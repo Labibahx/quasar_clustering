@@ -1,6 +1,5 @@
 """ Aesha Tammour 7 August 2014
 Unsupervised clustering analysis on a sample of SDSS quasars.
-Basically, imitating Mark's code!
 
 """
 
