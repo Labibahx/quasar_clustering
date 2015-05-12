@@ -1,6 +1,6 @@
-quasar clustering
-==================
-Unsupervised clustering analysis for quasar spectra
+quasar unsupervised  clustering
+===============================
+Unsupervised clustering analysis for quasar spectra data
 The starting point is the Quasar catalog of Paris et al. 2014 
 The paper and full catalog can be found here http://adslabs.org/adsabs/abs/2014A%26A...563A..54P/
 
