@@ -6,6 +6,7 @@ from astropy.io import fits
 from astropy.table import Table
 from sklearn.cluster import KMeans
 from mpl_toolkits.mplot3d import Axes3D
+from operator import itemgetter
 
 
 ## the following is copied from quasar_cluster.py
@@ -61,3 +62,26 @@ for i,j in zip(clstr_name, num_ls):
     clstr_ls.append((i,j))
 
 c1= fits.open()
+
+
+
+
+
+def profiles(line, ):
+    compos= glob.glob(line+"ew_hwhm*.fits")
+    como_list.append(line)
+    orderd_compos= sorted()
+    for f in compos:
+        spec_file= fits.open(f)
+
+sorted(list, key=itemgetter(1))
+
+
+
+
+
+
+
+
+
+
