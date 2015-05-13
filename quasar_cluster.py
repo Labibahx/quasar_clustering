@@ -157,10 +157,10 @@ labels= kmeans.predict(qs)
 
 ## save the clustering results: the subset joined with the label (which point to the cluster the object belongs to) and the object name from the catalog.
 clstr_with_names= np.column_stack((qs, labels, sdss_name))
-save(clstr_name+str(k)+"clstrs_name.npy", clstr_with_names) #save
+save(clstr_name+str(k)+"_clstrs_name.npy", clstr_with_names) #save
 
 clstr_with_labels= np.column_stack((qs, labels))
-save(clstr_name+str(k)+"clstrs.npy", clstr_with_labels)
+save(clstr_name+str(k)+"_clstrs.npy", clstr_with_labels)
 
 ### to read this array, use load(file name). All elements in the array will have dtype= S18.
 ### to use them I need to convert to floats. use new_array= old_array.astype(desired_dtype). dtype= float64
