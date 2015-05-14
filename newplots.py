@@ -7,6 +7,7 @@ from astropy.table import Table
 from sklearn.cluster import KMeans
 from mpl_toolkits.mplot3d import Axes3D
 from operator import itemgetter
+from glob import glob
 
 
 ## the following is copied from quasar_cluster.py
@@ -64,11 +65,28 @@ for i,j in zip(clstr_name, num_ls):
 c1= fits.open()
 
 
+line_clstrs= [[("mg2", 3), ("mg2", 4)], [("c3", 5), ("c3", 6)], [("c4", 3), ("c4", 4)]]
 
+for i in range(3):
+    clstr1= np.load(line_clstrs[0][i]+"_ew_hwhm_"+str(line_clstrs[1][i])+"clstrs.npy")
+    clstr1= np.load(l_n[0]+"_ew_hwhm_"+str(l_n[1])+"clstrs.npy")
 
-
-def profiles(line, ):
-    compos= glob.glob(line+"ew_hwhm*.fits")
+def profiles(line, k):
+    """ plot line profiles for the clusters in 4 panels
+        """
+    compos= glob(line+"ew_hwhm_"+str(k)+"*.fits")
+    
+    
+    
+    
+    clstrs= glob.glob(line+"_ew_hwhm*clstrs.npy")
+    clstrs1= np.load(clstrs[0])
+    clstrs2= np.load(clstrs[1])
+    fig= figure()
+    ax1= fig.add_sublot(241)
+    for c in range(1,k1+1):
+        ax1.plot()
+    
     como_list.append(line)
     orderd_compos= sorted()
     for f in compos:
