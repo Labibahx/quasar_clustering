@@ -53,30 +53,123 @@ features= [[c4_ew, c4_bhwhm, c4_rhwhm, c4_amp, c4_fwhm],
 
 ## each cluster is represented by a composite spectrum with the number of objects in each cluster given in the FITS header (keyword:'SPEC_NUMBER')
 
-clstr_name= []
-num_ls=[]
-for c in clstr_name:
-    c_array= np.load()
-    num_ls.append(len(c_array))
 
-for i,j in zip(clstr_name, num_ls):
-    clstr_ls.append((i,j))
-
-c1= fits.open()
-
-
-line_clstrs= [[("mg2", 3), ("mg2", 4)], [("c3", 5), ("c3", 6)], [("c4", 3), ("c4", 4)]]
-
-for i in range(3):
-    clstr1= np.load(line_clstrs[0][i]+"_ew_hwhm_"+str(line_clstrs[1][i])+"clstrs.npy")
-    clstr1= np.load(l_n[0]+"_ew_hwhm_"+str(l_n[1])+"clstrs.npy")
-
-def profiles(line, k):
+def profiles(line, k1, k2):
     """ plot line profiles for the clusters in 4 panels
         """
-    compos= glob(line+"ew_hwhm_"+str(k)+"*.fits")
+    comp_name1= line+"_ew_hwhm_"+str(k1)+"*.fits"
+    comp_name2= line+"_ew_hwhm_"+str(k2)+"*.fits"
+    compos1= glob(comp_name1)
+    compos2= glob(comp_name2)
     
+    compo_list_k1= []
+    for obj in compos1:
+        spec1= fits.open(obj)
+        num_obj1= spec1[0].header['SPEC_NUMBER']
+        compo_list_k1.append([obj, num_obj1])
+    ordered_compos1= sorted(compo_list_k1, key= itemgetter(1), reverse= True)
+
+    compo_list_k2= []
+    for obj in compos2:
+        spec2= fits.open(obj)
+        num_obj2= spec2[0].header['SPEC_NUMBER']
+        compo_list_k2.append([obj, num_obj2])
+    ordered_compos2= sorted(compo_list_k2, key= itemgetter(1), reverse= True)
+
+    print ordered_compos1, ordered_compos2
+
+   # return ordered_compos1, ordered_compos2
+
+    fig= figure(figsize=(12,8))
+    fig1= fig.add_axes([0., 0., 1, 1])
+    fig1.set_axis_off()
+    fig1.set_xlim(0, 1)
+    fig1.set_ylim(0, 1)
+    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center')
+    fig1.text(0.5, 0.03, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center')
+    fig1.text(0.92, 0.7, "K = "+str(k1), rotation= 'vertical', horizontalalignment= 'center')
+    fig1.text(0.92, 0.3, "K = "+str(k2), rotation= 'vertical', horizontalalignment= 'center')
     
+    w= np.arange(1100, 4000, 0.1) #wavelength array
+
+    fl= range(1,5)
+
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', 'brown' ,'cornflowerblue', 'khaki', 'olive', 'purple']
+    xlimit= [(1500,1600), (1600, 1700), (1835, 1950), (2740, 2850)]
+    ylimit= [(0.55,2.1), (0.49,0.9), (0.39,0.9), (0.19,0.5)]
+    line_mark= [[1549], [1640, 1663.5], [1857, 1892, 1908], [2800]]
+    line_label= [['CIV'], ['HeII', 'OIII]'], ['AlIII', 'SiIII', 'CIII]'], ['MgII']]
+
+
+    for (y,xl,yl, l_lab, l_mark) in zip(fl, xlimit, ylimit, line_label, line_mark):
+        
+        ax= fig.add_subplot(2,4,y)
+        ax.axes.get_xaxis().set_ticks([1500, 1550, 1600, 1650, 1700, 1750, 1800, 1850, 1900, 1950, 2700, 2750, 2800, 2850])
+        ax.axes.get_yaxis().set_ticks([.2, .4, .6, .8, 1, 1.2, 1.4, 1.6, 1.8])
+        ax.tick_params(axis='both', which='major', labelsize=10)
+        xlim(xl)
+        ylim(yl)
+        
+        for ll in range(len(l_lab)):
+            
+            ax.axvline(l_mark[ll], ls= ':', c= 'k')
+            ax.text(l_mark[ll]+2, yl[1]-yl[1]/15, l_lab[ll])
+
+
+        ii=1.85
+        for (o, clr) in zip(ordered_compos1, clr_ls):
+            n= o[1]
+            if n >105:
+                spec= fits.open(o[0])
+                flx= spec[0].data
+                ax.plot(w, flx, c= clr, lw=2, label= str(n))
+                ii-=0.15
+                if y==1:
+                    ax.text(1510, ii, str(n), color= clr)
+
+                
+    fl= range(5,9)
+
+
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', 'brown' ,'cornflowerblue', 'khaki', 'olive', 'purple']
+    xlimit= [(1500,1600), (1600, 1700), (1835, 1950), (2740, 2850)]
+    ylimit= [(0.55,2.1), (0.49,0.9), (0.39,0.9), (0.19,0.5)]
+    line_mark= [[1549], [1640, 1663.5], [1857, 1892, 1908], [2800]]
+    line_label= [['CIV'], ['HeII', 'OIII]'], ['AlIII', 'SiIII', 'CIII]'], ['MgII']]
+
+    
+    for (y,xl,yl, l_lab, l_mark) in zip(fl, xlimit, ylimit, line_label, line_mark):
+    
+        ax= fig.add_subplot(2,4,y)
+        ax.axes.get_xaxis().set_ticks([1500, 1550, 1600, 1650, 1700, 1750, 1800, 1850, 1900, 1950, 2700, 2750, 2800, 2850])
+        ax.axes.get_yaxis().set_ticks([.2, .4, .6, .8, 1, 1.2, 1.4, 1.6, 1.8])
+        ax.tick_params(axis='both', which='major', labelsize=10)
+        xlim(xl)
+        ylim(yl)
+        
+        for ll in range(len(l_lab)):
+            
+            ax.axvline(l_mark[ll], ls= ':', c= 'k')
+            ax.text(l_mark[ll]+2, yl[1]-yl[1]/15, l_lab[ll])
+
+
+        ii= 1.85
+        for (o, clr) in zip(ordered_compos2, clr_ls):
+            n= o[1]
+            if o[1] > 105:
+                spec= fits.open(o[0])
+                flx= spec[0].data
+                ax.plot(w, flx, c=clr, lw=2, label= str(n))
+                ii-=0.15
+                if y==5:
+                    ax.text(1510, ii, str(n), color= clr)
+
+
+
+
+
+""" scatter plots (and histograms??) for each cluster.
+"""
     
     
     clstrs= glob.glob(line+"_ew_hwhm*clstrs.npy")
