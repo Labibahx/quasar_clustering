@@ -166,8 +166,6 @@ def profiles(line, k1, k2):
 
 
 
-
-
 """ scatter plots (and histograms??) for each cluster.
 """
     
