@@ -27,16 +27,43 @@ def spec_look_up(cluster_array, k):
     
     clstr_k= ss[(ss['SDSS_NAME'] == all_clstrs[:,4]) & (all_clstrs[:, 3].astype(int) == k)] # only samples in cluster k
 
-
-   ## c1= ss[(ss['SDSS_NAME']== clstr_array[:,4]) & (clstr_array[:,3].astype(int) ==0)]
-    
-
     print len(clstr_k)
 
     spec_files_list=[]
-    for s in range(len(clstr)):
-        spectrum_name= "spec-"+str(clstr['PLATE'][s])+"-"+str(clstr['MJD'][s])+"-"+str(clstr['FIBERID'][s]).zfill(4)+"_proc.fits"
+    sdss_names_list= []
+    for s in range(len(clstr_k)):
+        spectrum_name= "./proc_data/spec-"+str(clstr_k['PLATE'][s])+"-"+str(clstr_k['MJD'][s])+"-"+str(clstr_k['FIBERID'][s]).zfill(4)+"_proc.fits"
         spec_files_list.append(spectrum_name)
+        sdss_names_list.append(clstr_k['SDSS_NAME'][s])
+    
+    
+        ## plot the spectra
+    fig= figure()
+    ax=fig.add_subplot(111)
+    
+    for (file, name) in zip(spec_files_list, sdss_names_list):
+        try:
+            spec= fits.open(file)
+            wavelen= spec[0].data[0]
+            flx= spec[0].data[1]
+           # plot(wavelen[c4], flx[c4])
+            plot (wavelen, flx)
+            xlim(1350, 1750)
+            ylim(-1, 4.5)
+            axvline(1549, ls= ':')
+            text(1355, 3.5, "SDSS "+name)
+            print str(file)
+            
+            resume = input("Press Enter to plot next spectrum on list.")
+        
+        except SyntaxError:
+            pass
+            clf()
+    
+
+        
+        
+        
 
     return(spec_files_list)
 
