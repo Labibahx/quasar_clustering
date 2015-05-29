@@ -17,25 +17,25 @@ def spec_look_up(cluster_array, k):
     
         """
 
-    clstr= np.load(cluster_array)
-
-    sdss_names= clstr[:,4][clstr[:,3].astype(int)== k]
-    print sdss_names.shape
-
+    all_clstrs= np.load(cluster_array)
+    
     data= Table.read('dr10q.fits') #DR10 catalog
     
+    ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1) & (data['REWE_CIII'] >0) & (data['REWE_CIII'] <2000) & (data['REWE_CIV'] >0) & (data['REWE_CIV'] <2000) & (data['REWE_MGII'] >0) & (data['REWE_MGII'] <2000) & (data['BAL_FLAG_VI'] ==0)]
     
+    #corss-match the above two files
+    
+    clstr_k= ss[(ss['SDSS_NAME'] == all_clstrs[:,4]) & (all_clstrs[:, 3].astype(int) == k)] # only samples in cluster k
+
+
    ## c1= ss[(ss['SDSS_NAME']== clstr_array[:,4]) & (clstr_array[:,3].astype(int) ==0)]
     
-    mjd= data['MJD'][(data['SDSS_NAME'] == clstr[:,4]) & (clstr[:,3].astype(int) == 3)]
-    #plate= data['PLATE'][data['SDSS_NAME'] == sdss_names]
-    #fiber= data['FIBERID'][data['SDSS_NAME'] == sdss_names]
 
-    print mjd.shape, sdss_names.shape
+    print len(clstr_k)
 
     spec_files_list=[]
-    for s in range(len(sdss_names)):
-        spectrum_name= "spec-"+str(plate[s])+"-"+str(mjd[s])+"-"+str(fiber[s]).zfill(4)+"_proc.fits"
+    for s in range(len(clstr)):
+        spectrum_name= "spec-"+str(clstr['PLATE'][s])+"-"+str(clstr['MJD'][s])+"-"+str(clstr['FIBERID'][s]).zfill(4)+"_proc.fits"
         spec_files_list.append(spectrum_name)
 
     return(spec_files_list)
