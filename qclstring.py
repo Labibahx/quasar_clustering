@@ -1,4 +1,5 @@
-""" Unsupervised clustering analysis on a sample of SDSS quasars.
+""" 
+Unsupervised clustering analysis on a sample of SDSS quasars.
 link to the Paris et al. 2014 paper (SDSS-DR 10)
 http://adslabs.org/adsabs/abs/2014A%26A...563A..54P/
 This script is similar to spec_cluster.py but it reads corrected spectra (for extiction and redshift) then performs the clustering analysis and creates composites.
@@ -9,6 +10,9 @@ The working directory for this script is the main quasar_clustering directory. T
 
 ====================
 Updated on 30 May 2015 to include a limit on the SNR in the selctions. This cut-off brought the size of the sample from 7754 to 4342 quasars.
+
+=======
+This is a script that does the same stuff as quasar_cluster.py but written in a more fiendly resuable way... hopefully
 
 """
 
@@ -22,22 +26,56 @@ from sklearn import metrics
 import time
 from mpl_toolkits.mplot3d import Axes3D
 
+
+
 ### Read the SDSS DR10 Quasar catalog
 
 data = Table.read('dr10q.fits')
 
-""" extract the part with redshift 1.6 > z > 2.1
-also remove the bad measurements and all the other junk (the catalog has EW of -1, -inf or ridiculously large negative numbers. The EW values are >0 for absorption lines so I am only keeping the >0 EWs)
-I checked some of the objects with EWs < 0 and there seem to be something wrong with the measurements (the negative EW does not mean absorption line)
-I also put an upper cut for the ew <2000 as there seems to be some outliers
-"""
-
-# subsample with: upper and lower redshift limits, reasonable measurements for EW, and BAL quasars excluded
+""" + extract the part with redshift 1.6 > z > 2.1
+    + remove the bad measurements and all the other junk (the catalog has EW of -1, -inf or ridiculously large negative numbers. The EW values are >0 for absorption lines as well)
+    + I checked some of the objects with EWs < 0 and there seem to be something wrong with the measurements (the negative EW does not mean absorption line).
+    + I also put a limit on the ew <2000 as there seems to be some outliers
+    + BAL quasars will not included in the main sample
+    + limit on the SNR of >3 which reduced the size of the sample to ~1/3 if no SNR is used.
+    
+    """
 ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1)
-        & (data['REWE_CIII'] >0) & (data['REWE_CIII'] <2000)
-        & (data['REWE_CIV'] >0) & (data['REWE_CIV'] <2000)
-        & (data['REWE_MGII'] >0) & (data['REWE_MGII'] <2000)
-        & (data['BAL_FLAG_VI'] ==0) & (data['SNR_1700'] > 3)]
+          & (data['REWE_CIII'] >0) & (data['REWE_CIII'] <2000)
+          & (data['REWE_CIV'] >0) & (data['REWE_CIV'] <2000)
+          & (data['REWE_MGII'] >0) & (data['REWE_MGII'] <2000)
+          & (data['BAL_FLAG_VI'] ==0) & (data['SNR_1700'] > 3)]
+
+def qclstr():
+
+    """unsupervised clustering with KMeans
+    """
+
+
+    para
+
+
+
+var = raw_input("Please enter something: ")
+print "you entered", var
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ### use only some of the parameters to do the clustering
