@@ -6,10 +6,6 @@ spec_cluster.py includes correcting the spectra, clustering and stacking.
 I separated these processes to see if this is what is causing the script to be slow -turns out it is just the same.
 
 The working directory for this script is the main quasar_clustering directory. The catalgue file is (dr10q.fits) is there. The script reads the proccessed fits spectra from the proc_data directory.
-
-====================
-Updated on 30 May 2015 to include a limit on the SNR in the selctions. This cut-off brought the size of the sample from 7754 to 4342 quasars.
-
 """
 
 import numpy as np
@@ -32,13 +28,7 @@ I checked some of the objects with EWs < 0 and there seem to be something wrong 
 I also put an upper cut for the ew <2000 as there seems to be some outliers
 """
 
-# subsample with: upper and lower redshift limits, reasonable measurements for EW, and BAL quasars excluded
-ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1)
-        & (data['REWE_CIII'] >0) & (data['REWE_CIII'] <2000)
-        & (data['REWE_CIV'] >0) & (data['REWE_CIV'] <2000)
-        & (data['REWE_MGII'] >0) & (data['REWE_MGII'] <2000)
-        & (data['BAL_FLAG_VI'] ==0) & (data['SNR_1700'] > 3)]
-
+ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1) & (data['REWE_CIII'] >0) & (data['REWE_CIII'] <2000) & (data['REWE_CIV'] >0) & (data['REWE_CIV'] <2000) & (data['REWE_MGII'] >0) & (data['REWE_MGII'] <2000) & (data['BAL_FLAG_VI'] ==0)] # subsample with: upper and lower redshift limits, reasonable measurements for EW, and BAL quasars excluded
 
 ### use only some of the parameters to do the clustering
 
@@ -92,10 +82,10 @@ pca_qs= pca.components_
 
 
 '''choose k that gives the knee of the sos vs. k plot
-    Two ways to do that:
-    1- plot cost function (within cluster sum of squares) vs. number of clusters and look for elbow.
-    2- silhouette score
-    '''
+ Two ways to do that:
+1- plot cost function (within cluster sum of squares) vs. number of clusters and look for elbow.
+2- silhouette score
+'''
 
 num_c= np.arange(2,9) # number of clusters
 sos_ls= [] # list of the sum of distances squared
