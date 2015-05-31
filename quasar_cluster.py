@@ -160,12 +160,14 @@ savefig('sos_all.pdf')
 ### test reproducibility -cluster centroids are the same for several runs of KMeans
 
 lines = [('CIV', 3), ('CIV', 4), ('CIII', 5), ('CIII', 6), ('CIII', 7), ('MGII', 3), ('MGII', 4)]
-cntrs = open('centroids.txt', 'wr')
 
 param_list = ['REWE_', 'BHWHM_', 'RHWHM_']
 
 
 for l in lines:
+    cntrs = open(l[0]+str(l[1])+".txt", 'wr')
+
+    print l[0]
     
     cntrs.write("#"+str(l)+'\n')
     qs= np.column_stack(ss[p+l[0]] for p in param_list)
@@ -173,19 +175,20 @@ for l in lines:
     k=l[1] #number of clusters
     labels=[]
     clstr_cntrs=[]
-    for r in range(10):
+    for r in range(50):
+        #print r
         kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
         kmeans.fit(qs)
         labels.append(kmeans.predict(qs))
         clstr_cntrs = kmeans.cluster_centers_
+        #print clstr_cntrs
         
-        
-        cntrs.write(str(clstr_cntrs[0][0])+'\t'+ str(clstr_cntrs[0][1])+'\t' + str(clstr_cntrs[0][2])+'\t'
-                   +str(clstr_cntrs[1][0])+'\t'+ str(clstr_cntrs[1][1])+'\t' + str(clstr_cntrs[1][2])+'\t'
-                   +str(clstr_cntrs[2][0])+'\t'+ str(clstr_cntrs[2][1])+'\t' + str(clstr_cntrs[2][2])+'\n')
+        for i in range(k):
+            cntrs.write(str(clstr_cntrs[i][0])+'\t'+ str(clstr_cntrs[i][1])+'\t' + str(clstr_cntrs[i][2])+ '\t')
+        cntrs.write('\n')
 
-cntrs.close()
-
+    cntrs.close()
+# see newplots.py for plotting the results
 
 ### Now do the clustering using K-Means
 
