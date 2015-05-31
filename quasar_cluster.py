@@ -40,6 +40,8 @@ ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1)
         & (data['BAL_FLAG_VI'] ==0) & (data['SNR_1700'] > 3)]
 
 
+save('dr10qsample.npy',ss) # save as numpy array
+
 ### use only some of the parameters to do the clustering
 
 # list of parameters to include in the clustering analysis (features)
