@@ -70,14 +70,14 @@ fiber= ss['FIBERID']
 ###
 ### a list of lists of the features entering the clustering analysis
 ###
-features= [[c4_ew, c4_bhwhm, c4_rhwhm, c4_amp, c4_fwhm],
-           [c3_ew, c3_bhwhm, c3_rhwhm, c3_amp, c3_fwhm],
-           [mg2_ew, mg2_bhwhm, mg2_rhwhm, mg2_amp, mg2_fwhm]]
+features= [[c4_ew, c4_bhwhm, c4_rhwhm],
+           [c3_ew, c3_bhwhm, c3_rhwhm],
+           [mg2_ew, mg2_bhwhm, mg2_rhwhm]]
 
 ### combine 1D arrays to create a 2D numpy array to perform the clustering analysis on (each row is one quasar, each column is one feature)
 
 # qs= np.column_stack(n for n in features[0][:3]+features[1][:3]+features[2][:3]) # all three lines. can specify which features to use by changing the range in the second []
-qs= np.column_stack(n for n in features[2][:-2]) # one line only. 0 can be changed to use a different line
+qs= np.column_stack(n for n in features[0]) # one line only. 0 can be changed to use a different line
 
 
 ####
@@ -155,6 +155,36 @@ ylabel('Sum of squares')
 xlabel('Number of clusters')
 legend(numpoints=1)
 savefig('sos_all.pdf')
+
+
+### test reproducibility -cluster centroids are the same for several runs of KMeans
+
+lines = [('CIV', 3), ('CIV', 4), ('CIII', 5), ('CIII', 6), ('CIII', 7), ('MGII', 3), ('MGII', 4)]
+cntrs = open('centroids.txt', 'wr')
+
+param_list = ['REWE_', 'BHWHM_', 'RHWHM_']
+
+
+for l in lines:
+    
+    cntrs.write("#"+str(l)+'\n')
+    qs= np.column_stack(ss[p+l[0]] for p in param_list)
+
+    k=l[1] #number of clusters
+    labels=[]
+    clstr_cntrs=[]
+    for r in range(10):
+        kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
+        kmeans.fit(qs)
+        labels.append(kmeans.predict(qs))
+        clstr_cntrs = kmeans.cluster_centers_
+        
+        
+        cntrs.write(str(clstr_cntrs[0][0])+'\t'+ str(clstr_cntrs[0][1])+'\t' + str(clstr_cntrs[0][2])+'\t'
+                   +str(clstr_cntrs[1][0])+'\t'+ str(clstr_cntrs[1][1])+'\t' + str(clstr_cntrs[1][2])+'\t'
+                   +str(clstr_cntrs[2][0])+'\t'+ str(clstr_cntrs[2][1])+'\t' + str(clstr_cntrs[2][2])+'\n')
+
+cntrs.close()
 
 
 ### Now do the clustering using K-Means
