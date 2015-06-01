@@ -80,7 +80,7 @@ features= [[c4_ew, c4_bhwhm, c4_rhwhm],
 
 # qs= np.column_stack(n for n in features[0][:3]+features[1][:3]+features[2][:3]) # all three lines. can specify which features to use by changing the range in the second []
 
-qs= np.column_stack(n for n in features[2]) # one line only. 0 can be changed to use a different line
+qs= np.column_stack(n for n in features[0]) # one line only. 0 can be changed to use a different line
 
 ####
 # use the following two lines to do dimensionality reduction on the features matrix using PCA
@@ -194,7 +194,7 @@ for l in lines:
 
 ### Now do the clustering using K-Means
 
-clstr_name= "mg2_ew_hwhm"
+clstr_name= "c4_ew_hwhm"
 k=5 #number of clusters
 kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
 kmeans.fit(qs)
