@@ -171,8 +171,8 @@ def two_d_scatter(line, cluster, k, feature1, feature2, feature3):
          horizontalalignment='left', verticalalignment='center',
          transform=ax.transAxes, color= 'black')
 
-    xlabel(line+" "+feature1+ " (km/s)")
-    ylabel(line+" "+feature2+ " (km/s)")
+    xlabel(line+" "+feature2+ " (km/s)")
+    ylabel(line+" "+feature3+ " (km/s)")
 
     t=0
     for o in ordered_clstrs:
