@@ -12,8 +12,8 @@ def spec_look_up(cluster_array, k):
     """ read a list of sdss names, corss-match list with table with mjd, plate, fiber IDs to generate spectra file name with format mjd-plate-fiber_proc.fits e.g., spec-3587-55182-0691_proc.fits
     the processed spectra (i.e., corrected for Galactic extinction and de-redshifted and normalized. See spec_proc.py)
     
-    cluster_array: a 2D numpy array with the results of a clustering trial.  Each sample (row) has the values for the features (parameters) used in the clustering and the sdss names of the objects in each cluster. and a clolumn withe clusters labels
-    k: cluster label. k=0 --> first cluster, k=1 --> second cluster... 
+    cluster_array: a 2D numpy array with the results of a clustering trial.  Each sample (row) has the values for the features (parameters) used in the clustering and the sdss names of the objects in each cluster. and a clolumn withe clusters labels. e.g, 'c4_ew_hwhm_5clstrs_name.npy'
+    k: the cluster label you want to look at: k=0 --> first cluster, k=1 --> second cluster...
     
         """
 
@@ -21,7 +21,7 @@ def spec_look_up(cluster_array, k):
     
     data= Table.read('dr10q.fits') #DR10 catalog
     
-    ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1) & (data['REWE_CIII'] >0) & (data['REWE_CIII'] <2000) & (data['REWE_CIV'] >0) & (data['REWE_CIV'] <2000) & (data['REWE_MGII'] >0) & (data['REWE_MGII'] <2000) & (data['BAL_FLAG_VI'] ==0)]
+    ss = np.load("dr10qsample.npy") # subsample with conditions (see quasar_cluster.py)
     
     #corss-match the above two files
     
