@@ -70,14 +70,14 @@ fiber= ss['FIBERID']
 ###
 ### a list of lists of the features entering the clustering analysis
 ###
-features= [[c4_ew, c4_bhwhm, c4_rhwhm, c4_amp, c4_fwhm],
-           [c3_ew, c3_bhwhm, c3_rhwhm, c3_amp, c3_fwhm],
-           [mg2_ew, mg2_bhwhm, mg2_rhwhm, mg2_amp, mg2_fwhm]]
+features= [[c4_ew, c4_bhwhm, c4_rhwhm],
+           [c3_ew, c3_bhwhm, c3_rhwhm],
+           [mg2_ew, mg2_bhwhm, mg2_rhwhm]]
 
 ### combine 1D arrays to create a 2D numpy array to perform the clustering analysis on (each row is one quasar, each column is one feature)
 
 # qs= np.column_stack(n for n in features[0][:3]+features[1][:3]+features[2][:3]) # all three lines. can specify which features to use by changing the range in the second []
-qs= np.column_stack(n for n in features[2][:-2]) # one line only. 0 can be changed to use a different line
+qs= np.column_stack(n for n in features[1]) # one line only. 0 can be changed to use a different line
 
 
 ####
@@ -159,8 +159,8 @@ savefig('sos_all.pdf')
 
 ### Now do the clustering using K-Means
 
-clstr_name= "c3_ew_hwhm"
-k=5 #number of clusters
+clstr_name= "c4_ew_hwhm"
+k=3 #number of clusters
 kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
 kmeans.fit(qs)
 labels= kmeans.predict(qs)
