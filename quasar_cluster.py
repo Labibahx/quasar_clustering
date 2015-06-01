@@ -79,7 +79,7 @@ features= [[c4_ew, c4_bhwhm, c4_rhwhm],
 ### combine 1D arrays to create a 2D numpy array to perform the clustering analysis on (each row is one quasar, each column is one feature)
 
 # qs= np.column_stack(n for n in features[0][:3]+features[1][:3]+features[2][:3]) # all three lines. can specify which features to use by changing the range in the second []
-<<<<<<< HEAD
+
 qs= np.column_stack(n for n in features[1]) # one line only. 0 can be changed to use a different line
 
 ####
@@ -161,7 +161,7 @@ savefig('sos_all.pdf')
 
 ### test reproducibility -cluster centroids are the same for several runs of KMeans
 
-lines = [('CIV', 3), ('CIV', 4), ('CIII', 5), ('CIII', 6), ('CIII', 7), ('MGII', 3), ('MGII', 4)]
+lines = [('CIV', 3), ('CIV', 4), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4)]
 
 param_list = ['REWE_', 'BHWHM_', 'RHWHM_']
 
@@ -194,8 +194,8 @@ for l in lines:
 
 ### Now do the clustering using K-Means
 
-clstr_name= "c4_ew_hwhm"
-k=3 #number of clusters
+clstr_name= "c3_ew_hwhm"
+k=6 #number of clusters
 kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
 kmeans.fit(qs)
 labels= kmeans.predict(qs)
