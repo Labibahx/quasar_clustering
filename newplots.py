@@ -10,47 +10,10 @@ from operator import itemgetter
 from glob import glob
 
 
-## the following is copied from quasar_cluster.py
-
-data= Table.read('dr10q.fits')
-ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1) & (data['REWE_CIII'] >0) & (data['REWE_CIII'] <2000) & (data['REWE_CIV'] >0) & (data['REWE_CIV'] <2000) & (data['REWE_MGII'] >0) & (data['REWE_MGII'] <2000) & (data['BAL_FLAG_VI'] ==0)] # subsample with: upper and lower redshift limits, reasonable measurements for EW, and BAL quasars excluded
-
-### use only some of the parameters to do the clustering
-
-# list of parameters to include in the clustering analysis (features)
-redshift= ss['Z_PCA'] # PCA redshift
-c4_fwhm= ss['FWHM_CIV'] # FWHM CIV emission line
-c4_bhwhm= ss['BHWHM_CIV'] # blue HWHM of CIV emission line
-c4_rhwhm= ss['RHWHM_CIV'] # red HWHM of CIV emission line
-c4_amp = ss['AMP_CIV'] # amplitude of CIV emission line (median rms pixel noise)
-c4_ew= ss['REWE_CIV'] # EW for the CIV emission line
-c3_fwhm= ss['FWHM_CIII']
-c3_bhwhm= ss['BHWHM_CIII']
-c3_rhwhm= ss['RHWHM_CIII']
-c3_amp= ss['AMP_CIII']
-c3_ew= ss['REWE_CIII']
-mg2_fwhm= ss['FWHM_MGII']
-mg2_bhwhm= ss['BHWHM_MGII']
-mg2_rhwhm= ss['RHWHM_MGII']
-mg2_amp= ss['AMP_MGII']
-mg2_ew= ss['REWE_MGII']
-bal= ss['BAL_FLAG_VI'] # BAL flag from visual inspection
-c4_tew= ss['REW_CIV'] # EW of the CIV trough
-alpha_nu= ss['ALPHA_NU'] # spectra index between 1450−1500 A, 1700−1850 A and 1950−2750 A
-sdss_name = ss['SDSS_NAME']
-plate= ss['PLATE']
-mjd= ss['MJD']
-fiber= ss['FIBERID']
-
-features= [[c4_ew, c4_bhwhm, c4_rhwhm, c4_amp, c4_fwhm],
-           [c3_ew, c3_bhwhm, c3_rhwhm, c3_amp, c3_fwhm],
-           [mg2_ew, mg2_bhwhm, mg2_rhwhm, mg2_amp, mg2_fwhm]]
+ss= np.load(dr10qsample.npy)
 
 
 ## each cluster is saved into a numpy 2D array which includes the clustering parameters and the name of the sdss object. To get the other parameters for the same object that were not used in the clustering, I can cross match the cluster 2D array with the full subsample array ss (defined in line 14 here).
-
-
-
 ## each cluster is represented by a composite spectrum with the number of objects in each cluster given in the FITS header (keyword:'SPEC_NUMBER')
 
 
@@ -220,6 +183,47 @@ def two_d_scatter(line, cluster, k, feature1, feature2, feature3):
         t+=1
 
     legend(scatterpoints=1)
+
+#############################
+
+def plot_reprod(line, k):
+
+    """ make plots with cluster centroids calculated 50 times to show reproducibility.
+    read values from text files.
+    """
+    
+    #lines = [('CIV', 3), ('CIV', 4), ('CIII', 5), ('CIII', 6), ('CIII', 7), ('MGII', 3), ('MGII', 4)]
+
+    cntrs= loadtxt(line+str(k)+".txt")
+    fig= figure()
+    
+    subplots_adjust(hspace = .05)
+    ax1= fig.add_subplot(311)
+    xlim(-4, 54)
+    ylabel('EW '+line)
+    ax1.set_xticks([10, 20, 30, 40, 50], [10, 20, 30, 40, 50])
+    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
+    
+    for m in range(0, k*3, 3):
+        ax1.scatter(range(50), cntrs[:, m], marker='d', edgecolor='k', facecolor='w')
+    
+
+    ax2= fig.add_subplot(312, sharex= ax1)
+    xlim(-4, 54)
+    ylabel('BHWHM '+line)
+    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
+    for m in range(1, k*3, 3):
+        ax2.scatter(range(50), cntrs[:, m], marker='o', edgecolor='k', facecolor='w')
+
+    ax3= fig.add_subplot(313, sharex= ax1)
+    xlim(-4, 54)
+    ylabel('RHWHM '+line)
+    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
+    for m in range(2, k*3, 3):
+        ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='w')
+
+
+
 
 
 

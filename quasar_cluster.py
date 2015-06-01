@@ -40,6 +40,8 @@ ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1)
         & (data['BAL_FLAG_VI'] ==0) & (data['SNR_1700'] > 3)]
 
 
+save('dr10qsample.npy',ss) # save as numpy array
+
 ### use only some of the parameters to do the clustering
 
 # list of parameters to include in the clustering analysis (features)
@@ -77,8 +79,8 @@ features= [[c4_ew, c4_bhwhm, c4_rhwhm],
 ### combine 1D arrays to create a 2D numpy array to perform the clustering analysis on (each row is one quasar, each column is one feature)
 
 # qs= np.column_stack(n for n in features[0][:3]+features[1][:3]+features[2][:3]) # all three lines. can specify which features to use by changing the range in the second []
+<<<<<<< HEAD
 qs= np.column_stack(n for n in features[1]) # one line only. 0 can be changed to use a different line
-
 
 ####
 # use the following two lines to do dimensionality reduction on the features matrix using PCA
@@ -156,6 +158,39 @@ xlabel('Number of clusters')
 legend(numpoints=1)
 savefig('sos_all.pdf')
 
+
+### test reproducibility -cluster centroids are the same for several runs of KMeans
+
+lines = [('CIV', 3), ('CIV', 4), ('CIII', 5), ('CIII', 6), ('CIII', 7), ('MGII', 3), ('MGII', 4)]
+
+param_list = ['REWE_', 'BHWHM_', 'RHWHM_']
+
+
+for l in lines:
+    cntrs = open(l[0]+str(l[1])+".txt", 'wr')
+
+    print l[0]
+    
+    cntrs.write("#"+str(l)+'\n')
+    qs= np.column_stack(ss[p+l[0]] for p in param_list)
+
+    k=l[1] #number of clusters
+    labels=[]
+    clstr_cntrs=[]
+    for r in range(50):
+        #print r
+        kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
+        kmeans.fit(qs)
+        labels.append(kmeans.predict(qs))
+        clstr_cntrs = kmeans.cluster_centers_
+        #print clstr_cntrs
+        
+        for i in range(k):
+            cntrs.write(str(clstr_cntrs[i][0])+'\t'+ str(clstr_cntrs[i][1])+'\t' + str(clstr_cntrs[i][2])+ '\t')
+        cntrs.write('\n')
+
+    cntrs.close()
+# see newplots.py for plotting the results
 
 ### Now do the clustering using K-Means
 
