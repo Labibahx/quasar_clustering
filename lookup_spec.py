@@ -61,32 +61,49 @@ def spec_look_up(cluster_array, k):
             clf()
     
 
+
+
+def spec_display(spec_ls):
+
+    """ read a list of spectra and display them. Read input and use as flag (for either low SNR or BAL quasar).
         
-        
-        
-
-    return(spec_files_list)
-
-
-
-
-def spec_display(spec_list):
-
-""" look up and display a list quasars. Read file names from a list
+        spec_ls: numpy array with the quasar sample as selected in quasar_cluster.py
+        flag= 0 all good
+        flag= 1 BAL
+        flag= 2 very low SNR
     """
 
-    spectra= spec_list
+    sample= np.load(spec_ls)
+    flag_ls=[]
     
     wavelen= np.arange(1100, 4000, 0.1)  #wavelength array
-
-    for file in spectra:
+    fig= figure(figsize(15,6))
+    
+    for i in range(len(sample)):
+        print "Looking at spectrum number", i+1
         try:
-            spec= fits.open(file)
-            flx= spec[0].data
+            spectrum_name= "./proc_data/spec-"+str(sample['PLATE'][i])+"-"+str(sample['MJD'][i])+"-"+str(sample['FIBERID'][i]).zfill(4)+"_proc.fits"
+            spec= fits.open(spectrum_name)
+            flx= spec[0].data[1]
+            
             plot(wavelen, flx)
+            xlim(1200, 3100)
+            ylim(-1,4)
+            axvline(1549, ls=':')
+            axvline(1908, ls=':')
+            axvline(2800, ls=':')
+            text(-0.5, 2500, sample['SDSS_NAME'])
+            print "Flags: 0= all good, 1= BAL, 2= too noisy"
+            flag= input()
+            flag_ls.append(flag)
             resume = input("Press Enter to plot next spectrum on list.")
+        
         except SyntaxError:
             pass
+            clf()
+
+    new_array= np.column_stack((sample, flag_ls))
+    save("sample_myflags.npy", new_array)
 
 
 
