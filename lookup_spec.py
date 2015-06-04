@@ -94,7 +94,7 @@ def spec_display(spec_ls, n1, n2):
             spec= fits.open(spectrum_name)
             flx= spec[0].data[1]
             
-            plot(wavelen, flx)
+            plot(wavelen, flx, c= 'k')
             xlim(1200, 3100)
             ylim(-1,4)
             axvline(1397, ls=':')
