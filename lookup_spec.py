@@ -63,21 +63,29 @@ def spec_look_up(cluster_array, k):
 
 
 
-def spec_display(spec_ls):
+def spec_display(spec_ls, n1, n2):
 
     """ read a list of spectra and display them. Read input and use as flag (for either low SNR or BAL quasar).
         
         spec_ls: numpy array with the quasar sample as selected in quasar_cluster.py
-        flag= 0 all good
-        flag= 1 BAL
-        flag= 2 very low SNR
+        flag= 0 keep
+        flag= 1 reject
+        
+        n1: start at line number n1
+        n2: stop at line number n2
+        
     """
 
-    sample= np.load(spec_ls)
+    data= np.load(spec_ls)
+    
+    sample= data[n1:n2+1]
+    print "Looking at lines", n1, "to", n2
+    
     flag_ls=[]
+    names=[]
     
     wavelen= np.arange(1100, 4000, 0.1)  #wavelength array
-    fig= figure(figsize(15,6))
+    fig= figure(figsize(20,8))
     
     for i in range(len(sample)):
         print "Looking at spectrum number", i+1
@@ -89,21 +97,23 @@ def spec_display(spec_ls):
             plot(wavelen, flx)
             xlim(1200, 3100)
             ylim(-1,4)
+            axvline(1397, ls=':')
             axvline(1549, ls=':')
             axvline(1908, ls=':')
             axvline(2800, ls=':')
-            text(-0.5, 2500, sample['SDSS_NAME'])
-            print "Flags: 0= all good, 1= BAL, 2= too noisy"
+            text(2500, 3, sample['SDSS_NAME'][i])
+            print "Flags: 0= keep, 1= reject"
             flag= input()
             flag_ls.append(flag)
+            names.append(sample['SDSS_NAME'][i])
             resume = input("Press Enter to plot next spectrum on list.")
         
         except SyntaxError:
             pass
             clf()
 
-    new_array= np.column_stack((sample, flag_ls))
-    save("sample_myflags.npy", new_array)
+    new_array= np.column_stack((names, flag_ls))
+    save("myflags_"+str(n1)+"_to_"+str(n2)+".npy", new_array)
 
 
 
