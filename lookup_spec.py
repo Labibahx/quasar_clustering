@@ -96,13 +96,20 @@ def spec_display(spec_ls, n1, n2):
             flx= spec[0].data[1]
             
             plot(wavelen, flx, c= 'k')
-            xlim(1200, 3100)
+            xlim(1300, 3000)
             ylim(-1,4)
-            axvline(1397, ls=':')
-            axvline(1549, ls=':')
-            axvline(1908, ls=':')
-            axvline(2800, ls=':')
-            text(2500, 3, sample['SDSS_NAME'][i])
+            axvline(1397, ls=':', c='r')
+            text(1400, 3.5, 'Si IV', rotation= 'vertical')
+            axvline(1549, ls=':', c='r')
+            text(1551, 3.5, 'C IV', rotation= 'vertical')
+            axvline(1640, ls= ':', c='r')
+            text(1642, 3.5, 'He II', rotation='vertical')
+            axvline(1908, ls=':', c='r')
+            text(1910, 3.5, 'C III]', rotation= 'vertical')
+            axvline(2800, ls=':', c='r')
+            text(2802, 3.5, 'Mg II', rotation= 'vertical')
+            text(2500, 3, "SDSS"+sample['SDSS_NAME'][i], color='r')
+            text(2500, 2.7, "Z_PCA: %4.3f" % sample['Z_PCA'][i], color= 'r')
             print "Flags: 0= keep, 1= reject"
             flag= input()
             flag_ls.append(flag)
@@ -118,13 +125,13 @@ def spec_display(spec_ls, n1, n2):
 
 ### concatenate the flag arrays
 
-flag_arrays= glob('myflags*.npy')
+flag_arrays= glob('myflags*to*.npy')
 
-f= np.load(flag_array[0])
+f= np.load(flag_arrays[0])
 
-for i in range(1, len(flag_array)):
-    ff= np.load(flag_array[i])
+for i in range(1, len(flag_arrays)):
+    ff= np.load(flag_arrays[i])
     f= np.concatenate((f, ff), axis=0)
 
-save('myflags1.npy' ,f)
+save('myflags2.npy' ,f)
 

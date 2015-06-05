@@ -27,7 +27,7 @@ from mpl_toolkits.mplot3d import Axes3D
 data = Table.read('dr10q.fits')
 
 """ extract the part with redshift 1.6 > z > 2.1
-also remove the bad measurements and all the other junk (the catalog has EW of -1, -inf or ridiculously large negative numbers. The EW values are >0 for absorption lines so I am only keeping the >0 EWs)
+also remove the bad measurements and all the other junk (the catalog has EW of -1, -inf or ridiculously large negative numbers. The EW values are < 0 for absorption lines so I am only keeping the >0 EWs)
 I checked some of the objects with EWs < 0 and there seem to be something wrong with the measurements (the negative EW does not mean absorption line)
 I also put an upper cut for the ew <2000 as there seems to be some outliers
 """
