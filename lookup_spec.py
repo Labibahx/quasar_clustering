@@ -5,6 +5,7 @@ from astropy.io import fits
 
 from astropy.table import Table
 
+from glob import glob
 
 
 def spec_look_up(cluster_array, k):
@@ -115,5 +116,15 @@ def spec_display(spec_ls, n1, n2):
     new_array= np.column_stack((names, flag_ls))
     save("myflags_"+str(n1)+"_to_"+str(n2)+".npy", new_array)
 
+### concatenate the flag arrays
 
+flag_arrays= glob('myflags*.npy')
+
+f= np.load(flag_array[0])
+
+for i in range(1, len(flag_array)):
+    ff= np.load(flag_array[i])
+    f= np.concatenate((f, ff), axis=0)
+
+save('myflags1.npy' ,f)
 
