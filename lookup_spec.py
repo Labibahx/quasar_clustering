@@ -135,3 +135,36 @@ for i in range(1, len(flag_arrays)):
 
 save('myflags2.npy' ,f)
 
+
+mf1= np.load("myflags1.npy")
+mf2= np.load("myflags2.npy")
+
+flags=[]
+names=[]
+
+
+for i in range(len(mf1)):
+    for j in range(len(mf2)):
+        if mf1[i][0]== mf2[j][0] :
+            #print mf1[i][1].astype(int), mf2[j][1].astype(int)
+            
+            f= mf1[i][1].astype(int) * mf2[j][1].astype(int)
+            
+            names.append(mf1[i][0])
+            
+            flags.append(f)
+
+
+new_array= np.column_stack((names, flags))
+np.savetxt("myflags_full.csv", new_array, delimiter=",")
+
+
+
+
+
+
+
+
+
+
+
