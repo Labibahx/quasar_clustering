@@ -13,7 +13,7 @@ def spec_look_up(cluster_array, k):
     """ read a list of sdss names, corss-match list with table with mjd, plate, fiber IDs to generate spectra file name with format mjd-plate-fiber_proc.fits e.g., spec-3587-55182-0691_proc.fits
     the processed spectra (i.e., corrected for Galactic extinction and de-redshifted and normalized. See spec_proc.py)
     
-    cluster_array: a 2D numpy array with the results of a clustering trial.  Each sample (row) has the values for the features (parameters) used in the clustering and the sdss names of the objects in each cluster. and a clolumn withe clusters labels. e.g, 'c4_ew_hwhm_5clstrs_name.npy'
+    cluster_array: a 2D numpy array with the results of a clustering trial.  Each sample (row) has the values for the features (parameters) used in the clustering and the sdss names of the objects in each cluster. and a column with clusters labels. e.g, 'c4_ew_hwhm_5clstrs_name.npy'
     k: the cluster label you want to look at: k=0 --> first cluster, k=1 --> second cluster...
     
         """
