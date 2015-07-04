@@ -120,6 +120,7 @@ def spec_display(spec_ls, n1, n2):
             pass
             clf()
 
+    close(fig)
     new_array= np.column_stack((names, flag_ls))
     save("myflags_"+str(n1)+"_to_"+str(n2)+".npy", new_array)
 
@@ -133,7 +134,7 @@ for i in range(1, len(flag_arrays)):
     ff= np.load(flag_arrays[i])
     f= np.concatenate((f, ff), axis=0)
 
-save('myflags2.npy' ,f)
+save('myflags3.npy' ,f)
 
 
 mf1= np.load("myflags1.npy")
