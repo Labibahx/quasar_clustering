@@ -137,6 +137,21 @@ for i in range(1, len(flag_arrays)):
 save('myflags3.npy' ,f)
 
 
+#join the sample file with the myflags list
+
+mf= np.load("myflags3.npy")
+
+mftable= Table([mf[0],mf[1]], names= ('SDSS_NAME', 'MY_FLAG') )
+mftable.write("myflags3.csv")
+
+#join
+
+
+
+
+
+
+
 mf1= np.load("myflags1.npy")
 mf2= np.load("myflags2.npy")
 
