@@ -149,7 +149,7 @@ mftable.write("myflags3.csv")
 sample= Table.read("dr10qsample.csv")
 mf3= Table.read("myflags3.csv")
 
-x= join(sample, mf3)
+x= join(sample, mf3, join_type='left')
 
 x.write("sample_myflags.csv")
 
