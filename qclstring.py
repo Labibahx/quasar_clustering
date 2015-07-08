@@ -12,7 +12,9 @@ The working directory for this script is the main quasar_clustering directory. T
 Updated on 30 May 2015 to include a limit on the SNR in the selctions. This cut-off brought the size of the sample from 7754 to 4342 quasars.
 
 =======
-This is a script that does the same stuff as quasar_cluster.py but written in a more fiendly resuable way... hopefully
+This is a script that does the same stuff as quasar_cluster.py but written in a more friendly resuable way... hopefully
+
+July 8 2015 - not using this script. Back to quasar_cluster.py
 
 """
 
@@ -41,35 +43,23 @@ data = Table.read('dr10q.fits')
     
     """
 ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1)
-          & (data['REWE_CIII'] >0) & (data['REWE_CIII'] <2000)
-          & (data['REWE_CIV'] >0) & (data['REWE_CIV'] <2000)
-          & (data['REWE_MGII'] >0) & (data['REWE_MGII'] <2000)
+          & (data['REWE_CIII'] >0) & (data['ERR_REWE_CIII'] < data['REWE_CIII']/10)
+          & (data['REWE_CIV'] >0) & (data['ERR_REWE_CIV'] < data['REWE_CIV']/10)
+          & (data['REWE_MGII'] >0) & (data['ERR_REWE_MGII'] < data['REWE_MGII']/10)
           & (data['BAL_FLAG_VI'] ==0) & (data['SNR_1700'] > 3)]
 
-def qclstr():
+def qclstr(line, k):
 
     """unsupervised clustering with KMeans
     """
 
 
-    para
+    param_list= []
 
 
 
-var = raw_input("Please enter something: ")
-print "you entered", var
-
-
-
-
-
-
-
-
-
-
-
-
+#var = raw_input("Please enter something: ")
+#print "you entered", var
 
 
 
