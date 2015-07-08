@@ -140,13 +140,18 @@ save('myflags3.npy' ,f)
 #join the sample file with the myflags list
 
 mf= np.load("myflags3.npy")
+mf_newshape= np.transpose(mf)
 
-mftable= Table([mf[0],mf[1]], names= ('SDSS_NAME', 'MY_FLAG') )
+mftable= Table([mf_newshape[0],mf_newshape[1]], names= ('SDSS_NAME', 'MY_FLAG') )
 mftable.write("myflags3.csv")
 
 #join
+sample= Table.read("dr10qsample.csv")
+mf3= Table.read("myflags3.csv")
 
+x= join(sample, mf3)
 
+x.write("sample_myflags.csv")
 
 
 
