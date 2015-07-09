@@ -17,6 +17,7 @@ from astropy.table import Table
 from astropy.io import fits
 from sklearn.cluster import KMeans
 from scipy.cluster.hierarchy import linkage, dendrogram
+from scipy.stats import sigmaclip
 from sklearn.decomposition import PCA
 from sklearn import metrics
 import time
@@ -44,33 +45,40 @@ ss.write('dr10qsample.csv', delimiter= ',') # save as csv (tried to save as FITS
 
 save('dr10qsample.npy',ss) # save as numpy array
 
+"""
+use only some of the parameters to do the clustering, use only the objects with no heavy absorption in CIV (MY_FLAG == 0 only)
 
-### use only some of the parameters to do the clustering
+lookup_spec.py was used to view and flag objects with heavy absorption in CIV. Then the flags array was joined with the main sample dr10qsample.csv and saved as sample_myflags.csv
+
+"""
+t= Table.read("sample_myflags.csv")
+
+tt= t[t['MY_FLAG'] ==0]
 
 # list of parameters to include in the clustering analysis (features)
-redshift= ss['Z_PCA'] # PCA redshift
-c4_fwhm= ss['FWHM_CIV'] # FWHM CIV emission line
-c4_bhwhm= ss['BHWHM_CIV'] # blue HWHM of CIV emission line
-c4_rhwhm= ss['RHWHM_CIV'] # red HWHM of CIV emission line
-c4_amp = ss['AMP_CIV'] # amplitude of CIV emission line (median rms pixel noise)
-c4_ew= ss['REWE_CIV'] # EW for the CIV emission line
-c3_fwhm= ss['FWHM_CIII']
-c3_bhwhm= ss['BHWHM_CIII']
-c3_rhwhm= ss['RHWHM_CIII']
-c3_amp= ss['AMP_CIII']
-c3_ew= ss['REWE_CIII']
-mg2_fwhm= ss['FWHM_MGII']
-mg2_bhwhm= ss['BHWHM_MGII']
-mg2_rhwhm= ss['RHWHM_MGII']
-mg2_amp= ss['AMP_MGII']
-mg2_ew= ss['REWE_MGII']
-bal= ss['BAL_FLAG_VI'] # BAL flag from visual inspection
-c4_tew= ss['REW_CIV'] # EW of the CIV trough
-alpha_nu= ss['ALPHA_NU'] # spectra index between 1450−1500 A, 1700−1850 A and 1950−2750 A
-sdss_name = ss['SDSS_NAME']
-plate= ss['PLATE']
-mjd= ss['MJD']
-fiber= ss['FIBERID']
+redshift= tt['Z_PCA'] # PCA redshift
+c4_fwhm= tt['FWHM_CIV'] # FWHM CIV emission line
+c4_bhwhm= tt['BHWHM_CIV'] # blue HWHM of CIV emission line
+c4_rhwhm= tt['RHWHM_CIV'] # red HWHM of CIV emission line
+c4_amp = tt['AMP_CIV'] # amplitude of CIV emission line (median rms pixel noise)
+c4_ew= tt['REWE_CIV'] # EW for the CIV emission line
+c3_fwhm= tt['FWHM_CIII']
+c3_bhwhm= tt['BHWHM_CIII']
+c3_rhwhm= tt['RHWHM_CIII']
+c3_amp= tt['AMP_CIII']
+c3_ew= tt['REWE_CIII']
+mg2_fwhm= tt['FWHM_MGII']
+mg2_bhwhm= tt['BHWHM_MGII']
+mg2_rhwhm= tt['RHWHM_MGII']
+mg2_amp= tt['AMP_MGII']
+mg2_ew= tt['REWE_MGII']
+bal= tt['BAL_FLAG_VI'] # BAL flag from visual inspection
+c4_tew= tt['REW_CIV'] # EW of the CIV trough
+alpha_nu= tt['ALPHA_NU'] # spectra index between 1450−1500 A, 1700−1850 A and 1950−2750 A
+sdss_name = tt['SDSS_NAME']
+plate= tt['PLATE']
+mjd= tt['MJD']
+fiber= tt['FIBERID']
 
 ###
 ### a list of lists of the features entering the clustering analysis
@@ -198,7 +206,7 @@ for l in lines:
 ### Now do the clustering using K-Means
 
 clstr_name= "c4_ew_hwhm"
-k=5 #number of clusters
+k=3 #number of clusters
 kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
 kmeans.fit(qs)
 labels= kmeans.predict(qs)
@@ -238,7 +246,9 @@ for c in range(k):
     print "cluster", c+1, "has", len(clust_spec[1:]), "objects"
 #    save(clstr_name+str(c+1)+'.npy', clust_spec)  #save spectra in cluster as 2D numpy array with wavelength in 1st row. Can be later read with load(file name)
     spec_num.append(len(clust_spec[1:]))
-    compos.append(np.median(clust_spec[1:], axis=0)) # list with the composites (compos[0] is composite from 1st cluster, compos[1] 2nd cluster,...)
+    compos_spec= np.median(clust_spec[1:], axis=0)
+    clipped_compo= sigmaclip(compos_spec, 3, 3)
+    compos.append(clipped_compo[0]) # list with the composites (compos[0] is composite from 1st cluster, compos[1] 2nd cluster,...)
 
 #save the composites as fits files
 
