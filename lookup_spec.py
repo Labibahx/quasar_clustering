@@ -149,13 +149,13 @@ mftable.write("myflags3.csv")
 sample= Table.read("dr10qsample.csv")
 mf3= Table.read("myflags3.csv")
 
-x= join(sample, mf3, join_type='left')
+x= join(sample, mf3, join_type='left').filled(0)
 
 x.write("sample_myflags.csv")
 
 
 
-
+#---------------------
 
 mf1= np.load("myflags1.npy")
 mf2= np.load("myflags2.npy")
