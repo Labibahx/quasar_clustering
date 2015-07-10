@@ -91,7 +91,7 @@ features= [[c4_ew, c4_bhwhm, c4_rhwhm],
 
 # qs= np.column_stack(n for n in features[0][:3]+features[1][:3]+features[2][:3]) # all three lines. can specify which features to use by changing the range in the second []
 
-qs= np.column_stack(n for n in features[1]) # one line only. 0 can be changed to use a different line
+qs= np.column_stack(n for n in features[2]) # one line only. 0 can be changed to use a different line
 
 ####
 # use the following two lines to do dimensionality reduction on the features matrix using PCA
@@ -205,7 +205,7 @@ for l in lines:
 
 ### Now do the clustering using K-Means
 
-clstr_name= "c3_ew_hwhm"
+clstr_name= "mg2_ew_hwhm"
 k=5 #number of clusters
 kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
 kmeans.fit(qs)
@@ -230,18 +230,19 @@ spec_num= [] # number of objects in each composite (cluster) to be used in the p
 
 for c in range(k):
     cluster= tt[labels==c]
-    clust_spec= np.arange(1100, 4000, 0.1) # wavelength -this is how it becomes after rebinning
+    clust_spec= np.arange(1100, 4000, 0.5) # wavelength -this is how it becomes after rebinning
    # t1= time.time()
    # print "t1=", t1
    
     for q in range(len(cluster)):
-        name='./proc_data/spec-'+str(cluster['PLATE'][q])+'-'+str(cluster['MJD'][q])+'-'+str(cluster['FIBERID'][q]).zfill(4)+'_proc.fits'
+        name='./new_proc_data/spec-'+str(cluster['PLATE'][q])+'-'+str(cluster['MJD'][q])+'-'+str(cluster['FIBERID'][q]).zfill(4)+'_proc.fits'
         spec=fits.open(name)
         flx= spec[0].data[1]
         spec.close()
      #   flxx= np.nan_to_num(flx) #making sure the flux array has no NAN or INF
         wlen= spec[0].data[0]
-        clust_spec= np.vstack((clust_spec, flx)) # 2D array. 1st row: restframe wavelength, other rows have corrected fluxes of spectra from clusters (one for each row)
+        norm_flx= flx/np.mean(flx[2360:2390]) # normalize spectra
+        clust_spec= np.vstack((clust_spec, norm_flx)) # 2D array. 1st row: restframe wavelength, other rows have corrected fluxes of spectra from clusters (one for each row)
         del spec
     
     print "cluster", c+1, "has", len(clust_spec[1:]), "objects"
@@ -300,17 +301,17 @@ for cls in clstr_ls:
 ### format the tables a bit differently to match the figures below
 ###
 
-clstr_num= [('mg2', 3), ('mg2', 4), ('c3', 4), ('c4', 3), ('c4', 4)]
+clstr_num= [('mg2', 3), ('mg2', 4), ('mg2', 5), ('c3', 3), ('c3', 4), ('c3', 5) ,('c4', 3), ('c4', 4), ('c4', 5)]
 
 tbl_file= open("clstrs_num_tbl.txt", 'wr')
-tbl_file.write("Line & k & 1 & 2 & 3 & 4 \n")
+tbl_file.write("Line & k & 1 & 2 & 3 & 4 & 5 \n")
 
 for o in clstr_num:
     print o[0], o[1]
     spec_numbers=[]
     tbl_file.write(o[0] + "\t" )
     for pp in range(1, o[1]+1):
-        sp= fits.open(o[0]+"_3param_"+str(o[1])+"clstrs"+str(pp)+".fits")
+        sp= fits.open(o[0]+"_ew_hwhm_"+str(o[1])+"clstrs"+str(pp)+".fits")
         spec_numbers.append(sp[0].header['SPEC_NUMBER'])
     spec_numbers_ordered= sorted(spec_numbers, reverse= True)
     print spec_numbers_ordered
