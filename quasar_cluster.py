@@ -91,7 +91,7 @@ features= [[c4_ew, c4_bhwhm, c4_rhwhm],
 
 # qs= np.column_stack(n for n in features[0][:3]+features[1][:3]+features[2][:3]) # all three lines. can specify which features to use by changing the range in the second []
 
-qs= np.column_stack(n for n in features[0]) # one line only. 0 can be changed to use a different line
+qs= np.column_stack(n for n in features[1]) # one line only. 0 can be changed to use a different line
 
 ####
 # use the following two lines to do dimensionality reduction on the features matrix using PCA
@@ -183,7 +183,7 @@ for l in lines:
     print l[0]
     
     cntrs.write("#"+str(l)+'\n')
-    qs= np.column_stack(ss[p+l[0]] for p in param_list)
+    qs= np.column_stack(tt[p+l[0]] for p in param_list)
 
     k=l[1] #number of clusters
     labels=[]
@@ -205,8 +205,8 @@ for l in lines:
 
 ### Now do the clustering using K-Means
 
-clstr_name= "c4_ew_hwhm"
-k=3 #number of clusters
+clstr_name= "c3_ew_hwhm"
+k=5 #number of clusters
 kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
 kmeans.fit(qs)
 labels= kmeans.predict(qs)
@@ -227,8 +227,9 @@ save(clstr_name+"_"+str(k)+"clstrs.npy", clstr_with_labels)
 
 compos= [] # list of arrays, each array is a composite that represents one cluster
 spec_num= [] # number of objects in each composite (cluster) to be used in the plotting
+
 for c in range(k):
-    cluster= ss[labels==c]
+    cluster= tt[labels==c]
     clust_spec= np.arange(1100, 4000, 0.1) # wavelength -this is how it becomes after rebinning
    # t1= time.time()
    # print "t1=", t1
@@ -245,10 +246,18 @@ for c in range(k):
     
     print "cluster", c+1, "has", len(clust_spec[1:]), "objects"
 #    save(clstr_name+str(c+1)+'.npy', clust_spec)  #save spectra in cluster as 2D numpy array with wavelength in 1st row. Can be later read with load(file name)
+
     spec_num.append(len(clust_spec[1:]))
-    compos_spec= np.median(clust_spec[1:], axis=0)
-    clipped_compo= sigmaclip(compos_spec, 3, 3)
-    compos.append(clipped_compo[0]) # list with the composites (compos[0] is composite from 1st cluster, compos[1] 2nd cluster,...)
+    
+    clipped_compo=[]
+    for i in range(clust_spec.shape[1]):
+    
+        y= sigmaclip(clust_spec[:,i], 3, 3)
+        m=median(y[0])
+        clipped_compo.append(m)
+
+    compos.append(clipped_compo) # list with the composites (compos[0] is composite from 1st cluster, compos[1] 2nd cluster,...)
+print len(compos), len(compos[0]), len(compos[1]), len(compos[2])
 
 #save the composites as fits files
 
