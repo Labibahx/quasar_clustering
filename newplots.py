@@ -17,6 +17,33 @@ ss= np.load(dr10qsample.npy)
 ## each cluster is represented by a composite spectrum with the number of objects in each cluster given in the FITS header (keyword:'SPEC_NUMBER')
 
 
+
+
+def line_profile(line, k):
+
+    """ plot profiles for lines in the same cluster (line+k, e.g, CIV, k=4) in 6 panels for: Ly alpha, Si IV, C IV, He II, (Al III, Si III], C III], Mg II
+        """
+
+    comp_name= line+"_ew_hwhm_"+str(k)+"*.fits"
+    compos= glob(compo_name)
+
+
+    compo_list= []
+    for obj in compos:
+        spec= fits.open(obj)
+        num_obj= spec[0].header['SPEC_NUMBER']
+        compo_list.append([obj, num_obj])
+    ordered_compos= sorted(compo_list, key= itemgetter(1), reverse= True)
+
+    fig= figure()
+
+    for (p,deltax) in zip(range(7), deltax_list):
+        ax= fig.add_subplot(2,3,p)
+
+
+
+
+
 def profiles(line, k1, k2):
     """ plot line profiles for the clusters in 4 panels
         """
