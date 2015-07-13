@@ -255,7 +255,7 @@ def plot_reprod(line, k):
     read values from text files.
     """
     
-    #lines = [('CIV', 3), ('CIV', 4), ('CIII', 5), ('CIII', 6), ('CIII', 7), ('MGII', 3), ('MGII', 4)]
+    #lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
 
     cntrs= loadtxt(line+str(k)+".txt")
     fig= figure()
@@ -273,7 +273,7 @@ def plot_reprod(line, k):
 
     ax2= fig.add_subplot(312, sharex= ax1)
     xlim(-4, 54)
-    ylabel('BHWHM '+line)
+    ylabel("BHWHM "+line)
     gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
     for m in range(1, k*3, 3):
         ax2.scatter(range(50), cntrs[:, m], marker='o', edgecolor='k', facecolor='w')
@@ -281,6 +281,7 @@ def plot_reprod(line, k):
     ax3= fig.add_subplot(313, sharex= ax1)
     xlim(-4, 54)
     ylabel('RHWHM '+line)
+    xlabel("NUmber of Repeats")
     gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
     for m in range(2, k*3, 3):
         ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='w')
