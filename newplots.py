@@ -207,6 +207,12 @@ def profiles(line, k1, k2):
     """
 
 def two_d_scatter(line, cluster, k, feature1, feature2, feature3):
+    
+    """ line: CIV, CIII, MGII
+        cluster: e.g., c4_ew_hwhm or mg2_ew_hwhm
+        k: number of clusters
+        features: EW, BHWHM, RHWHM
+        """
 
 
     clstr_name= cluster+"_"+str(k)+"clstrs.npy"
@@ -241,7 +247,7 @@ def two_d_scatter(line, cluster, k, feature1, feature2, feature3):
     for o in ordered_clstrs:
         print o[0], o[1]
         
-        ax.scatter(bhwhm[c_label==o[0]], rhwhm[c_label==o[0]], c=clr_ls[t], label=str(o[1]))
+        ax.scatter(bhwhm[c_label==o[0]], rhwhm[c_label==o[0]], c=clr_ls[t], label=str(o[1]), alpha= 0.7)
 
         t+=1
 
