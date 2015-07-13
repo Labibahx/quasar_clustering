@@ -172,7 +172,7 @@ savefig('sos_all.pdf')
 
 ### test reproducibility -cluster centroids are the same for several runs of KMeans
 
-lines = [('CIV', 3), ('CIV', 4), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4)]
+lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
 
 param_list = ['REWE_', 'BHWHM_', 'RHWHM_']
 
@@ -180,7 +180,7 @@ param_list = ['REWE_', 'BHWHM_', 'RHWHM_']
 for l in lines:
     cntrs = open(l[0]+str(l[1])+".txt", 'wr')
 
-    print l[0]
+    print l[0], ",K=", l[1]
     
     cntrs.write("#"+str(l)+'\n')
     qs= np.column_stack(tt[p+l[0]] for p in param_list)
