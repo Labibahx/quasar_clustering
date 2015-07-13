@@ -268,7 +268,7 @@ def plot_reprod(line, k):
     gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
     
     for m in range(0, k*3, 3):
-        ax1.scatter(range(50), cntrs[:, m], marker='d', edgecolor='k', facecolor='w')
+        ax1.scatter(range(50), cntrs[:, m], marker='s', edgecolor='k', facecolor='w')
     
 
     ax2= fig.add_subplot(312, sharex= ax1)
@@ -281,7 +281,7 @@ def plot_reprod(line, k):
     ax3= fig.add_subplot(313, sharex= ax1)
     xlim(-4, 54)
     ylabel('RHWHM '+line)
-    xlabel("NUmber of Repeats")
+    xlabel("Number of Repeats")
     gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
     for m in range(2, k*3, 3):
         ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='w')
