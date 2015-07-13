@@ -128,7 +128,7 @@ for q in num_c:
 
 
 #scatter(num_c, sos_ls)
-
+fig= figure(figsize=(8,6))
 plot(num_c, sil_score_mg2, marker= 'D', color= '0.1', ls='--', label= 'Mg II')
 plot(num_c, sil_score_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
 plot(num_c, sil_score_c4, marker= 'o', color= '0.5', ls=':', label= 'C IV')
