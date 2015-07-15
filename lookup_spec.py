@@ -63,8 +63,7 @@ def spec_look_up(cluster_array, k):
     
 
 
-
-def spec_display(spec_ls, n1, n2):
+def spec_flag(spec_ls, n1, n2):
 
     """ read a list of spectra and display them. Read input and use as flag (for either low SNR or BAL quasar).
         

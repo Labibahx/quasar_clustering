@@ -10,7 +10,13 @@ from specutils import extinction
 
 data= Table.read('dr10q.fits')
 
-s= Table.read('sample_myflags.csv')
+#s= Table.read('sample_myflags.csv')
+
+s = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1)
+          & (data['ERR_REWE_CIII'] < data['REWE_CIII']/10)
+          & (data['ERR_REWE_CIV'] < data['REWE_CIV']/10)
+          & (data['ERR_REWE_MGII'] < data['REWE_MGII']/10)
+          & (data['SNR_1700'] > 3)]
 
 #s = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1) & (data['REWE_CIII'] >0) & (data['REWE_CIII'] <2000) & (data['REWE_CIV'] >0) & (data['REWE_CIV'] <2000) & (data['REWE_MGII'] >0) & (data['REWE_MGII'] <2000) & (data['BAL_FLAG_VI'] ==0)] #  subsample with: upper and lower redshift limits, reasonable measurements for EW, and BAL quasars excluded
 
