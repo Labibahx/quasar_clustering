@@ -7,6 +7,27 @@ from astropy.table import Table
 
 from glob import glob
 
+import seaborn as sns
+
+
+def spec_display(plate, mjd, fiber):
+    """ input Plate, MJD, FiberID. Look up the FITS file and plot the spectrum
+        assumes we are in the quasar_clustering directory and FITS files are in the new_proc_data directory.
+    """
+    spec_name= "./new_proc_data/spec-"+str(plate)+"-"+str(mjd)+"-"+str(fiber).zfill(4)+"_proc.fits"
+
+    spec= fits.open(spec_name)
+    flx= spec[0].data[1]
+    wlen= spec[0].data[0]
+
+    fig= figure(figsize=(16,8))
+    plot(wlen, flx, c='k')
+
+    xlabel(r'Wavelength ($\AA$)')
+    ylabel('Normalized flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)')
+
+
+
 
 def spec_look_up(cluster_array, k):
 
@@ -63,8 +84,7 @@ def spec_look_up(cluster_array, k):
     
 
 
-
-def spec_display(spec_ls, n1, n2):
+def spec_flag(spec_ls, n1, n2):
 
     """ read a list of spectra and display them. Read input and use as flag (for either low SNR or BAL quasar).
         
