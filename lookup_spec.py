@@ -41,9 +41,9 @@ def spec_look_up(cluster_array, k):
 
     all_clstrs= np.load(cluster_array)
     
-    data= Table.read('dr10q.fits') #DR10 catalog
+    data= Table.read("sample_myflags.csv") #sample (no BALs)
     
-    ss = np.load("dr10qsample.npy") # subsample with conditions (see quasar_cluster.py)
+    ss = data[data['MY_FLAG'] ==0] # subsample. some objects were flagged out due to heavy absorption in CIV
     
     #corss-match the above two files
     
@@ -54,13 +54,13 @@ def spec_look_up(cluster_array, k):
     spec_files_list=[]
     sdss_names_list= []
     for s in range(len(clstr_k)):
-        spectrum_name= "./proc_data/spec-"+str(clstr_k['PLATE'][s])+"-"+str(clstr_k['MJD'][s])+"-"+str(clstr_k['FIBERID'][s]).zfill(4)+"_proc.fits"
+        spectrum_name= "./new_proc_data/spec-"+str(clstr_k['PLATE'][s])+"-"+str(clstr_k['MJD'][s])+"-"+str(clstr_k['FIBERID'][s]).zfill(4)+"_proc.fits"
         spec_files_list.append(spectrum_name)
         sdss_names_list.append(clstr_k['SDSS_NAME'][s])
     
     
         ## plot the spectra
-    fig= figure()
+    fig= figure(figsize=(12, 8))
     ax=fig.add_subplot(111)
     
     for (file, name) in zip(spec_files_list, sdss_names_list):
@@ -71,7 +71,7 @@ def spec_look_up(cluster_array, k):
            # plot(wavelen[c4], flx[c4])
             plot (wavelen, flx)
             xlim(1350, 1750)
-            ylim(-1, 4.5)
+            # ylim(-1, 4.5)
             axvline(1549, ls= ':')
             text(1355, 3.5, "SDSS "+name)
             print str(file)
