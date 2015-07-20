@@ -312,7 +312,7 @@ def twoD_cluster_kde(cluster_array):
     xlabel('BHWHM (km/s)', fontsize=18)
     ylabel('RHWHM (km/s)', fontsize=18)
     
-    xlim(0,8500)
+    #xlim(0,8500)
     ylim(0,8500)
     
     for k in range(max(clstr[:,3]).astype(int)+1):
