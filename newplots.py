@@ -19,7 +19,6 @@ ss= np.load(dr10qsample.npy)
 
 
 
-
 def line_profile(line, k):
 
     """ plot profiles for lines in the same cluster (line+k, e.g, CIV, k=4) in 6 panels for: Ly alpha, Si IV, C IV, He II, (Al III, Si III], C III], Mg II
@@ -292,7 +291,37 @@ def plot_reprod(line, k):
     for m in range(2, k*3, 3):
         ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='w')
 
+############
+############
 
+def twoD_cluster_kde(cluster_array):
+
+    """ plot KDE for the clusters for the BHWHM, RHWHM
+    still need to do a lot of work on it. but this should do for now"""
+
+    clstr= np.load(cluster_array)
+    
+    cmap_ls=['BuGn', 'PuBu', 'OrRd', 'RdPu', 'gray_r']
+
+    sns.set_style("ticks", {'font.family': u'sans-serif'})
+   # sns.set(font_scale=1.5)
+    
+    fig= figure()
+    ax= fig.add_subplot(111)
+    
+    xlabel('BHWHM (km/s)', fontsize=18)
+    ylabel('RHWHM (km/s)', fontsize=18)
+    
+    xlim(0,8500)
+    ylim(0,8500)
+    
+    for k in range(max(clstr[:,3]).astype(int)+1):
+        
+        sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k]
+                        , shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[k]
+                        , legend= True, label= str(len(clstr[:,1][clstr[:,3]==k])))
+
+    plt.legend(loc=1)
 
 
 

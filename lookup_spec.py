@@ -41,7 +41,7 @@ def spec_look_up(cluster_array, k):
 
     all_clstrs= np.load(cluster_array)
     
-    data= Table.read("sample_myflags.csv") #sample (no BALs)
+    data= Table.read("sample_myflags.csv", format='ascii', delimiter=',') #sample (no BALs)
     
     ss = data[data['MY_FLAG'] ==0] # subsample. some objects were flagged out due to heavy absorption in CIV
     
