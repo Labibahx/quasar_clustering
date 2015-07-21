@@ -294,10 +294,12 @@ def plot_reprod(line, k):
 ############
 ############
 
-def twoD_cluster_kde(cluster_array):
+def twoD_cluster_kde(cluster_array, line):
 
     """ plot KDE for the clusters for the BHWHM, RHWHM
-    still need to do a lot of work on it. but this should do for now"""
+    still need to do a lot of work on it. but this should do for now
+    cluster_array: a 2D numpy array with the clustering results
+    line: a string with the line used for clustering. To be used as a title for the figure."""
 
     clstr= np.load(cluster_array)
     
@@ -306,14 +308,15 @@ def twoD_cluster_kde(cluster_array):
     sns.set_style("ticks", {'font.family': u'sans-serif'})
    # sns.set(font_scale=1.5)
     
-    fig= figure()
+    fig= figure(figsize=(8,8))
     ax= fig.add_subplot(111)
+    #ax.text(4000, 4000, line)
     
     xlabel('BHWHM (km/s)', fontsize=18)
     ylabel('RHWHM (km/s)', fontsize=18)
     
-    #xlim(0,8500)
-    ylim(0,8500)
+    xlim(0,6500)
+    ylim(0,6500)
     
     for k in range(max(clstr[:,3]).astype(int)+1):
         
@@ -321,7 +324,7 @@ def twoD_cluster_kde(cluster_array):
                         , shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[k]
                         , legend= True, label= str(len(clstr[:,1][clstr[:,3]==k])))
 
-    plt.legend(loc=1)
+    ax.legend(loc=1)
 
 
 
