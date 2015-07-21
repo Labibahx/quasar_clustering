@@ -51,7 +51,7 @@ use only some of the parameters to do the clustering, use only the objects with 
 lookup_spec.py was used to view and flag objects with heavy absorption in CIV. Then the flags array was joined with the main sample dr10qsample.csv and saved as sample_myflags.csv
 
 """
-t= Table.read("sample_myflags.csv")
+t= Table.read("sample_myflags.csv", format= 'ascii', delimiter=',')
 
 tt= t[t['MY_FLAG'] ==0]
 
@@ -205,8 +205,8 @@ for l in lines:
 
 ### Now do the clustering using K-Means
 
-clstr_name= "mg2_ew_hwhm"
-k=5 #number of clusters
+clstr_name= "c3_ew_hwhm"
+k=6 #number of clusters
 kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
 kmeans.fit(qs)
 labels= kmeans.predict(qs)
@@ -238,7 +238,7 @@ for c in range(k):
         name='./new_proc_data/spec-'+str(cluster['PLATE'][q])+'-'+str(cluster['MJD'][q])+'-'+str(cluster['FIBERID'][q]).zfill(4)+'_proc.fits'
         spec=fits.open(name)
         flx= spec[0].data[1]
-        spec.close()
+        #spec.close()
      #   flxx= np.nan_to_num(flx) #making sure the flux array has no NAN or INF
         wlen= spec[0].data[0]
         norm_flx= flx/np.mean(flx[2360:2390]) # normalize spectra
