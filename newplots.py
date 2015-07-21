@@ -19,9 +19,13 @@ ss= np.load(dr10qsample.npy)
 
 
 
-def line_profile(line, k):
+def line_profile(line, line_name, k):
 
     """ plot profiles for lines in the same cluster (line+k, e.g, c4, k=4) in 6 panels for: Ly alpha, Si IV, C IV, He II, (Al III, Si III], C III], Mg II
+        param: 
+        line: c4, c3 or mg2 as str
+        line_name: CIV, CIII, or MgII as str
+        k: number of clusters (3, 4, ...)
         """
 
     compo_name= line+"_ew_hwhm_"+str(k)+"*.fits"
@@ -48,19 +52,22 @@ def line_profile(line, k):
     fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18)
 
     dx_list= [(1160, 1265), (1350, 1450), (1500, 1600), (1590, 1690), (1810, 1950), (2750, 2850)]
-    dy_list= [(0.75, 1.9), (0.75, 1.5), (0.75, 2.53), (0.75, 1.2), (0.75, 1.8), (0.75, 1.6)]
+    dy_list= [(0.75, 2.3), (0.75, 1.5), (0.75, 2.21), (0.75, 1.2), (0.75, 1.8), (0.75, 1.6)]
 
     line_mark= [[1215.7, 1240], [1396.8], [1549], [1640, 1663.5], [1857, 1892, 1908], [2800]]
     line_label= [[r'Ly$\alpha$', 'N V'], ['Si IV'], ['C IV'], ['He II', 'O III]'], ['Al III', 'Si III]', 'C III]'], ['Mg II']]
 
-    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', 'khaki', 'cornflowerblue', 'brown' , 'olive', 'purple']
+    alphabet_list = ['a', 'b', 'c', 'd', 'e', 'f']
+    compo_labels= [line_name+"-"+ a for a in alphabet_list]
+
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'khaki', 'cornflowerblue', 'brown' , 'olive', 'purple']
 
     wlen= np.arange(1100, 4000, 0.5) #wavelength array
 
     for (p,dx, dy, lm, lb) in zip(range(1,8), dx_list, dy_list, line_mark, line_label):
         ax= fig.add_subplot(2,3,p)
         ax.axes.get_xaxis().set_ticks([1150, 1175, 1200, 1225, 1250, 1275, 1300, 1325, 1350, 1375, 1400, 1425, 1450, 1475, 1500, 1525, 1550, 1575, 1600, 1625, 1650, 1675, 1700, 1725, 1750, 1775, 1800, 1825, 1850, 1875, 1900, 1925, 1950, 1975, 2700, 2725, 2750, 2775, 2800, 2825, 2850])
-        ax.axes.get_yaxis().set_ticks([.2, .4, .6, .8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6])
+        ax.axes.get_yaxis().set_ticks([.2, .4, .6, .8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8])
         
         xlim(dx)
         ylim(dy)
@@ -68,19 +75,21 @@ def line_profile(line, k):
         for ll in range(len(line_mark[p-1])):
         
             axvline(lm[ll], ls=':', c='k')
-            text(lm[ll]+0.5, dy[1]-0.1, lb[ll], rotation= 'vertical', fontsize= 12)
+            text(lm[ll]+0.7, dy[1]-dy[1]/20, lb[ll], rotation= 'vertical', fontsize= 12)
 
-        ii= 2.5
-        for (sp, clr) in zip(ordered_compos, clr_ls):
+        ii= dy_list[0][1]-.2
+        #props= dict(boxstyle='round', alpha=0.5)
+        
+        for (sp, clr, clab) in zip(ordered_compos, clr_ls, compo_labels):
             n= sp[1]
             if sp[1] >300:
                 spec= fits.open(sp[0])
                 flx= spec[0].data
                 
                 plot(wlen, flx/flx[(dx[0]-1100)*2], c= clr, lw= 2)
-                ii-=0.15
-                if p==3:
-                    ax.text(1510, ii, str(n), color= clr)
+                ii-=0.1
+                if p==1:
+                    ax.text(1162, ii, clab+", N="+ str(n), color= clr) #bbox=props
 
 #####
 #####
@@ -309,33 +318,52 @@ def twoD_cluster_kde(cluster_array, line):
 
     clstr= np.load(cluster_array)
     
-    cmap_ls=['BuGn', 'PuBu', 'OrRd', 'RdPu', 'gray_r', 'Purples']
+  #  cmap_ls=['OrRd', 'PuBu', 'Purples', 'BuGn', 'RdPu', 'gray_r'] 'YlOrBr'
+    cmap_ls= ['YlOrBr', 'Blues', 'RdPu', 'Greens', 'Greys']
 
     sns.set_style("ticks", {'font.family': u'sans-serif'})
    # sns.set(font_scale=1.5)
     
-    fig= figure(figsize=(8,8))
+    fig= figure(figsize=(10,10))
     ax= fig.add_subplot(111)
-    #ax.text(4000, 4000, line)
     
     xlabel('BHWHM (km/s)', fontsize=18)
     ylabel('RHWHM (km/s)', fontsize=18)
     
-    xlim(0,10000)
+    xlim(0,6500)
     ylim(0,10000)
     
-    for k in range(max(clstr[:,3]).astype(int)+1):
+    x, y= [], []
+    
+    k_ls=[]
+    
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'khaki', 'cornflowerblue', 'brown' , 'olive', 'purple']
+    
+    for i in range(max(clstr[:,3].astype(int))+1):
+    
+        k_ls.append([i, len(clstr[clstr[:,3]==i])])
+    
+    ord_k_ls= sorted(k_ls, key= itemgetter(1), reverse= True)
+    
+    print ord_k_ls
+    
+    clstr_label= [ line+'-a', line+'-b', line+'-c', line+'-d', line+'-e', line+'-f']
+    
+    u=1
+    for j in range(len(ord_k_ls)):
+        k= ord_k_ls[j][0]
+        print k
+        
+        u-=0.03
+        x =mean(clstr[:,1][clstr[:,3]==k])
+        y =mean(clstr[:,2][clstr[:,3]==k])
+        n= len(clstr[:,2][clstr[:,3]==k])
         
         sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k]
-                        , shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[k]
-                        , legend= True, label= str(len(clstr[:,1][clstr[:,3]==k])))
-
-    ax.legend(loc=1)
-
-
-
-
-
+                        , shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
+        #scatter(x,y, marker= 'x', c='r', s=60)
+        text(x, y, clstr_label[j])
+        text(0.05, u,  clstr_label[j]+", N="+str(n), transform=ax.transAxes, color= clr_ls[j])
 
 
 
