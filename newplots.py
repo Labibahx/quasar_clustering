@@ -21,7 +21,7 @@ ss= np.load(dr10qsample.npy)
 
 def line_profile(line, k):
 
-    """ plot profiles for lines in the same cluster (line+k, e.g, CIV, k=4) in 6 panels for: Ly alpha, Si IV, C IV, He II, (Al III, Si III], C III], Mg II
+    """ plot profiles for lines in the same cluster (line+k, e.g, c4, k=4) in 6 panels for: Ly alpha, Si IV, C IV, He II, (Al III, Si III], C III], Mg II
         """
 
     compo_name= line+"_ew_hwhm_"+str(k)+"*.fits"
@@ -38,14 +38,14 @@ def line_profile(line, k):
     print ordered_compos
 
 
-    fig= figure(figsize=(12,8))
+    fig= figure(figsize=(14,8))
     sns.set_style("ticks")
     fig1= fig.add_axes([0., 0., 1, 1])
     fig1.set_axis_off()
     fig1.set_xlim(0, 1)
     fig1.set_ylim(0, 1)
-    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center')
-    fig1.text(0.5, 0.03, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center')
+    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18)
+    fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18)
 
     dx_list= [(1160, 1265), (1350, 1450), (1500, 1600), (1590, 1690), (1810, 1950), (2750, 2850)]
     dy_list= [(0.75, 1.9), (0.75, 1.5), (0.75, 2.53), (0.75, 1.2), (0.75, 1.8), (0.75, 1.6)]
@@ -59,25 +59,31 @@ def line_profile(line, k):
 
     for (p,dx, dy, lm, lb) in zip(range(1,8), dx_list, dy_list, line_mark, line_label):
         ax= fig.add_subplot(2,3,p)
+        ax.axes.get_xaxis().set_ticks([1100, 1150, 1200, 1250, 1300, 1350, 1400, 1500, 1550, 1600, 1650, 1700, 1750, 1800, 1850, 1900, 1950, 2700, 2750, 2800, 2850])
+        ax.axes.get_yaxis().set_ticks([.2, .4, .6, .8, 1, 1.2, 1.4, 1.6, 1.8])
+        
         xlim(dx)
         ylim(dy)
 
         for ll in range(len(line_mark[p-1])):
         
             axvline(lm[ll], ls=':', c='k')
-            text(lm[ll]+0.1, dy[1]-0.1, lb[ll], rotation= 'vertical', fontsize= 'small')
+            text(lm[ll]+0.5, dy[1]-0.1, lb[ll], rotation= 'vertical', fontsize= 12)
 
         ii= 2.5
         for (sp, clr) in zip(ordered_compos, clr_ls):
             n= sp[1]
-            if sp[1] >100:
+            if sp[1] >300:
                 spec= fits.open(sp[0])
-                plot(wlen, spec[0].data/spec[0].data[(dx[0]-1100)*2], c= clr, lw= 2)
+                flx= spec[0].data
+                
+                plot(wlen, flx/flx[(dx[0]-1100)*2], c= clr, lw= 2)
                 ii-=0.15
                 if p==3:
                     ax.text(1510, ii, str(n), color= clr)
 
-
+#####
+#####
 
 def profiles(line, k1, k2):
     """ plot line profiles for the clusters in 4 panels
@@ -303,7 +309,7 @@ def twoD_cluster_kde(cluster_array, line):
 
     clstr= np.load(cluster_array)
     
-    cmap_ls=['BuGn', 'PuBu', 'OrRd', 'RdPu', 'gray_r']
+    cmap_ls=['BuGn', 'PuBu', 'OrRd', 'RdPu', 'gray_r', 'Purples']
 
     sns.set_style("ticks", {'font.family': u'sans-serif'})
    # sns.set(font_scale=1.5)
@@ -315,8 +321,8 @@ def twoD_cluster_kde(cluster_array, line):
     xlabel('BHWHM (km/s)', fontsize=18)
     ylabel('RHWHM (km/s)', fontsize=18)
     
-    xlim(0,6500)
-    ylim(0,6500)
+    xlim(0,10000)
+    ylim(0,10000)
     
     for k in range(max(clstr[:,3]).astype(int)+1):
         
