@@ -319,7 +319,7 @@ def twoD_cluster_kde(cluster_array, line):
     clstr= np.load(cluster_array)
     
   #  cmap_ls=['OrRd', 'PuBu', 'Purples', 'BuGn', 'RdPu', 'gray_r'] 'YlOrBr'
-    cmap_ls= ['YlOrBr', 'Blues', 'RdPu', 'Greens', 'Greys']
+    cmap_ls= ['YlOrBr', 'Blues', 'RdPu', 'Greens', 'Greys', 'Reds']
 
     sns.set_style("ticks", {'font.family': u'sans-serif'})
    # sns.set(font_scale=1.5)
@@ -337,7 +337,7 @@ def twoD_cluster_kde(cluster_array, line):
     
     k_ls=[]
     
-    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'khaki', 'cornflowerblue', 'brown' , 'olive', 'purple']
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
     
     for i in range(max(clstr[:,3].astype(int))+1):
     
