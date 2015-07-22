@@ -172,7 +172,7 @@ savefig('sos_all.pdf')
 
 ### test reproducibility -cluster centroids are the same for several runs of KMeans
 
-lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
+lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('CIII', 6), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
 
 param_list = ['REWE_', 'BHWHM_', 'RHWHM_']
 
