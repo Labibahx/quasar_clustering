@@ -275,10 +275,10 @@ def plot_reprod(line, k):
     read values from text files.
     """
     
-    #lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
+    #lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('CIII', 6), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
 
     cntrs= loadtxt(line+str(k)+".txt")
-    fig= figure()
+    fig= figure(figsize=(10,8))
     
     subplots_adjust(hspace = .05)
     ax1= fig.add_subplot(311)
@@ -288,7 +288,7 @@ def plot_reprod(line, k):
     gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
     
     for m in range(0, k*3, 3):
-        ax1.scatter(range(50), cntrs[:, m], marker='s', edgecolor='k', facecolor='w')
+        ax1.scatter(range(50), cntrs[:, m], marker='s', edgecolor='k', facecolor='0.5')
     
 
     ax2= fig.add_subplot(312, sharex= ax1)
@@ -296,7 +296,7 @@ def plot_reprod(line, k):
     ylabel("BHWHM "+line)
     gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
     for m in range(1, k*3, 3):
-        ax2.scatter(range(50), cntrs[:, m], marker='o', edgecolor='k', facecolor='w')
+        ax2.scatter(range(50), cntrs[:, m], marker='o', edgecolor='k', facecolor='0.5')
 
     ax3= fig.add_subplot(313, sharex= ax1)
     xlim(-4, 54)
@@ -304,7 +304,7 @@ def plot_reprod(line, k):
     xlabel("Number of Repeats")
     gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
     for m in range(2, k*3, 3):
-        ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='w')
+        ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='0.5')
 
 ############
 ############
