@@ -46,21 +46,23 @@ ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1)
           & (data['ERR_REWE_MGII'] < data['REWE_MGII']/10)
           & (data['SNR_1700'] > 3)]
 
-ss.write('dr10qsample_BAL.csv', delimiter= ',') # save as csv (tried to save as FITS file but there is something wrong with the units)
+ss.write('dr10qsample_BAL.fits') # Even csv is not working all the time (works on laptop not desktop :/). I tried to save as numpy array then load the array and use fits.writeto('filename.fits', array). this works on desktop
 
-save('dr10BALqsample_BAL.npy',ss) # save as numpy array
+save('dr10sample_BAL.npy',ss) # save as numpy array
 
 """
 use only some of the parameters to do the clustering, use only the objects with no heavy absorption in CIV (MY_FLAG == 0 only)
 
-lookup_spec.py was used to view and flag objects with heavy absorption in CIV. Then the flags array was joined with the main sample dr10qsample.csv and saved as sample_myflags.csv
+I used lookup_spec.py to flag objects with A star-like spectra. Then the flags array was joined with the main sample dr10qsample_BAL.csv and saved as balsample_myflags.csv
 
 """
-t= Table.read("dr10qsample_BAL.csv")
+t= Table.read("balsample_myflags.csv")
 
-tt= t
+###
+###flags here are to remove the A star-like spectra only. Heavy absorption is allowed in this sample.
+###
 
-#tt= t[t['MY_FLAG'] ==0]
+tt= t[t['MY_FLAG'] ==0]
 
 # list of parameters to include in the clustering analysis (features)
 redshift= tt['Z_PCA'] # PCA redshift
