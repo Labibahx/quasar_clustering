@@ -275,13 +275,15 @@ def plot_reprod(line, k):
     read values from text files.
     """
     
+<<<<<<< HEAD
     #lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
     #for the BAL sample:lines = [('CIII', 3), ('CIII', 4), ('CIII', 5), ('CIII', 6), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
     
 
     cntrs= loadtxt(line+str(k)+"_bal.txt") #sample with BALs
     #cntrs= loadtxt(line+str(k)+".txt") #use for the non-BAL sample
-    fig= figure()
+   
+    fig= figure(figsize=(10,8))
     
     subplots_adjust(hspace = .05)
     ax1= fig.add_subplot(311)
@@ -291,7 +293,7 @@ def plot_reprod(line, k):
     gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
     
     for m in range(0, k*3, 3):
-        ax1.scatter(range(50), cntrs[:, m], marker='s', edgecolor='k', facecolor='w')
+        ax1.scatter(range(50), cntrs[:, m], marker='s', edgecolor='k', facecolor='0.5')
     
 
     ax2= fig.add_subplot(312, sharex= ax1)
@@ -299,7 +301,7 @@ def plot_reprod(line, k):
     ylabel("BHWHM "+line)
     gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
     for m in range(1, k*3, 3):
-        ax2.scatter(range(50), cntrs[:, m], marker='o', edgecolor='k', facecolor='w')
+        ax2.scatter(range(50), cntrs[:, m], marker='o', edgecolor='k', facecolor='0.5')
 
     ax3= fig.add_subplot(313, sharex= ax1)
     xlim(-4, 54)
@@ -307,7 +309,7 @@ def plot_reprod(line, k):
     xlabel("Number of Repeats")
     gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
     for m in range(2, k*3, 3):
-        ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='w')
+        ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='0.5')
 
 ############
 ############
@@ -322,7 +324,7 @@ def twoD_cluster_kde(cluster_array, line):
     clstr= np.load(cluster_array)
     
   #  cmap_ls=['OrRd', 'PuBu', 'Purples', 'BuGn', 'RdPu', 'gray_r'] 'YlOrBr'
-    cmap_ls= ['YlOrBr', 'Blues', 'RdPu', 'Greens', 'Greys']
+    cmap_ls= ['YlOrBr', 'Blues', 'RdPu', 'Greens', 'Greys', 'Reds']
 
     sns.set_style("ticks", {'font.family': u'sans-serif'})
    # sns.set(font_scale=1.5)
@@ -340,7 +342,7 @@ def twoD_cluster_kde(cluster_array, line):
     
     k_ls=[]
     
-    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'khaki', 'cornflowerblue', 'brown' , 'olive', 'purple']
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
     
     for i in range(max(clstr[:,3].astype(int))+1):
     
