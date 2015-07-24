@@ -3,7 +3,7 @@
 import numpy as np
 from astropy.io import fits
 
-from astropy.table import Table
+from astropy.table import Table, join
 
 from glob import glob
 
@@ -105,19 +105,19 @@ def spec_flag(spec_ls, n1, n2):
     flag_ls=[]
     names=[]
     
-    wavelen= np.arange(1100, 4000, 0.1)  #wavelength array
+    wavelen= np.arange(1100, 4000, 0.5)  #wavelength array
     fig= figure(figsize(20,8))
     
     for i in range(len(sample)):
         print "Looking at spectrum number", i+1
         try:
-            spectrum_name= "./proc_data/spec-"+str(sample['PLATE'][i])+"-"+str(sample['MJD'][i])+"-"+str(sample['FIBERID'][i]).zfill(4)+"_proc.fits"
+            spectrum_name= "./new_proc_data/spec-"+str(sample['PLATE'][i])+"-"+str(sample['MJD'][i])+"-"+str(sample['FIBERID'][i]).zfill(4)+"_proc.fits"
             spec= fits.open(spectrum_name)
             flx= spec[0].data[1]
             
             plot(wavelen, flx, c= 'k')
             xlim(1300, 3000)
-            ylim(-1,4)
+            ylim(-5,20)
             axvline(1397, ls=':', c='r')
             text(1400, 3.5, 'Si IV', rotation= 'vertical')
             axvline(1549, ls=':', c='r')
@@ -128,8 +128,8 @@ def spec_flag(spec_ls, n1, n2):
             text(1910, 3.5, 'C III]', rotation= 'vertical')
             axvline(2800, ls=':', c='r')
             text(2802, 3.5, 'Mg II', rotation= 'vertical')
-            text(2500, 3, "SDSS"+sample['SDSS_NAME'][i], color='r')
-            text(2500, 2.7, "Z_PCA: %4.3f" % sample['Z_PCA'][i], color= 'r')
+            text(2500, 18, "SDSS"+sample['SDSS_NAME'][i], color='r')
+            text(2500, 16, "Z_PCA: %4.3f" % sample['Z_PCA'][i], color= 'r')
             print "Flags: 0= keep, 1= reject"
             flag= input()
             flag_ls.append(flag)
@@ -154,24 +154,25 @@ for i in range(1, len(flag_arrays)):
     ff= np.load(flag_arrays[i])
     f= np.concatenate((f, ff), axis=0)
 
-save('myflags3.npy' ,f)
+save('myflags_BAL.npy' ,f)
 
 
 #join the sample file with the myflags list
 
-mf= np.load("myflags3.npy")
+mf= np.load("myflags_BAL.npy")
 mf_newshape= np.transpose(mf)
 
 mftable= Table([mf_newshape[0],mf_newshape[1]], names= ('SDSS_NAME', 'MY_FLAG') )
-mftable.write("myflags3.csv")
+mftable.write("myflags_BAL.csv")
 
 #join
-sample= Table.read("dr10qsample.csv")
-mf3= Table.read("myflags3.csv")
+sample= Table.read("dr10sample_BAL.fits")
+mf3= Table.read("myflags_BAL.csv")
 
 x= join(sample, mf3, join_type='left').filled(0)
 
-x.write("sample_myflags.csv")
+x.write("sample_myflags_BAL.fits")
+
 
 
 
