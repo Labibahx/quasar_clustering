@@ -96,7 +96,7 @@ features= [[c4_ew, c4_bhwhm, c4_rhwhm],
 
 # qs= np.column_stack(n for n in features[0][:3]+features[1][:3]+features[2][:3]) # all three lines. can specify which features to use by changing the range in the second []
 
-qs= np.column_stack(n for n in features[2]) # one line only. 0 can be changed to use a different line
+qs= np.column_stack(n for n in features[1]) # one line only. 0 can be changed to use a different line
 
 ####
 # use the following two lines to do dimensionality reduction on the features matrix using PCA
@@ -136,7 +136,7 @@ for q in num_c:
 
 plot(num_c, sil_score_mg2, marker= 'D', color= '0.1', ls='--', label= 'Mg II')
 plot(num_c, sil_score_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
-plot(num_c, sil_score_c4, marker= 'o', color= '0.5', ls=':', label= 'C IV')
+#plot(num_c, sil_score_c4, marker= 'o', color= '0.5', ls=':', label= 'C IV')
 #plot(num_c, sil_score_all, marker= 's', color= '0.7', ls='-', label='3 lines')
 
 text(3.5,0.85, "Features: EW, RHWHM, BHWHM")
@@ -177,13 +177,13 @@ savefig('sos_all.pdf')
 
 ### test reproducibility -cluster centroids are the same for several runs of KMeans
 
-lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
+lines = [('CIII', 3), ('CIII', 4), ('CIII', 5), ('CIII', 6), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
 
 param_list = ['REWE_', 'BHWHM_', 'RHWHM_']
 
 
 for l in lines:
-    cntrs = open(l[0]+str(l[1])+".txt", 'wr')
+    cntrs = open(l[0]+str(l[1])+"_bal.txt", 'wr')
 
     print l[0], ",K=", l[1]
     
