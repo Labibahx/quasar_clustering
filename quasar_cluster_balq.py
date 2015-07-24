@@ -56,9 +56,11 @@ use only some of the parameters to do the clustering, use only the objects with 
 lookup_spec.py was used to view and flag objects with heavy absorption in CIV. Then the flags array was joined with the main sample dr10qsample.csv and saved as sample_myflags.csv
 
 """
-t= Table.read("sample_myflags.csv")
+t= Table.read("dr10qsample_BAL.csv")
 
-tt= t[t['MY_FLAG'] ==0]
+tt= t
+
+#tt= t[t['MY_FLAG'] ==0]
 
 # list of parameters to include in the clustering analysis (features)
 redshift= tt['Z_PCA'] # PCA redshift
@@ -210,8 +212,8 @@ for l in lines:
 
 ### Now do the clustering using K-Means
 
-clstr_name= "mg2_ew_hwhm"
-k=5 #number of clusters
+clstr_name= "c3_ew_hwhm_bal"
+k=3 #number of clusters
 kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
 kmeans.fit(qs)
 labels= kmeans.predict(qs)
