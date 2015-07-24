@@ -276,8 +276,11 @@ def plot_reprod(line, k):
     """
     
     #lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
+    #for the BAL sample:lines = [('CIII', 3), ('CIII', 4), ('CIII', 5), ('CIII', 6), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
+    
 
-    cntrs= loadtxt(line+str(k)+".txt")
+    cntrs= loadtxt(line+str(k)+"_bal.txt") #sample with BALs
+    #cntrs= loadtxt(line+str(k)+".txt") #use for the non-BAL sample
     fig= figure()
     
     subplots_adjust(hspace = .05)
