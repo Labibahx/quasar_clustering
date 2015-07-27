@@ -51,7 +51,7 @@ use only some of the parameters to do the clustering, use only the objects with 
 lookup_spec.py was used to view and flag objects with heavy absorption in CIV. Then the flags array was joined with the main sample dr10qsample.csv and saved as sample_myflags.csv
 
 """
-t= Table.read("sample_myflags.csv", format= 'ascii', delimiter=',')
+t= Table.read("qsample_myflags.fits")
 
 tt= t[t['MY_FLAG'] ==0]
 
@@ -172,7 +172,7 @@ savefig('sos_all.pdf')
 
 ### test reproducibility -cluster centroids are the same for several runs of KMeans
 
-lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('CIII', 6), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
+lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIV', 6), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('CIII', 6), ('MGII', 3), ('MGII', 4), ('MGII', 5), ('MGII', 6)]
 
 param_list = ['REWE_', 'BHWHM_', 'RHWHM_']
 
@@ -205,7 +205,13 @@ for l in lines:
 
 ### Now do the clustering using K-Means
 
-clstr_name= "c3_ew_hwhm"
+features= [[c4_ew, c4_bhwhm, c4_rhwhm],
+           [c3_ew, c3_bhwhm, c3_rhwhm],
+           [mg2_ew, mg2_bhwhm, mg2_rhwhm]]
+
+qs= np.column_stack(n for n in features[2])
+
+clstr_name= "mg2_ew_hwhm"
 k=6 #number of clusters
 kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
 kmeans.fit(qs)
@@ -213,13 +219,13 @@ labels= kmeans.predict(qs)
 
 ## save the clustering results: the subset joined with the label (which point to the cluster the object belongs to) and the object name from the catalog.
 clstr_with_names= np.column_stack((qs, labels, sdss_name))
-save(clstr_name+"_"+str(k)+"clstrs_name.npy", clstr_with_names) #save
+save("./clusters/"+clstr_name+"_"+str(k)+"clstrs_name.npy", clstr_with_names) #save
 
 clstr_with_labels= np.column_stack((qs, labels))
-save(clstr_name+"_"+str(k)+"clstrs.npy", clstr_with_labels)
+save("./clusters/"+clstr_name+"_"+str(k)+"clstrs.npy", clstr_with_labels)
 
 ### to read this array, use load(file name). All elements in the array will have dtype= S18.
-### to use them I need to convert to floats. use new_array= old_array.astype(desired_dtype). dtype= float64
+### to convert to floats use new_array= old_array.astype(desired_dtype). dtype= float64
 
 
 """ make median composite spectra for each cluster
@@ -241,30 +247,30 @@ for c in range(k):
         #spec.close()
      #   flxx= np.nan_to_num(flx) #making sure the flux array has no NAN or INF
         wlen= spec[0].data[0]
-        norm_flx= flx/np.mean(flx[2360:2390]) # normalize spectra
+        norm_flx= flx/np.median(flx[2360:2390]) # normalize spectra
         clust_spec= np.vstack((clust_spec, norm_flx)) # 2D array. 1st row: restframe wavelength, other rows have corrected fluxes of spectra from clusters (one for each row)
         del spec
     
     print "cluster", c+1, "has", len(clust_spec[1:]), "objects"
-#    save(clstr_name+str(c+1)+'.npy', clust_spec)  #save spectra in cluster as 2D numpy array with wavelength in 1st row. Can be later read with load(file name)
 
     spec_num.append(len(clust_spec[1:]))
     
     clipped_compo=[]
     for i in range(clust_spec.shape[1]):
     
-        y= sigmaclip(clust_spec[:,i], 3, 3)
+        y= sigmaclip(clust_spec[1:,i], 3, 3)
         m=median(y[0])
         clipped_compo.append(m)
 
     compos.append(clipped_compo) # list with the composites (compos[0] is composite from 1st cluster, compos[1] 2nd cluster,...)
-print len(compos), len(compos[0]), len(compos[1]), len(compos[2])
+
 
 #save the composites as fits files
 
 for i,j in zip(range(1,k+1), spec_num):
-    spec_name= clstr_name+"_"+str(k)+"clstrs"+str(i)+".fits"
-    hdu= fits.PrimaryHDU(compos[i-1])
+    spec_name= "./composites/"+clstr_name+"_"+str(k)+"clstrs"+str(i)+".fits" #assumes there is a directory called composites in the working directory
+    spec_file= np.vstack((wlen,compos[i-1]))
+    hdu= fits.PrimaryHDU(spec_file)
     hdr= hdu.header
     hdr.set('SPEC_NUMBER', j)
     hdr.set('COMPOSITE', clstr_name)
@@ -301,17 +307,17 @@ for cls in clstr_ls:
 ### format the tables a bit differently to match the figures below
 ###
 
-clstr_num= [('mg2', 3), ('mg2', 4), ('mg2', 5), ('c3', 3), ('c3', 4), ('c3', 5) ,('c4', 3), ('c4', 4), ('c4', 5)]
+clstr_num= [('mg2', 3), ('mg2', 4), ('mg2', 5), ('mg2', 6), ('c3', 3), ('c3', 4), ('c3', 5), ('c3', 6),('c4', 3), ('c4', 4), ('c4', 5), ('c4', 6)]
 
 tbl_file= open("clstrs_num_tbl.txt", 'wr')
-tbl_file.write("Line & k & 1 & 2 & 3 & 4 & 5 \n")
+tbl_file.write("Line & k & 1 & 2 & 3 & 4 & 5 & 6\n")
 
 for o in clstr_num:
     print o[0], o[1]
     spec_numbers=[]
     tbl_file.write(o[0] + "\t" )
     for pp in range(1, o[1]+1):
-        sp= fits.open(o[0]+"_ew_hwhm_"+str(o[1])+"clstrs"+str(pp)+".fits")
+        sp= fits.open("./composites/"+o[0]+"_ew_hwhm_"+str(o[1])+"clstrs"+str(pp)+".fits")
         spec_numbers.append(sp[0].header['SPEC_NUMBER'])
     spec_numbers_ordered= sorted(spec_numbers, reverse= True)
     print spec_numbers_ordered
@@ -322,32 +328,5 @@ for o in clstr_num:
 tbl_file.close()
 
 
-""" visualize the clusters -need to do more work on this
-    
-    make 3D plots to visualize the clusters
-    """
 
-### this is what I used to quickly look at clustering results.
-### load the 2-D numpy array then
-### scatter(c4_6param[:,2].astype(float64), c4_6param[:,5].astype(float64), c=c4_6param[:,6].astype(int))
-
-fig= figure(figsize= (12,8))
-ax= fig.add_subplot(111, projection = '3d')
-
-ax.azim= 130
-ax.elev = 0
-
-ax.scatter(qs[:, 2], qs[:, 3], qs[:, 4], zdir= 'z', c=labels, marker='.')
-
-ax.set_xlabel('FWHM')
-ax.set_xlim3d(500, 8000)
-
-ax.set_ylabel('BHWHM')
-ax.set_ylim3d(500, 8000)
-
-ax.set_zlabel('RHWHM')
-ax.set_zlim3d(500, 8000)
-
-
-clstr_cntrs= kmeans.cluster_centers_  # returrns a list of tuples with the coordinates of the cluster center
 
