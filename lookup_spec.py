@@ -154,24 +154,24 @@ for i in range(1, len(flag_arrays)):
     ff= np.load(flag_arrays[i])
     f= np.concatenate((f, ff), axis=0)
 
-save('myflags_BAL.npy' ,f)
+save("myflags.npy" ,f)
 
 
 #join the sample file with the myflags list
 
-mf= np.load("myflags_BAL.npy")
+mf= np.load("myflags.npy")
 mf_newshape= np.transpose(mf)
 
 mftable= Table([mf_newshape[0],mf_newshape[1]], names= ('SDSS_NAME', 'MY_FLAG') )
-mftable.write("myflags_BAL.csv")
+mftable.write("myflags.csv")
 
 #join
-sample= Table.read("dr10sample_BAL.fits")
-mf3= Table.read("myflags_BAL.csv")
+sample= Table.read("dr10qsample.fits")
+mf3= Table.read("myflags.csv")
 
 x= join(sample, mf3, join_type='left').filled(0)
 
-x.write("sample_myflags_BAL.fits")
+x.write("sample_myflags.fits")
 
 
 
