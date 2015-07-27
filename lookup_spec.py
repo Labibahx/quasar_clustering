@@ -166,7 +166,7 @@ mftable= Table([mf_newshape[0],mf_newshape[1]], names= ('SDSS_NAME', 'MY_FLAG') 
 mftable.write("myflags.csv")
 
 #join
-sample= Table.read("dr10qsample.fits")
+sample= Table.read("dr10qsample.csv")
 mf3= Table.read("myflags.csv")
 
 x= join(sample, mf3, join_type='left').filled(0)
