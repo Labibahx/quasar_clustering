@@ -331,10 +331,11 @@ def twoD_cluster_kde(cluster_array, line):
     fig= figure(figsize=(12, 12))
     ax= fig.add_subplot(111)
     
-    xlabel('BHWHM (km/s)', fontsize=18)
+    #xlabel('BHWHM (km/s)', fontsize=18)
+    xlabel(r'EW ($\AA$)', fontsize=18)
     ylabel('RHWHM (km/s)', fontsize=18)
     
-    xlim(0,6500)
+    xlim(0,50)
     ylim(0,8000)
     
     x, y= [], []
@@ -363,8 +364,9 @@ def twoD_cluster_kde(cluster_array, line):
         y =mean(clstr[:,2][clstr[:,3]==k])
         n= len(clstr[:,2][clstr[:,3]==k])
         
-        sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 15
-                        , shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
+        #sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 15, shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
+        sns.kdeplot(clstr[:,0][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 10
+                    , shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
         #scatter(x,y, marker= 'x', c='r', s=60)
         text(x, y, clstr_label[j], fontsize= 16)
         text(0.05, u,  clstr_label[j]+", N="+str(n), transform=ax.transAxes, color= clr_ls[j], fontsize= 16)
