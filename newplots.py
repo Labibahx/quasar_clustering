@@ -28,7 +28,7 @@ def line_profile(line, line_name, k):
         k: number of clusters (3, 4, ...)
         """
 
-    compo_name= line+"_ew_hwhm_"+str(k)+"*.fits"
+    compo_name= "./composites/"+line+"_ew_hwhm_"+str(k)+"*.fits"
     compos= glob(compo_name)
 
 
@@ -52,7 +52,7 @@ def line_profile(line, line_name, k):
     fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18)
 
     dx_list= [(1160, 1265), (1350, 1450), (1500, 1600), (1590, 1690), (1810, 1950), (2750, 2850)]
-    dy_list= [(0.75, 2.3), (0.75, 1.5), (0.75, 2.21), (0.75, 1.2), (0.75, 1.8), (0.75, 1.6)]
+    dy_list= [(0.75, 2.3), (0.75, 1.5), (0.75, 3.0), (0.75, 1.2), (0.75, 1.8), (0.75, 1.6)]
 
     line_mark= [[1215.7, 1240], [1396.8], [1549], [1640, 1663.5], [1857, 1892, 1908], [2800]]
     line_label= [[r'Ly$\alpha$', 'N V'], ['Si IV'], ['C IV'], ['He II', 'O III]'], ['Al III', 'Si III]', 'C III]'], ['Mg II']]
@@ -61,8 +61,6 @@ def line_profile(line, line_name, k):
     compo_labels= [line_name+"-"+ a for a in alphabet_list]
 
     clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'khaki', 'cornflowerblue', 'brown' , 'olive', 'purple']
-
-    wlen= np.arange(1100, 4000, 0.5) #wavelength array
 
     for (p,dx, dy, lm, lb) in zip(range(1,8), dx_list, dy_list, line_mark, line_label):
         ax= fig.add_subplot(2,3,p)
@@ -84,10 +82,11 @@ def line_profile(line, line_name, k):
             n= sp[1]
             if sp[1] >300:
                 spec= fits.open(sp[0])
-                flx= spec[0].data
+                wlen= spec[0].data[0]
+                flx= spec[0].data[1]
                 
                 plot(wlen, flx/flx[(dx[0]-1100)*2], c= clr, lw= 2)
-                ii-=0.1
+                ii-=0.15
                 if p==1:
                     ax.text(1162, ii, clab+", N="+ str(n), color= clr) #bbox=props
 
@@ -329,14 +328,14 @@ def twoD_cluster_kde(cluster_array, line):
     sns.set_style("ticks", {'font.family': u'sans-serif'})
    # sns.set(font_scale=1.5)
     
-    fig= figure(figsize=(10,10))
+    fig= figure(figsize=(12, 12))
     ax= fig.add_subplot(111)
     
     xlabel('BHWHM (km/s)', fontsize=18)
     ylabel('RHWHM (km/s)', fontsize=18)
     
     xlim(0,6500)
-    ylim(0,10000)
+    ylim(0,8000)
     
     x, y= [], []
     
@@ -359,16 +358,16 @@ def twoD_cluster_kde(cluster_array, line):
         k= ord_k_ls[j][0]
         print k
         
-        u-=0.03
+        u-=0.04
         x =mean(clstr[:,1][clstr[:,3]==k])
         y =mean(clstr[:,2][clstr[:,3]==k])
         n= len(clstr[:,2][clstr[:,3]==k])
         
-        sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k]
+        sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 15
                         , shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
         #scatter(x,y, marker= 'x', c='r', s=60)
-        text(x, y, clstr_label[j])
-        text(0.05, u,  clstr_label[j]+", N="+str(n), transform=ax.transAxes, color= clr_ls[j])
+        text(x, y, clstr_label[j], fontsize= 16)
+        text(0.05, u,  clstr_label[j]+", N="+str(n), transform=ax.transAxes, color= clr_ls[j], fontsize= 16)
 
 
 
