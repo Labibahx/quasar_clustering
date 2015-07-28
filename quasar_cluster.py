@@ -51,7 +51,7 @@ use only some of the parameters to do the clustering, use only the objects with 
 lookup_spec.py was used to view and flag objects with heavy absorption in CIV. Then the flags array was joined with the main sample dr10qsample.csv and saved as sample_myflags.csv
 
 """
-t= Table.read("qsample_myflags.fits")
+t= Table.read("sample_myflags.fits")
 
 tt= t[t['MY_FLAG'] ==0]
 
@@ -111,11 +111,12 @@ pca_qs= pca.components_
     '''
 
 num_c= np.arange(2,9) # number of clusters
-sos_ls= [] # list of the sum of distances squared
-sil_score_c4= [] # list to store silhouette scores
-sil_score_c3= []
-sil_score_mg2= []
-sil_score_all= []
+
+# lists to store silhouette scores
+sil_score_c4, sil_score_c3, sil_score_mg2= [], [], []
+
+# lists of the sum of distances squared
+sos_ls_c4, sos_ls_c3, sos_ls_mg2= [], [], []
 
 for q in num_c:
     kmeans= KMeans(init= 'k-means++', n_clusters= q, n_init= 10)
@@ -123,16 +124,15 @@ for q in num_c:
     labels= kmeans.predict(qs)
     sc= metrics.silhouette_score(qs, labels)
     print q, sc
-    sos_ls.append(kmeans.inertia_)
+    sos_ls_mg2.append(kmeans.inertia_)
     sil_score_mg2.append(sc)
 
 
-#scatter(num_c, sos_ls)
+#plot silhouette scores
 fig= figure(figsize=(8,6))
 plot(num_c, sil_score_mg2, marker= 'D', color= '0.1', ls='--', label= 'Mg II')
 plot(num_c, sil_score_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
 plot(num_c, sil_score_c4, marker= 'o', color= '0.5', ls=':', label= 'C IV')
-#plot(num_c, sil_score_all, marker= 's', color= '0.7', ls='-', label='3 lines')
 
 text(3.5,0.85, "Features: EW, RHWHM, BHWHM")
 
@@ -142,32 +142,17 @@ xlabel(r'$K$')
 xlim(1.9, 8.1)
 
 
-"""plot sos for CIV, CIII], MgII, and 3lines clusters on one figure
-"""
+#plot sos
+fig= figure(figsize=(8,6))
 
-fig= figure()
-feat_ls= [features[0]+features[1]+ features[2], features[0], features[1], features[2]]
-lbl_ls= ['3 lines', 'C IV', 'C III', 'Mg II']
-marker_ls= ['*', 'D', 'o', 's']
-color_ls= ['purple', 'seagreen', 'navy', 'orange']
-
-for g in range(4):
-    quasars= np.column_stack(m for m in feat_ls[g])
-    num_c= np.arange(1,15) # number of clusters
-    sos_ls= [] # list of the sum of distances squared
-
-    for q in num_c:
-        kmeans= KMeans(init= 'k-means++', n_clusters= q, n_init= 10)
-        kmeans.fit(quasars)
-        labels= kmeans.predict(quasars)
-        sos_ls.append(kmeans.inertia_)
-
-    scatter(num_c, sos_ls, marker= marker_ls[g], color= color_ls[g] , label= lbl_ls[g])
+plot(num_c, sos_ls_mg2, marker= 'D', color= '0.1', ls='--', label= 'Mg II')
+plot(num_c, sos_ls_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
+plot(num_c, sos_ls_c4, marker= 'o', color= '0.5', ls=':', label= 'C IV')
 
 ylabel('Sum of squares')
-xlabel('Number of clusters')
+xlabel(r'$K$')
+xlim(1.9, 8.1)
 legend(numpoints=1)
-savefig('sos_all.pdf')
 
 
 ### test reproducibility -cluster centroids are the same for several runs of KMeans
@@ -277,10 +262,6 @@ for i,j in zip(range(1,k+1), spec_num):
     hdr.set('PARAMETERS USED', 'EW, RHWHM, BHWHM')
     hdu.writeto(spec_name)
     #hdu.close()
-
-#compos.append(wlen)
-#np.savetxt('3lines_5param.txt', compos, delimiter=',') #save as a 2D array with wavelength and a composite for each cluster
-
 
 
 ''' generate tables with the number of objects in each cluster for each clustering run (each with different number of clusters 4 to 8).
