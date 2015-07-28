@@ -266,51 +266,6 @@ def two_d_scatter(line, cluster, k, feature1, feature2, feature3):
 
     legend(scatterpoints=1)
 
-#############################
-
-def plot_reprod(line, k):
-
-    """ make plots with cluster centroids calculated 50 times to show reproducibility.
-    read values from text files.
-    """
-    
-<<<<<<< HEAD
-    #lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
-    #for the BAL sample:lines = [('CIII', 3), ('CIII', 4), ('CIII', 5), ('CIII', 6), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
-    
-
-    cntrs= loadtxt(line+str(k)+"_bal.txt") #sample with BALs
-    #cntrs= loadtxt(line+str(k)+".txt") #use for the non-BAL sample
-   
-    fig= figure(figsize=(10,8))
-    
-    subplots_adjust(hspace = .05)
-    ax1= fig.add_subplot(311)
-    xlim(-4, 54)
-    ylabel('EW '+line)
-    ax1.set_xticks([10, 20, 30, 40, 50], [10, 20, 30, 40, 50])
-    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
-    
-    for m in range(0, k*3, 3):
-        ax1.scatter(range(50), cntrs[:, m], marker='s', edgecolor='k', facecolor='0.5')
-    
-
-    ax2= fig.add_subplot(312, sharex= ax1)
-    xlim(-4, 54)
-    ylabel("BHWHM "+line)
-    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
-    for m in range(1, k*3, 3):
-        ax2.scatter(range(50), cntrs[:, m], marker='o', edgecolor='k', facecolor='0.5')
-
-    ax3= fig.add_subplot(313, sharex= ax1)
-    xlim(-4, 54)
-    ylabel('RHWHM '+line)
-    xlabel("Number of Repeats")
-    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
-    for m in range(2, k*3, 3):
-        ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='0.5')
-
-############
 ############
 
 def twoD_cluster_kde(cluster_array, line):
@@ -370,6 +325,77 @@ def twoD_cluster_kde(cluster_array, line):
         #scatter(x,y, marker= 'x', c='r', s=60)
         text(x, y, clstr_label[j], fontsize= 16)
         text(0.05, u,  clstr_label[j]+", N="+str(n), transform=ax.transAxes, color= clr_ls[j], fontsize= 16)
+
+#############################
+
+def plot_reprod(line, k):
+    
+    """ make plots with cluster centroids calculated 50 times to show reproducibility.
+        read values from text files.
+        """
+    
+    #lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
+    #for the BAL sample:lines = [('CIII', 3), ('CIII', 4), ('CIII', 5), ('CIII', 6), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
+    
+    
+    cntrs= loadtxt(line+str(k)+"_bal.txt") #sample with BALs
+    #cntrs= loadtxt(line+str(k)+".txt") #use for the non-BAL sample
+    
+    fig= figure(figsize=(10,8))
+    
+    subplots_adjust(hspace = .05)
+    ax1= fig.add_subplot(311)
+    xlim(-4, 54)
+    ylabel('EW '+line)
+    ax1.set_xticks([10, 20, 30, 40, 50], [10, 20, 30, 40, 50])
+    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
+    
+    for m in range(0, k*3, 3):
+        ax1.scatter(range(50), cntrs[:, m], marker='s', edgecolor='k', facecolor='0.5')
+    
+    
+    ax2= fig.add_subplot(312, sharex= ax1)
+    xlim(-4, 54)
+    ylabel("BHWHM "+line)
+    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
+    for m in range(1, k*3, 3):
+        ax2.scatter(range(50), cntrs[:, m], marker='o', edgecolor='k', facecolor='0.5')
+    
+    ax3= fig.add_subplot(313, sharex= ax1)
+    xlim(-4, 54)
+    ylabel('RHWHM '+line)
+    xlabel("Number of Repeats")
+    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
+    for m in range(2, k*3, 3):
+        ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='0.5')
+
+#########################
+
+def cntrs(line):
+
+    '''plot the results of reproducibilty check in a more compact way than plot_reprod.
+        for each line make a 3 panel figure, one for each feature (EW, BHWHM and BHWHM).
+        In each panel plot the mean on the feature for each cluster and the std dev as error bar.
+        
+        line: CIII, CIV or MGII '''
+
+    files= glob(line+"*.txt")
+    
+    ew, blu, red= [], [], []
+    
+    
+    
+    fig= figure(figsize=(9,12))
+
+    for c in range(3,7):
+        
+        for r in range(1,4):
+        
+            for z in range(1,13):
+                ax= fig.add_subplot(3,4,z)
+
+
+
 
 
 
