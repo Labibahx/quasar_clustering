@@ -264,29 +264,7 @@ for i,j in zip(range(1,k+1), spec_num):
     #hdu.close()
 
 
-''' generate tables with the number of objects in each cluster for each clustering run (each with different number of clusters 4 to 8).
-As these numbers might slightly vary for each run the numbers for the composites I currently have saved might be different than the ones I would get from repeating the clustering analysis again. 
-So I will instead read the number of the objects in each composite from the FITS headers of the saved composites
-'''
-
-clstr_ls= ['c4', 'c3', 'mg2']
-
-for cls in clstr_ls:
-    f= open(cls+"_tbl.txt", 'wr')
-    f.write("cluster"+"\t"+"1"+"\t"+"2"+"\t"+"3"+"\t"+"4"+"\t"+ "5"+"\t"+ "6"+"\t"+ "7"+"\t"+ "8" + "\n")
-    for h in range(4,9):
-        f.write(str(h) + "\t")
-        for r in range(1,h+1):
-            spec= fits.open(cls+"_5param_"+str(h)+"clstrs"+str(r)+".fits")
-            num= spec[0].header['SPEC_NUMBER']
-            f.write(str(num) + '\t')
-        f.write('\n')
-    f.close()
-
-
-###
-### format the tables a bit differently to match the figures below
-###
+#generate tables with the number of objects in each cluster for each clustering run
 
 clstr_num= [('mg2', 3), ('mg2', 4), ('mg2', 5), ('mg2', 6), ('c3', 3), ('c3', 4), ('c3', 5), ('c3', 6),('c4', 3), ('c4', 4), ('c4', 5), ('c4', 6)]
 
@@ -307,7 +285,6 @@ for o in clstr_num:
         tbl_file.write(str(s) + " & ")
     tbl_file.write('\n')
 tbl_file.close()
-
 
 
 
