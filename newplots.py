@@ -433,8 +433,8 @@ def plot_spec_parts(line, line_name, k):
     fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
     
-    line_mark= [[1215.7, 1240, 1396.8], [1549, 1640, 1663.5], [1857, 1892, 1908], [2800]]
-    line_label= [[r'Ly$\alpha$', 'N V', 'Si IV'], ['C IV', 'He II', 'O III]'], ['Al III', 'Si III]', 'C III]'], ['Mg II']]
+    line_mark= [[1215.7, 1240, 1305, 1335, 1396.8], [1549, 1640, 1663.5], [1857, 1892, 1908], [2800]]
+    line_label= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV'], ['CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], ['MgII']]
     
     alphabet_list = ['a', 'b', 'c', 'd', 'e', 'f']
     compo_labels= [line_name+"-"+ a for a in alphabet_list]
@@ -443,7 +443,7 @@ def plot_spec_parts(line, line_name, k):
     
     splt_ls=[221, 222, 223, 224]
     dx_ls= [(1150,1450),(1465,1700), (1800, 2000),  (2750, 2850)]
-    dy_ls= [(0.5, 2.1), (0.75, 3.1), (0.75, 1.8),  (0.85, 1.6)]
+    dy_ls= [(0.5, 2.1), (0.75, 2.6), (0.75, 1.8),  (0.85, 1.6)]
     
     for s in range(4):
     
@@ -453,7 +453,7 @@ def plot_spec_parts(line, line_name, k):
         
         for t in range(len(line_mark[s])):
             ax.axvline(line_mark[s][t], ls=':', c='k')
-            ax.text(line_mark[s][t]-10, dy_ls[s][1]-(dy_ls[s][1]/15), line_label[s][t], rotation= 'vertical', fontsize= 14, family='serif')
+            ax.text(line_mark[s][t]-((dx_ls[s][1]-dx_ls[s][0])/20), dy_ls[s][1]-(dy_ls[s][1]/15), line_label[s][t], rotation= 'vertical', fontsize= 14, family='serif')
         
         ii= dy_ls[s][1]
         for (sp, clr, clab) in zip(ordered_compos, clr_ls, compo_labels):
@@ -465,5 +465,5 @@ def plot_spec_parts(line, line_name, k):
             plot(wlen, flx/flx[(dx_ls[s][0]-1100)*2], c= clr, lw= 1.5)
             
             ii-=0.1
-            ax.text(1940, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
+            ax.text(1925, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
 
