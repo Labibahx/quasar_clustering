@@ -60,7 +60,7 @@ def line_profile(line, line_name, k):
     alphabet_list = ['a', 'b', 'c', 'd', 'e', 'f']
     compo_labels= [line_name+"-"+ a for a in alphabet_list]
 
-    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'khaki', 'cornflowerblue', 'brown' , 'olive', 'purple']
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
 
     for (p,dx, dy, lm, lb) in zip(range(1,8), dx_list, dy_list, line_mark, line_label):
         ax= fig.add_subplot(2,3,p)
@@ -80,7 +80,7 @@ def line_profile(line, line_name, k):
         
         for (sp, clr, clab) in zip(ordered_compos, clr_ls, compo_labels):
             n= sp[1]
-            if sp[1] >300:
+            if sp[1] >100:
                 spec= fits.open(sp[0])
                 wlen= spec[0].data[0]
                 flx= spec[0].data[1]
@@ -323,8 +323,8 @@ def twoD_cluster_kde(cluster_array, line):
         sns.kdeplot(clstr[:,0][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 10
                     , shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
         #scatter(x,y, marker= 'x', c='r', s=60)
-        text(x, y, clstr_label[j], fontsize= 16)
-        text(0.05, u,  clstr_label[j]+", N="+str(n), transform=ax.transAxes, color= clr_ls[j], fontsize= 16)
+        text(x, y, clstr_label[j], fontsize= 16, family= 'serif')
+        text(0.05, u,  clstr_label[j]+", N="+str(n), transform=ax.transAxes, color= clr_ls[j], fontsize= 16, family= 'serif')
 
 #############################
 
@@ -395,7 +395,75 @@ def cntrs(line):
                 ax= fig.add_subplot(3,4,z)
 
 
+########################
 
+def plot_spec_parts(line, line_name, k):
+    
+    """ plot composite spectra in 3 panels:
+        panel 1: C IV, (He II & OIII]), (Al III, Si III], C III])
+        panel 2: Ly alpha, Si IV
+        panel 3: Mg II
+        param:
+        line: c4, c3 or mg2 as str
+        line_name: CIV, CIII, or MgII as str
+        k: number of clusters (3, 4, ...)
+        """
+    
+    compo_name= "./composites/"+line+"_ew_hwhm_"+str(k)+"*.fits"
+    compos= glob(compo_name)
+    
+    
+    compo_list= []
+    for obj in compos:
+        spec= fits.open(obj)
+        num_obj= spec[0].header['SPEC_NUMBER']
+        compo_list.append([obj, num_obj])
+    ordered_compos= sorted(compo_list, key= itemgetter(1), reverse= True)
 
+    print ordered_compos
+    
+    
+    fig= figure(figsize=(14,8))
+    sns.set_style("ticks")
+    fig1= fig.add_axes([0., 0., 1, 1])
+    fig1.set_axis_off()
+    fig1.set_xlim(0, 1)
+    fig1.set_ylim(0, 1)
+    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
+    
+    line_mark= [[1215.7, 1240, 1396.8], [1549, 1640, 1663.5], [1857, 1892, 1908], [2800]]
+    line_label= [[r'Ly$\alpha$', 'N V', 'Si IV'], ['C IV', 'He II', 'O III]'], ['Al III', 'Si III]', 'C III]'], ['Mg II']]
+    
+    alphabet_list = ['a', 'b', 'c', 'd', 'e', 'f']
+    compo_labels= [line_name+"-"+ a for a in alphabet_list]
+    
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
+    
+    splt_ls=[221, 222, 223, 224]
+    dx_ls= [(1150,1450),(1465,1700), (1800, 2000),  (2750, 2850)]
+    dy_ls= [(0.5, 2.1), (0.75, 3.1), (0.75, 1.8),  (0.85, 1.6)]
+    
+    for s in range(4):
+    
+        ax= fig.add_subplot(splt_ls[s])
+        xlim(dx_ls[s])
+        ylim(dy_ls[s])
+        
+        for t in range(len(line_mark[s])):
+            ax.axvline(line_mark[s][t], ls=':', c='k')
+            ax.text(line_mark[s][t]-10, dy_ls[s][1]-(dy_ls[s][1]/15), line_label[s][t], rotation= 'vertical', fontsize= 14, family='serif')
+        
+        ii= dy_ls[s][1]
+        for (sp, clr, clab) in zip(ordered_compos, clr_ls, compo_labels):
+            n= sp[1]
+            spec= fits.open(sp[0])
+            wlen= spec[0].data[0]
+            flx= spec[0].data[1]
+                
+            plot(wlen, flx/flx[(dx_ls[s][0]-1100)*2], c= clr, lw= 1.5)
+            
+            ii-=0.1
+            ax.text(1940, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
 
