@@ -28,7 +28,7 @@ def line_profile(line, line_name, k):
         k: number of clusters (3, 4, ...)
         """
 
-    compo_name= line+"_ew_hwhm_"+str(k)+"*.fits"
+    compo_name= "./composites/"+line+"_ew_hwhm_"+str(k)+"*.fits"
     compos= glob(compo_name)
 
 
@@ -52,7 +52,7 @@ def line_profile(line, line_name, k):
     fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18)
 
     dx_list= [(1160, 1265), (1350, 1450), (1500, 1600), (1590, 1690), (1810, 1950), (2750, 2850)]
-    dy_list= [(0.75, 2.3), (0.75, 1.5), (0.75, 2.21), (0.75, 1.2), (0.75, 1.8), (0.75, 1.6)]
+    dy_list= [(0.75, 2.3), (0.75, 1.5), (0.75, 3.0), (0.75, 1.2), (0.75, 1.8), (0.75, 1.6)]
 
     line_mark= [[1215.7, 1240], [1396.8], [1549], [1640, 1663.5], [1857, 1892, 1908], [2800]]
     line_label= [[r'Ly$\alpha$', 'N V'], ['Si IV'], ['C IV'], ['He II', 'O III]'], ['Al III', 'Si III]', 'C III]'], ['Mg II']]
@@ -60,9 +60,7 @@ def line_profile(line, line_name, k):
     alphabet_list = ['a', 'b', 'c', 'd', 'e', 'f']
     compo_labels= [line_name+"-"+ a for a in alphabet_list]
 
-    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'khaki', 'cornflowerblue', 'brown' , 'olive', 'purple']
-
-    wlen= np.arange(1100, 4000, 0.5) #wavelength array
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
 
     for (p,dx, dy, lm, lb) in zip(range(1,8), dx_list, dy_list, line_mark, line_label):
         ax= fig.add_subplot(2,3,p)
@@ -82,12 +80,13 @@ def line_profile(line, line_name, k):
         
         for (sp, clr, clab) in zip(ordered_compos, clr_ls, compo_labels):
             n= sp[1]
-            if sp[1] >300:
+            if sp[1] >100:
                 spec= fits.open(sp[0])
-                flx= spec[0].data
+                wlen= spec[0].data[0]
+                flx= spec[0].data[1]
                 
                 plot(wlen, flx/flx[(dx[0]-1100)*2], c= clr, lw= 2)
-                ii-=0.1
+                ii-=0.15
                 if p==1:
                     ax.text(1162, ii, clab+", N="+ str(n), color= clr) #bbox=props
 
@@ -267,50 +266,6 @@ def two_d_scatter(line, cluster, k, feature1, feature2, feature3):
 
     legend(scatterpoints=1)
 
-#############################
-
-def plot_reprod(line, k):
-
-    """ make plots with cluster centroids calculated 50 times to show reproducibility.
-    read values from text files.
-    """
-    
-    #lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
-    #for the BAL sample:lines = [('CIII', 3), ('CIII', 4), ('CIII', 5), ('CIII', 6), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
-    
-
-    cntrs= loadtxt(line+str(k)+"_bal.txt") #sample with BALs
-    #cntrs= loadtxt(line+str(k)+".txt") #use for the non-BAL sample
-   
-    fig= figure(figsize=(10,8))
-    
-    subplots_adjust(hspace = .05)
-    ax1= fig.add_subplot(311)
-    xlim(-4, 54)
-    ylabel('EW '+line)
-    ax1.set_xticks([10, 20, 30, 40, 50], [10, 20, 30, 40, 50])
-    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
-    
-    for m in range(0, k*3, 3):
-        ax1.scatter(range(50), cntrs[:, m], marker='s', edgecolor='k', facecolor='0.5')
-    
-
-    ax2= fig.add_subplot(312, sharex= ax1)
-    xlim(-4, 54)
-    ylabel("BHWHM "+line)
-    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
-    for m in range(1, k*3, 3):
-        ax2.scatter(range(50), cntrs[:, m], marker='o', edgecolor='k', facecolor='0.5')
-
-    ax3= fig.add_subplot(313, sharex= ax1)
-    xlim(-4, 54)
-    ylabel('RHWHM '+line)
-    xlabel("Number of Repeats")
-    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
-    for m in range(2, k*3, 3):
-        ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='0.5')
-
-############
 ############
 
 def twoD_cluster_kde(cluster_array, line):
@@ -328,14 +283,15 @@ def twoD_cluster_kde(cluster_array, line):
     sns.set_style("ticks", {'font.family': u'sans-serif'})
    # sns.set(font_scale=1.5)
     
-    fig= figure(figsize=(10,10))
+    fig= figure(figsize=(12, 12))
     ax= fig.add_subplot(111)
     
-    xlabel('BHWHM (km/s)', fontsize=18)
+    #xlabel('BHWHM (km/s)', fontsize=18)
+    xlabel(r'EW ($\AA$)', fontsize=18)
     ylabel('RHWHM (km/s)', fontsize=18)
     
-    xlim(0,6500)
-    ylim(0,10000)
+    xlim(0,50)
+    ylim(0,8000)
     
     x, y= [], []
     
@@ -358,16 +314,156 @@ def twoD_cluster_kde(cluster_array, line):
         k= ord_k_ls[j][0]
         print k
         
-        u-=0.03
+        u-=0.04
         x =mean(clstr[:,1][clstr[:,3]==k])
         y =mean(clstr[:,2][clstr[:,3]==k])
         n= len(clstr[:,2][clstr[:,3]==k])
         
-        sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k]
-                        , shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
+        #sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 15, shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
+        sns.kdeplot(clstr[:,0][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 10
+                    , shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
         #scatter(x,y, marker= 'x', c='r', s=60)
-        text(x, y, clstr_label[j])
-        text(0.05, u,  clstr_label[j]+", N="+str(n), transform=ax.transAxes, color= clr_ls[j])
+        text(x, y, clstr_label[j], fontsize= 16, family= 'serif')
+        text(0.05, u,  clstr_label[j]+", N="+str(n), transform=ax.transAxes, color= clr_ls[j], fontsize= 16, family= 'serif')
+
+#############################
+
+def plot_reprod(line, k):
+    
+    """ make plots with cluster centroids calculated 50 times to show reproducibility.
+        read values from text files.
+        """
+    
+    #lines = [('CIV', 3), ('CIV', 4), ('CIV', 5), ('CIII', 3), ('CIII', 4), ('CIII', 5), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
+    #for the BAL sample:lines = [('CIII', 3), ('CIII', 4), ('CIII', 5), ('CIII', 6), ('MGII', 3), ('MGII', 4), ('MGII', 5)]
+    
+    
+    cntrs= loadtxt(line+str(k)+"_bal.txt") #sample with BALs
+    #cntrs= loadtxt(line+str(k)+".txt") #use for the non-BAL sample
+    
+    fig= figure(figsize=(10,8))
+    
+    subplots_adjust(hspace = .05)
+    ax1= fig.add_subplot(311)
+    xlim(-4, 54)
+    ylabel('EW '+line)
+    ax1.set_xticks([10, 20, 30, 40, 50], [10, 20, 30, 40, 50])
+    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
+    
+    for m in range(0, k*3, 3):
+        ax1.scatter(range(50), cntrs[:, m], marker='s', edgecolor='k', facecolor='0.5')
+    
+    
+    ax2= fig.add_subplot(312, sharex= ax1)
+    xlim(-4, 54)
+    ylabel("BHWHM "+line)
+    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
+    for m in range(1, k*3, 3):
+        ax2.scatter(range(50), cntrs[:, m], marker='o', edgecolor='k', facecolor='0.5')
+    
+    ax3= fig.add_subplot(313, sharex= ax1)
+    xlim(-4, 54)
+    ylabel('RHWHM '+line)
+    xlabel("Number of Repeats")
+    gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
+    for m in range(2, k*3, 3):
+        ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='0.5')
+
+#########################
+
+def cntrs(line):
+
+    '''plot the results of reproducibilty check in a more compact way than plot_reprod.
+        for each line make a 3 panel figure, one for each feature (EW, BHWHM and BHWHM).
+        In each panel plot the mean on the feature for each cluster and the std dev as error bar.
+        
+        line: CIII, CIV or MGII '''
+
+    files= glob(line+"*.txt")
+    
+    ew, blu, red= [], [], []
+    
+    
+    
+    fig= figure(figsize=(9,12))
+
+    for c in range(3,7):
+        
+        for r in range(1,4):
+        
+            for z in range(1,13):
+                ax= fig.add_subplot(3,4,z)
 
 
+########################
+
+def plot_spec_parts(line, line_name, k):
+    
+    """ plot composite spectra in 3 panels:
+        panel 1: C IV, (He II & OIII]), (Al III, Si III], C III])
+        panel 2: Ly alpha, Si IV
+        panel 3: Mg II
+        param:
+        line: c4, c3 or mg2 as str
+        line_name: CIV, CIII, or MgII as str
+        k: number of clusters (3, 4, ...)
+        """
+    
+    compo_name= "./composites/"+line+"_ew_hwhm_"+str(k)+"*.fits"
+    compos= glob(compo_name)
+    
+    
+    compo_list= []
+    for obj in compos:
+        spec= fits.open(obj)
+        num_obj= spec[0].header['SPEC_NUMBER']
+        compo_list.append([obj, num_obj])
+    ordered_compos= sorted(compo_list, key= itemgetter(1), reverse= True)
+
+    print ordered_compos
+    
+    
+    fig= figure(figsize=(14,8))
+    sns.set_style("ticks")
+    fig1= fig.add_axes([0., 0., 1, 1])
+    fig1.set_axis_off()
+    fig1.set_xlim(0, 1)
+    fig1.set_ylim(0, 1)
+    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
+    
+    line_mark= [[1215.7, 1240, 1305, 1335, 1396.8], [1549, 1640, 1663.5], [1857, 1892, 1908], [2800]]
+    line_label= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV'], ['CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], ['MgII']]
+    
+    alphabet_list = ['a', 'b', 'c', 'd', 'e', 'f']
+    compo_labels= [line_name+"-"+ a for a in alphabet_list]
+    
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
+    
+    splt_ls=[221, 222, 223, 224]
+    dx_ls= [(1150,1450),(1465,1700), (1800, 2000),  (2750, 2850)]
+    dy_ls= [(0.5, 2.1), (0.75, 2.6), (0.75, 1.8),  (0.85, 1.6)]
+    
+    for s in range(4):
+    
+        ax= fig.add_subplot(splt_ls[s])
+        xlim(dx_ls[s])
+        ylim(dy_ls[s])
+        
+        for t in range(len(line_mark[s])):
+            ax.axvline(line_mark[s][t], ls=':', c='k')
+            ax.text(line_mark[s][t]-((dx_ls[s][1]-dx_ls[s][0])/20), dy_ls[s][1]-(dy_ls[s][1]/15), line_label[s][t], rotation= 'vertical', fontsize= 14, family='serif')
+        
+        ii= dy_ls[s][1]
+        for (sp, clr, clab) in zip(ordered_compos, clr_ls, compo_labels):
+            n= sp[1]
+            spec= fits.open(sp[0])
+            wlen= spec[0].data[0]
+            flx= spec[0].data[1]
+                
+            plot(wlen, flx/flx[(dx_ls[s][0]-1100)*2], c= clr, lw= 1.5)
+            
+            ii-=0.1
+            ax.text(1925, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
 
