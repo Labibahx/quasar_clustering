@@ -129,10 +129,10 @@ for q in num_c:
     sc= metrics.silhouette_score(qs, labels)
     print q, sc
     sos_ls.append(kmeans.inertia_)
-    sil_score_mg2.append(sc)
+    sil_score_c3.append(sc)
 
 
-#scatter(num_c, sos_ls)
+fig= figure(figsize=(8,6))
 plot(num_c, sil_score_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
 
 
@@ -142,6 +142,7 @@ legend(numpoints= 1)
 ylabel('Silhouette score')
 xlabel(r'$K$')
 xlim(1.9, 8.1)
+ylim(0.3, 0.72)
 
 
 """plot sos vs K CIII]
@@ -149,7 +150,7 @@ xlim(1.9, 8.1)
 
 fig= figure(figsize=(8,6))
 
-plot(num_c, sos_ls_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
+plot(num_c, sos_ls, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
 
 ylabel('Sum of squares')
 xlabel(r'$K$')
@@ -193,17 +194,17 @@ for l in lines:
 ### Now do the clustering using K-Means
 
 clstr_name= "c3_ew_hwhm_bal"
-k=3 #number of clusters
+k=6 #number of clusters
 kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
 kmeans.fit(qs)
 labels= kmeans.predict(qs)
 
 ## save the clustering results: the subset joined with the label (which point to the cluster the object belongs to) and the object name from the catalog.
 clstr_with_names= np.column_stack((qs, labels, sdss_name))
-save(clstr_name+"_"+str(k)+"clstrs_name.npy", clstr_with_names) #save
+save("./clusters/"+clstr_name+"_"+str(k)+"clstrs_name.npy", clstr_with_names) #save
 
 clstr_with_labels= np.column_stack((qs, labels))
-save(clstr_name+"_"+str(k)+"clstrs.npy", clstr_with_labels)
+save("./clusters/"+clstr_name+"_"+str(k)+"clstrs.npy", clstr_with_labels)
 
 ### to read this array, use load(file name). All elements in the array will have dtype= S18.
 ### to use them I need to convert to floats. use new_array= old_array.astype(desired_dtype). dtype= float64
@@ -271,7 +272,7 @@ for o in clstr_num:
     spec_numbers=[]
     tbl_file.write(o[0] + "\t" )
     for pp in range(1, o[1]+1):
-        sp= fits.open("./composites/"+o[0]+"_ew_hwhm_bal"+str(o[1])+"clstrs"+str(pp)+".fits")
+        sp= fits.open("./composites/"+o[0]+"_ew_hwhm_bal_"+str(o[1])+"clstrs"+str(pp)+".fits")
         spec_numbers.append(sp[0].header['SPEC_NUMBER'])
     spec_numbers_ordered= sorted(spec_numbers, reverse= True)
     print spec_numbers_ordered
