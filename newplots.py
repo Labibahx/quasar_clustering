@@ -11,6 +11,10 @@ from glob import glob
 import seaborn as sns
 
 
+#sns.set_style('ticks')
+#sns.set_context("paper", font_scale=2)
+
+
 ss= np.load(dr10qsample.npy)
 
 
@@ -286,11 +290,12 @@ def twoD_cluster_kde(cluster_array, line):
     fig= figure(figsize=(12, 12))
     ax= fig.add_subplot(111)
     
-    #xlabel('BHWHM (km/s)', fontsize=18)
-    xlabel(r'EW ($\AA$)', fontsize=18)
+    xlabel('BHWHM (km/s)', fontsize=18)
+    #xlabel(r'EW ($\AA$)', fontsize=18)
     ylabel('RHWHM (km/s)', fontsize=18)
     
-    xlim(0,50)
+    #xlim(0,50)
+    xlim(0,8000)
     ylim(0,8000)
     
     x, y= [], []
@@ -319,9 +324,8 @@ def twoD_cluster_kde(cluster_array, line):
         y =mean(clstr[:,2][clstr[:,3]==k])
         n= len(clstr[:,2][clstr[:,3]==k])
         
-        #sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 15, shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
-        sns.kdeplot(clstr[:,0][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 10
-                    , shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
+        sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 15, shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
+        #sns.kdeplot(clstr[:,0][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 10, shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
         #scatter(x,y, marker= 'x', c='r', s=60)
         text(x, y, clstr_label[j], fontsize= 16, family= 'serif')
         text(0.05, u,  clstr_label[j]+", N="+str(n), transform=ax.transAxes, color= clr_ls[j], fontsize= 16, family= 'serif')
@@ -409,7 +413,8 @@ def plot_spec_parts(line, line_name, k):
         k: number of clusters (3, 4, ...)
         """
     
-    compo_name= "./composites/"+line+"_ew_hwhm_"+str(k)+"*.fits"
+    compo_name= "./composites/"+line+"_ew_hwhm_bal_"+str(k)+"*.fits" #for the BAL sample
+    #compo_name= "./composites/"+line+"_ew_hwhm_"+str(k)+"*.fits"
     compos= glob(compo_name)
     
     
