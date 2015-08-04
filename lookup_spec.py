@@ -41,10 +41,11 @@ def spec_look_up(cluster_array, k):
 
     all_clstrs= np.load(cluster_array)
     
-    data= Table.read("dr10sample_BAL.fits", format='ascii', delimiter=',') # BAL quasars sample
+    
+    ss= Table.read("dr10sample_BAL.fits") # BAL quasars sample
     #data= Table.read("sample_myflags.csv", format='ascii', delimiter=',') #sample (no BALs)
     
-    ss = data[data['MY_FLAG'] ==0] # subsample. some objects were flagged out due to heavy absorption in CIV
+    #ss = data[data['MY_FLAG'] ==0] # subsample. some objects were flagged if the had missing flux
     
     #corss-match the above two files
     
