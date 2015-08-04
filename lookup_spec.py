@@ -26,7 +26,7 @@ def spec_display(plate, mjd, fiber):
     xlabel(r'Wavelength ($\AA$)')
     ylabel('Normalized flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)')
 
-
+###################
 
 
 def spec_look_up(cluster_array, k):
@@ -41,7 +41,8 @@ def spec_look_up(cluster_array, k):
 
     all_clstrs= np.load(cluster_array)
     
-    data= Table.read("sample_myflags.csv", format='ascii', delimiter=',') #sample (no BALs)
+    data= Table.read("dr10sample_BAL.fits", format='ascii', delimiter=',') # BAL quasars sample
+    #data= Table.read("sample_myflags.csv", format='ascii', delimiter=',') #sample (no BALs)
     
     ss = data[data['MY_FLAG'] ==0] # subsample. some objects were flagged out due to heavy absorption in CIV
     
@@ -82,7 +83,7 @@ def spec_look_up(cluster_array, k):
             pass
             clf()
     
-
+################
 
 def spec_flag(spec_ls, n1, n2):
 
@@ -171,7 +172,7 @@ mf3= Table.read("myflags.csv")
 
 x= join(sample, mf3, join_type='left').filled(0)
 
-x.write("sample_myflags.fits")
+x.write("qsample_myflags.fits")
 
 
 
