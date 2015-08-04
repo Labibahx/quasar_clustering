@@ -232,7 +232,7 @@ def two_d_scatter(line, cluster, k, feature1, feature2, feature3):
         """
 
 
-    clstr_name= cluster+"_"+str(k)+"clstrs.npy"
+    clstr_name= "./clusters/"+cluster+"_"+str(k)+"clstrs.npy"
     clstr= np.load(clstr_name)
     
     ew= clstr[:,0] #EW
