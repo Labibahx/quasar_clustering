@@ -306,9 +306,12 @@ def twoD_cluster_kde(cluster_array, line):
     
     for i in range(max(clstr[:,3].astype(int))+1):
     
-        k_ls.append([i, len(clstr[clstr[:,3]==i])])
+        k_ls.append([i, (mean(clstr[:,2][clstr[:,3]==i]))])
+        #k_ls.append([i, (mean(clstr[:,1][clstr[:,3]==i]) + mean(clstr[:,2][clstr[:,3]==i]))])
     
-    ord_k_ls= sorted(k_ls, key= itemgetter(1), reverse= True)
+    #ord_k_ls= sorted(k_ls, key= itemgetter(1), reverse= True)
+    
+    ord_k_ls= sorted(k_ls, key= itemgetter(1))
     
     print ord_k_ls
     
@@ -327,8 +330,11 @@ def twoD_cluster_kde(cluster_array, line):
         sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j]) #n_levels= 5
         #sns.kdeplot(clstr[:,0][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 10, shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j]) #EW
         #scatter(x,y, marker= 'x', c='r', s=60)
+    
         text(x, y, clstr_label[j], fontsize= 16, family= 'serif')
         text(0.05, u,  clstr_label[j]+", N="+str(n), transform=ax.transAxes, color= clr_ls[j], fontsize= 16, family= 'serif')
+
+
 
 #############################
 
@@ -423,7 +429,17 @@ def plot_spec_parts(line, line_name, k):
         spec= fits.open(obj)
         num_obj= spec[0].header['SPEC_NUMBER']
         compo_list.append([obj, num_obj])
-    ordered_compos= sorted(compo_list, key= itemgetter(1), reverse= True)
+    #ordered_compos= sorted(compo_list, key= itemgetter(1), reverse= True)
+    
+    for i in range(max(clstr[:,3].astype(int))+1):
+    
+        k_ls.append([i, (mean(clstr[:,2][clstr[:,3]==i]))])
+        #k_ls.append([i, (mean(clstr[:,1][clstr[:,3]==i]) + mean(clstr[:,2][clstr[:,3]==i]))])
+    
+        #ord_k_ls= sorted(k_ls, key= itemgetter(1), reverse= True)
+    
+    ordered_compos= sorted(k_ls, key= itemgetter(1))
+
 
     print ordered_compos
     
