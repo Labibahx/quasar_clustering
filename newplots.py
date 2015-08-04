@@ -232,8 +232,8 @@ def two_d_scatter(line, cluster, k, feature1, feature2, feature3):
         """
 
 
-    clstr_name= "./clusters/"+cluster+"_"+str(k)+"clstrs.npy"
-    clstr= np.load(clstr_name)
+    #clstr_name= "./clusters/"+cluster+"_"+str(k)+"clstrs.npy"
+    clstr= np.load(cluster)
     
     ew= clstr[:,0] #EW
     bhwhm= clstr[:,1] #BHWHM
@@ -324,8 +324,8 @@ def twoD_cluster_kde(cluster_array, line):
         y =mean(clstr[:,2][clstr[:,3]==k])
         n= len(clstr[:,2][clstr[:,3]==k])
         
-        sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 15, shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
-        #sns.kdeplot(clstr[:,0][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 10, shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j])
+        sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j]) #n_levels= 5
+        #sns.kdeplot(clstr[:,0][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 10, shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j]) #EW
         #scatter(x,y, marker= 'x', c='r', s=60)
         text(x, y, clstr_label[j], fontsize= 16, family= 'serif')
         text(0.05, u,  clstr_label[j]+", N="+str(n), transform=ax.transAxes, color= clr_ls[j], fontsize= 16, family= 'serif')
