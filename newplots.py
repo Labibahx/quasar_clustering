@@ -334,10 +334,103 @@ def twoD_cluster_kde(cluster_array, line):
         text(x, y, clstr_label[j], fontsize= 16, family= 'serif')
         text(0.05, u,  clstr_label[j]+", N="+str(n), transform=ax.transAxes, color= clr_ls[j], fontsize= 16, family= 'serif')
 
+        ## now overplot BAL quasars
+
+        b= Table.read('BALs_only.fits')
+        #scatter(b['BHWHM_'+line], b['RHWHM_'+line], marker='o', s=5, edgecolor='k', color='0.7', alpha=0.5)
+        sns.kdeplot(b['BHWHM_'+line], b['RHWHM_'+line], shade=False, shade_lowest=False)
+
+        #plot 1:1 line
+        z= arange(11000)
+        plot(z,z,'k-')
 
 
 #############################
 
+def cluster_kde(line, line_name):
+    
+    """ plot KDE for the clusters for the BHWHM, RHWHM in 4 panels for k=3, 4, 5, and 6
+
+        line: c3, c4, or mg2
+        line: "CIII", "CIV", or "MgII", a string with the line used for clustering. To be used as a title for the figure."""
+    
+    sns.set_style("ticks", {'font.family': u'sans-serif'})
+    
+    fig= figure(figsize=(14,8))
+    sns.set_style("ticks")
+    fig1= fig.add_axes([0., 0., 1, 1])
+    fig1.set_axis_off()
+    fig1.set_xlim(0, 1)
+    fig1.set_ylim(0, 1)
+    fig1.text(.05, .5, line_name+ " RHWHM (km/s)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(.5, .03, line_name+ " BHWHM (km/s)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    
+    
+    cmap_ls= ['YlOrBr', 'Blues', 'RdPu', 'Greens', 'Greys', 'Reds']
+
+    for (i,j) in zip(range(1,5), range(3,7)):
+        
+        ax= fig.add_subplot(2,2,i)
+        
+        z= arange(11000)
+        plot(z,z,'k-', lw=.5) #plot 1:1 line
+        
+        clstr_name= "./clusters/"+line+"_ew_hwhm_"+ str(j) +"clstrs.npy"
+        
+        print clstr_name
+        
+        clstr_array= np.load(clstr_name)
+        
+        xlim(min(clstr_array[:,1]), max(clstr_array[:,1])-max(clstr_array[:,1])/2)
+        ylim(min(clstr_array[:,1]), max(clstr_array[:,1])-max(clstr_array[:,1])/4)
+    
+        clstr_num= []
+    
+        for k in range(max(clstr_array[:,3].astype(int))+1):
+        
+            clstr_num.append([k, (len(clstr_array[clstr_array[:,3]== k]))])
+    
+        ordered_clstrs= sorted(clstr_num, key= itemgetter(1), reverse= True)
+        print ordered_clstrs
+        
+        ew=[]
+        x, y= [], []
+
+        cc= -1
+        for c in ordered_clstrs:
+            cc+=1
+            sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]], shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[cc])
+            ew.append(mean(clstr_array[:,0][clstr_array[:,3]==c[0]]))
+            x.append(mean(clstr_array[:,1][clstr_array[:,3]==c[0]]))
+            y.append(mean(clstr_array[:,2][clstr_array[:,3]==c[0]]))
+            
+        
+        scatter(x,y, marker='s', color='r', s=ew*50)
+        
+        clstr_label= [ line_name+'-a', line_name+'-b', line_name+'-c', line_name+'-d', line_name+'-e', line_name+'-f']
+        clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red'] # 'cornflowerblue', 'brown' , 'olive', 'purple']
+        
+        if j ==6:
+          
+            for l in range(6):
+                
+                text(x[l], y[l], clstr_label[l], fontsize= 14, family= 'serif')
+
+
+
+        
+        ## now overplot BAL quasars
+        
+        #b= Table.read('BALs_only.fits')
+        #scatter(b['BHWHM_'+line], b['RHWHM_'+line], marker='o', s=5, edgecolor='k', color='0.7', alpha=0.5)
+        #sns.kdeplot(b['BHWHM_'+line], b['RHWHM_'+line], shade=False, shade_lowest=False)
+        
+
+
+
+
+
+###########################
 def plot_reprod(line, k):
     
     """ make plots with cluster centroids calculated 50 times to show reproducibility.
