@@ -32,13 +32,8 @@ from mpl_toolkits.mplot3d import Axes3D
 
 data = Table.read('dr10q.fits')
 
-""" extract the part with redshift 1.6 > z > 2.1
-also remove the bad measurements and all the other junk (the catalog has EW of -1, -inf or ridiculously large negative numbers. The EW values are < 0 for absorption lines so I am only keeping the >0 EWs)
-I checked some of the objects with EWs < 0 and there seem to be something wrong with the measurements (the negative EW does not mean absorption line)
-I also put an upper cut for the ew <2000 as there seems to be some outliers
+""" extract the part with redshift 1.6 > z > 2.1 with some cut-off on uncertainty and S/N
 """
-
-# subsample with: upper and lower redshift limits, reasonable measurements for EW, and BAL quasars excluded
 
 ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1)
           & (data['ERR_REWE_CIII'] < data['REWE_CIII']/10)
@@ -58,8 +53,11 @@ I used lookup_spec.py to flag objects with A star-like spectra. Then the flags a
 """
 t= Table.read("sample_BAL_myflags.fits")
 
+b= t[t['BAL_FLAG_VI'] ==1] # this table has BAL quasars only. might be useful for the analysis on BAL quasars.
+b.write('BALs_only.fits', format= 'fits')
+
 ###
-###flags here are to remove the A star-like spectra only. Heavy absorption is allowed in this sample.
+### my flags are to remove spectra with missing flux only.
 ###
 
 tt= t[t['MY_FLAG'] ==0]
