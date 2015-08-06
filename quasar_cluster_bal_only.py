@@ -11,9 +11,8 @@ The working directory for this script is the main quasar_clustering directory. T
 Updated on 30 May 2015 to include a limit on the SNR in the selctions. This cut-off brought the size of the sample from 7754 to 4342 quasars.
 
 ====================
-13 July 2015
-
-this is a copy of quasar_cluster.py but the analysis is applied to a sample with the BAL flag tur off (i.e., BAL quasars are allowed to be in the sample)
+6 August 2015
+This is a copy of quasar_cluster_balq.py to use for clustering on BAL quasars only sample
 
 """
 
@@ -30,37 +29,26 @@ from mpl_toolkits.mplot3d import Axes3D
 
 ### Read the SDSS DR10 Quasar catalog
 
+"""
 data = Table.read('dr10q.fits')
 
-""" extract the part with redshift 1.6 > z > 2.1 with some cut-off on uncertainty and S/N
-"""
+##extract the part with redshift 1.6 > z > 2.1 with some cut-off on uncertainty and S/N
 
 ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1)
           & (data['ERR_REWE_CIII'] < data['REWE_CIII']/10)
           & (data['ERR_REWE_CIV'] < data['REWE_CIV']/10)
           & (data['ERR_REWE_MGII'] < data['REWE_MGII']/10)
           & (data['SNR_1700'] > 3)]
-
-ss.write('dr10qsample_BAL.fits') # Even csv is not working all the time (works on laptop not desktop :/). I tried to save as numpy array then load the array and use fits.writeto('filename.fits', array). this works on desktop
-
-save('dr10sample_BAL.npy',ss) # save as numpy array
-
+          
+          This is how the BAL+nonBAL sample was selected. File saved as dr10qsample_BAL_only.fits then I flagged a few objects with issues in their spectra. File saved as sample_BAL_myflags.fits
 """
-use only some of the parameters to do the clustering, use only the objects with no heavy absorption in CIV (MY_FLAG == 0 only)
 
-I used lookup_spec.py to flag objects with A star-like spectra. Then the flags array was joined with the main sample dr10qsample_BAL.csv and saved as balsample_myflags.csv
+data= Table.read('sample_BAL_myflags.fits')
 
-"""
-t= Table.read("sample_BAL_myflags.fits")
+tt= data[(data['BAL_FLAG_VI'] ==1) & (data['MY_FLAG']== 0)]
 
-b= t[t['BAL_FLAG_VI'] ==1] # this table has BAL quasars only. might be useful for the analysis on BAL quasars.
-b.write('BALs_only.fits', format= 'fits')
+tt.write('sample_myflags_BAL_only.fits')
 
-###
-### my flags are to remove spectra with missing flux only.
-###
-
-tt= t[t['MY_FLAG'] ==0]
 
 # list of parameters to include in the clustering analysis (features)
 redshift= tt['Z_PCA'] # PCA redshift
@@ -93,8 +81,6 @@ fiber= tt['FIBERID']
 features= [c3_ew, c3_bhwhm, c3_rhwhm]
 
 ### combine 1D arrays to create a 2D numpy array to perform the clustering analysis on (each row is one quasar, each column is one feature)
-
-# qs= np.column_stack(n for n in features[0][:3]+features[1][:3]+features[2][:3]) # all three lines. can specify which features to use by changing the range in the second []
 
 qs= np.column_stack(n for n in features) # one line only. 0 can be changed to use a different line
 
@@ -164,7 +150,7 @@ param_list = ['REWE_', 'BHWHM_', 'RHWHM_']
 
 
 for l in lines:
-    cntrs = open(l[0]+str(l[1])+"_bal.txt", 'wr')
+    cntrs = open(l[0]+str(l[1])+"_bal_only.txt", 'wr')
 
     print l[0], ",K=", l[1]
     
@@ -191,7 +177,7 @@ for l in lines:
 
 ### Now do the clustering using K-Means
 
-clstr_name= "c3_ew_hwhm_bal"
+clstr_name= "c3_ew_hwhm_bal_only"
 k=6 #number of clusters
 kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
 kmeans.fit(qs)
