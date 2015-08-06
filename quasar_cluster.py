@@ -287,4 +287,37 @@ for o in clstr_num:
 tbl_file.close()
 
 
+#generate tables with the number of objects in each cluster for each clustering run
+
+clstr_num= [('c3', 3), ('c3', 4), ('c3', 5), ('c3', 6),('c4', 3), ('c4', 4), ('c4', 5), ('c4', 6), ('mg2', 3), ('mg2', 4), ('mg2', 5), ('mg2', 6), ]
+
+tbl_file= open("clstrs_num_cntrs_tbl.txt", 'wr')
+tbl_file.write("Line & k & 1 & 2 & 3 & 4 & 5 & 6\n")
+
+for o in clstr_num:
+    print o[0], o[1]
+    
+    num_cntrs=[]
+    
+    tbl_file.write(o[0] + "\t" )
+    clstr_array= np.load("./clusters/"+o[0]+"_ew_hwhm_"+str(o[1])+"clstrs.npy") #c3_ew_hwhm_3clstrs.npy
+    
+    for k in range(o[1]):
+    
+        num_cntrs.append((len(clstr_array[clstr_array[:,3] == k]), (mean(clstr_array[:,0].astype(int)[clstr_array[:,3] == k])), mean(clstr_array[:,1].astype(int)[clstr_array[:,3] == k]), mean(clstr_array[:,2].astype(int)[clstr_array[:,3] == k])))
+    
+    num_cntrs_ordered= sorted(num_cntrs, key= itemgetter(0), reverse= True)
+
+    print num_cntrs_ordered
+
+    for s in num_cntrs_ordered:
+    
+        print s[0]
+        tbl_file.write("{:0.0f}".format(s[0]) +"\n"+ "{:0.2f}".format(s[1])+ ","+ "{:0.2f}".format(s[2])+ ","+ "{:0.2f}".format(s[3])+ " \n ")
+
+    tbl_file.write('\n')
+
+tbl_file.close()
+
+
 
