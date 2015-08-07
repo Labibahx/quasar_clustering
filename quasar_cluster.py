@@ -318,8 +318,12 @@ for o in clstr_num:
     for s in num_cntrs_ordered:
     
         #print s[1]
-        tbl_file.write("{:0.0f}".format(s[0]) +"\t"+ "{:0.2f}".format(s[1][0])+ ","+ "{:0.2f}".format(s[1][1])+ ","+ "{:0.2f}".format(s[1][2])+ " \n ")
+        tbl_file.write("{:0.0f}".format(s[0]) +"&")
+    tbl_file.write('\n')
+        
+    for s in num_cntrs_ordered:
 
+        tbl_file.write("("+"{:0.2f}".format(s[1][0])+ ","+ "{:0.2f}".format(s[1][1])+ ","+ "{:0.2f}".format(s[1][2])+")"+ " & ")
     tbl_file.write('\n')
 
 tbl_file.close()
