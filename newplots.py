@@ -336,18 +336,18 @@ def twoD_cluster_kde(cluster_array, line):
 
         ## now overplot BAL quasars
 
-        b= Table.read('BALs_only.fits')
-        #scatter(b['BHWHM_'+line], b['RHWHM_'+line], marker='o', s=5, edgecolor='k', color='0.7', alpha=0.5)
-        sns.kdeplot(b['BHWHM_'+line], b['RHWHM_'+line], shade=False, shade_lowest=False)
+        b= Table.read('sample_myflags_BAL_only.fits')
+        scatter(b['BHWHM_'+line], b['RHWHM_'+line], marker='o', s=3, color='0.7', alpha=0.5)
+        #sns.kdeplot(b['BHWHM_'+line], b['RHWHM_'+line], shade=False, shade_lowest=False)
 
-        #plot 1:1 line
+        #  plot 1:1 line
         z= arange(11000)
         plot(z,z,'k-')
 
 
 #############################
 
-def cluster_kde(line, line_name):
+def four_pan_cluster_kde(line, line_name):
     
     """ plot KDE for the clusters for the BHWHM, RHWHM in 4 panels for k=3, 4, 5, and 6
 
@@ -372,6 +372,8 @@ def cluster_kde(line, line_name):
         
         ax= fig.add_subplot(2,2,i)
         
+        text(.07, .9, "K="+str(j), transform=ax.transAxes, horizontalalignment='center', verticalalignment='center', fontsize= 12, family= 'serif')
+        
         z= arange(11000)
         plot(z,z,'k-', lw=.5) #plot 1:1 line
         
@@ -381,8 +383,8 @@ def cluster_kde(line, line_name):
         
         clstr_array= np.load(clstr_name)
         
-        xlim(min(clstr_array[:,1]), max(clstr_array[:,1])-max(clstr_array[:,1])/2)
-        ylim(min(clstr_array[:,1]), max(clstr_array[:,1])-max(clstr_array[:,1])/4)
+        xlim(0, 7000)
+        ylim(0, 10500)
     
         clstr_num= []
     
@@ -395,35 +397,38 @@ def cluster_kde(line, line_name):
         
         ew=[]
         x, y= [], []
+        n=[]
 
         cc= -1
         for c in ordered_clstrs:
             cc+=1
-            sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]], shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[cc])
+            sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]],cmap= cmap_ls[cc])
+            #sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]], shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[cc])
             ew.append(mean(clstr_array[:,0][clstr_array[:,3]==c[0]]))
             x.append(mean(clstr_array[:,1][clstr_array[:,3]==c[0]]))
             y.append(mean(clstr_array[:,2][clstr_array[:,3]==c[0]]))
+            n.append(len(clstr_array[clstr_array[:,3]==c[0]]))
             
         
-        scatter(x,y, marker='s', color='r', s=ew*50)
+        scatter(x,y, marker='o', color='r', s=[e for e in ew])
         
-        clstr_label= [ line_name+'-a', line_name+'-b', line_name+'-c', line_name+'-d', line_name+'-e', line_name+'-f']
+        clstr_label= ['a'+str(j),'b'+str(j),'c'+str(j),'d'+str(j),'e'+str(j),'f'+str(j)]
         clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red'] # 'cornflowerblue', 'brown' , 'olive', 'purple']
         
-        if j ==6:
-          
-            for l in range(6):
+        #if j ==6:
+            
+        u=1
+        for l in range(j):
+            u-=0.07
                 
-                text(x[l], y[l], clstr_label[l], fontsize= 14, family= 'serif')
+            text(x[l]+30, y[l]+50, clstr_label[l], fontsize= 14, family= 'serif')
+            text(0.7, u,  line_name+"-"+clstr_label[l]+", N="+str(n[l]), transform=ax.transAxes, color= clr_ls[l], fontsize= 14, family= 'serif')
 
-
-
-        
         ## now overplot BAL quasars
         
-        #b= Table.read('BALs_only.fits')
-        #scatter(b['BHWHM_'+line], b['RHWHM_'+line], marker='o', s=5, edgecolor='k', color='0.7', alpha=0.5)
-        #sns.kdeplot(b['BHWHM_'+line], b['RHWHM_'+line], shade=False, shade_lowest=False)
+        #b= Table.read('sample_myflags_BAL_only.fits')
+        #scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=3, color='0.3', alpha=0.5)
+        #sns.kdeplot(b['BHWHM_'+line_name], b['RHWHM_'+line_name], shade=False, shade_lowest=False)
         
 
 
