@@ -433,6 +433,100 @@ def four_pan_cluster_kde(line, line_name):
         b= Table.read('sample_myflags_BAL_only.fits')
         scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=3, color='0.3', alpha=0.5)
         #sns.kdeplot(b['BHWHM_'+line_name], b['RHWHM_'+line_name], shade=False, shade_lowest=False)
+
+
+##########################
+
+## forked from Pauline
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import cm
+from matplotlib.ticker import NullFormatter
+from seaborn import kdeplot
+
+# based on http://www.astrobetter.com/blog/2014/02/10/visualization-fun-with-python-2d-histogram-with-1d-histograms-on-axes/
+
+def kde_hist(cluster):
+    '''makes a histogran with sidecars:
+        2D histogram shown as an image in center, with
+        1D histograms corresponding to the 2 axes along each side
+        input: xvals, yvals: X and Y positions of points to be histogrammed
+        '''
+    
+    #hist_2d_all, xedge, yedge = np.histogram2d(xvals, yvals, bins=8)
+    
+    # start with a rectangular Figure
+    f = plt.figure(figsize=(8,8))
+    
+    # define where the axes go
+    left, width = 0.1, 0.65
+    bottom, height = 0.1, 0.65
+    bottom_h = left_h = left+width+0.02
+    
+    rect_scatter = [left, bottom, width, height]
+    rect_histx = [left, bottom_h, width, 0.2]
+    rect_histy = [left_h, bottom, 0.15, height]
+    
+    # add the axes to the figure
+    ax2d = plt.axes(rect_scatter)
+    axHistx = plt.axes(rect_histx)
+    axHisty = plt.axes(rect_histy)
+    
+    # no labels for the sidecar histograms, because the 2D plot has them
+    nullfmt   = NullFormatter()
+    axHistx.xaxis.set_major_formatter(nullfmt)
+    axHisty.yaxis.set_major_formatter(nullfmt)
+    
+    # the 2D plot:
+    # note the all-important transpose!
+    clstr= np.load(cluster)
+    
+    clstr_num= []
+        
+    for k in range(max(clstr_array[:,3].astype(int))+1):
+        
+        clstr_num.append([k, (mean(clstr_array[:,1][clstr_array[:,3]== k]), (mean(clstr_array[:,2][clstr_array[:,3]== k])))])
+        
+    ordered_clstrs= sorted(clstr_num, key= itemgetter(1)) # reverse= True
+    print ordered_clstrs
+
+    cmap_ls= ['YlOrBr', 'Blues', 'RdPu', 'Greens', 'Greys', 'Reds']
+    
+    cc= -1
+    for c in ordered_clstrs:
+        cc+=1
+       
+        sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]],cmap= cmap_ls[cc], ax=ax2d)
+    
+    #plot2d = ax2d.imshow(hist2d.T, interpolation='none', origin='low', extent=[xedge[0], xedge[-1], yedge[0], yedge[-1]],aspect='auto',cmap=cm.coolwarm)
+    ax2d.set_xlabel(line_name+ " BHWHM (km/s)" )
+    ax2d.set_ylabel(line_name+ " RHWHM (km/s)")
+
+    b= Table.read('sample_myflags_BAL_only.fits')
+    ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=3, color='0.3', alpha=0.5)
+    
+    # the 1-D histograms: first the X-histogram
+    #xhist = hist2d.sum(axis=1) # note x-hist is axis 1, not 0
+    sns.distplot(b['BHWHM_'+line_name], bins= 20, ax=axHistx)
+    #axHistx.bar(left=xedge[:-1], height=xhist, width = xedge[1:]-xedge[:-1])
+    #axHistx.set_xlim( ax2d.get_xlim()) # x-limits match the 2D plot
+    axHistx.set_ylabel('BHWHM')
+    #axHistx.set_yticks([0.1, 0.4, 0.7, 1.0])
+        
+    # then the Y-histogram
+    #yhist = hist2d.sum(axis=0) # note y-hist is axis 0, not 1
+    # use barh instead of bar here because we want a horizontal histogram
+    sns.distplot(b['BHWHM_'+line_name], bins= 20, vertical= True, ax=axHisty)
+    #axHisty.barh(bottom=yedge[:-1], width=yhist, height = yedge[1:]-yedge[:-1])
+    #axHisty.set_ylim( ax2d.get_ylim()) # y-limits match the 2D plot
+    #axHisty.set_xlim(0,0.8)
+    axHisty.set_xlabel('RHWHM')
+    #axHisty.set_xticks([0.2, 0.5, 0.8])
+        
+    plt.show()
+    return
+
+
         
 ########################
 
@@ -530,10 +624,6 @@ def plot_spec_parts(line, line_name, k):
             
             ii-=0.1
             ax.text(1925, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
-
-
-
-
 
 
 ###########################
