@@ -327,6 +327,7 @@ def twoD_cluster_kde(cluster_array, line):
         y =mean(clstr[:,2][clstr[:,3]==k])
         n= len(clstr[:,2][clstr[:,3]==k])
         
+        
         sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j]) #n_levels= 5
         #sns.kdeplot(clstr[:,0][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 10, shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j]) #EW
         #scatter(x,y, marker= 'x', c='r', s=60)
@@ -354,9 +355,11 @@ def four_pan_cluster_kde(line, line_name):
         line: c3, c4, or mg2
         line: "CIII", "CIV", or "MgII", a string with the line used for clustering. To be used as a title for the figure."""
     
+    sample= "_ew_hwhm_bal_" # change to "bal_" for the mixed sample or "bal_only_" for the BAL only sample or leave _ for the main non-BAL sample
+    
     sns.set_style("ticks", {'font.family': u'sans-serif'})
     
-    fig= figure(figsize=(14,8))
+    fig= figure(figsize=(16,10))
     sns.set_style("ticks")
     fig1= fig.add_axes([0., 0., 1, 1])
     fig1.set_axis_off()
@@ -365,6 +368,7 @@ def four_pan_cluster_kde(line, line_name):
     fig1.text(.05, .5, line_name+ " RHWHM (km/s)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
     fig1.text(.5, .03, line_name+ " BHWHM (km/s)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
     
+    props= dict(boxstyle='round', alpha=0.5, color='w')
     
     cmap_ls= ['YlOrBr', 'Blues', 'RdPu', 'Greens', 'Greys', 'Reds']
 
@@ -377,22 +381,23 @@ def four_pan_cluster_kde(line, line_name):
         z= arange(11000)
         plot(z,z,'k-', lw=.5) #plot 1:1 line
         
-        clstr_name= "./clusters/"+line+"_ew_hwhm_"+ str(j) +"clstrs.npy"
+        clstr_name= "./clusters/"+line+sample+ str(j) +"clstrs.npy"
         
         print clstr_name
         
         clstr_array= np.load(clstr_name)
         
-        xlim(0, 7000)
+        xlim(0, 6500)
         ylim(0, 10500)
     
         clstr_num= []
     
         for k in range(max(clstr_array[:,3].astype(int))+1):
         
-            clstr_num.append([k, (len(clstr_array[clstr_array[:,3]== k]))])
+            #clstr_num.append([k, (len(clstr_array[clstr_array[:,3]== k]))])
+            clstr_num.append([k, (mean(clstr_array[:,1][clstr_array[:,3]== k]), (mean(clstr_array[:,2][clstr_array[:,3]== k])))])
     
-        ordered_clstrs= sorted(clstr_num, key= itemgetter(1), reverse= True)
+        ordered_clstrs= sorted(clstr_num, key= itemgetter(1)) # reverse= True
         print ordered_clstrs
         
         ew=[]
@@ -408,7 +413,6 @@ def four_pan_cluster_kde(line, line_name):
             x.append(mean(clstr_array[:,1][clstr_array[:,3]==c[0]]))
             y.append(mean(clstr_array[:,2][clstr_array[:,3]==c[0]]))
             n.append(len(clstr_array[clstr_array[:,3]==c[0]]))
-            
         
         scatter(x,y, marker='o', color='r', s=[e for e in ew])
         
@@ -421,15 +425,112 @@ def four_pan_cluster_kde(line, line_name):
         for l in range(j):
             u-=0.07
                 
-            text(x[l]+30, y[l]+50, clstr_label[l], fontsize= 14, family= 'serif')
+            text(x[l]+50, y[l]-150, clstr_label[l], fontsize= 14, family= 'serif', bbox=props)
             text(0.7, u,  line_name+"-"+clstr_label[l]+", N="+str(n[l]), transform=ax.transAxes, color= clr_ls[l], fontsize= 14, family= 'serif')
 
         ## now overplot BAL quasars
         
-        #b= Table.read('sample_myflags_BAL_only.fits')
-        #scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=3, color='0.3', alpha=0.5)
+        b= Table.read('sample_myflags_BAL_only.fits')
+        scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=3, color='0.3', alpha=0.5)
         #sns.kdeplot(b['BHWHM_'+line_name], b['RHWHM_'+line_name], shade=False, shade_lowest=False)
         
+########################
+
+def plot_spec_parts(line, line_name, k):
+    
+    """ plot composite spectra in 3 panels:
+        panel 1: C IV, (He II & OIII]), (Al III, Si III], C III])
+        panel 2: Ly alpha, Si IV
+        panel 3: Mg II
+        param:
+        line: c4, c3 or mg2 as str
+        line_name: CIV, CIII, or MgII as str
+        k: number of clusters (3, 4, ...)
+        """
+    
+    sample= "_ew_hwhm_bal_only_" # change to "bal_" for the mixed sample or "bal_only_" for the BAL only sample or leave _ for the main non-BAL sample
+    
+    clstr_name= "./clusters/"+line+sample+ str(k) +"clstrs.npy"
+    clstr_array= np.load(clstr_name)
+    
+    clstr_num=[]
+    for f in range(max(clstr_array[:,3].astype(int))+1):
+        clstr_num.append([f, (mean(clstr_array[:,1][clstr_array[:,3]== f]), (mean(clstr_array[:,2][clstr_array[:,3]== f])))])
+        
+    ordered_clstrs= sorted(clstr_num, key= itemgetter(1)) #reverse= True
+    print ordered_clstrs
+
+    '''
+    compo_name= "./composites/"+line+"_ew_hwhm_bal_only_"+str(k)+"*.fits" #for the BAL only sample
+    #compo_name= "./composites/"+line+"_ew_hwhm_bal_"+str(k)+"*.fits" #for the BAL+nonBAL sample
+    #compo_name= "./composites/"+line+"_ew_hwhm_"+str(k)+"*.fits"
+    compos= glob(compo_name)'''
+    
+    compo_list= []
+    for r in ordered_clstrs:
+        compo_name= "./composites/"+line+sample+str(k)+"clstrs"+str(r[0]+1)+".fits" #for the BAL+nonBAL sample
+        spec= fits.open(compo_name)
+        num_obj= spec[0].header['SPEC_NUMBER']
+        compo_list.append([compo_name, num_obj])
+    
+    print compo_list
+    
+    '''
+    compo_list= []
+    for obj in compos:
+        spec= fits.open(obj)
+        num_obj= spec[0].header['SPEC_NUMBER']
+        compo_list.append([obj, num_obj])
+    ordered_compos= sorted(compo_list, key= itemgetter(1), reverse= True)
+
+    print ordered_compos
+    '''
+    
+
+    fig= figure(figsize=(14,8))
+    sns.set_style("ticks")
+    fig1= fig.add_axes([0., 0., 1, 1])
+    fig1.set_axis_off()
+    fig1.set_xlim(0, 1)
+    fig1.set_ylim(0, 1)
+    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
+    
+    line_mark= [[1215.7, 1240, 1305, 1335, 1396.8], [1549, 1640, 1663.5], [1857, 1892, 1908], [2800]]
+    line_label= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV'], ['CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], ['MgII']]
+    
+    alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
+    compo_labels= [line_name+"-"+ a for a in alphabet_list]
+    
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
+    
+    splt_ls=[221, 222, 223, 224]
+    dx_ls= [(1150,1450),(1465,1700), (1800, 2000),  (2750, 2850)]
+    dy_ls= [(0.5, 2.1), (0.75, 2.6), (0.75, 1.8),  (0.85, 1.6)]
+    
+    for s in range(4):
+    
+        ax= fig.add_subplot(splt_ls[s])
+        xlim(dx_ls[s])
+        ylim(dy_ls[s])
+        
+        for t in range(len(line_mark[s])):
+            ax.axvline(line_mark[s][t], ls=':', c='k')
+            ax.text(line_mark[s][t]-((dx_ls[s][1]-dx_ls[s][0])/20), dy_ls[s][1]-(dy_ls[s][1]/15), line_label[s][t], rotation= 'vertical', fontsize= 14, family='serif')
+        
+        ii= dy_ls[s][1]
+        for (sp, clr, clab) in zip(compo_list, clr_ls, compo_labels):
+            n= sp[1]
+            spec= fits.open(sp[0])
+            wlen= spec[0].data[0]
+            flx= spec[0].data[1]
+                
+            plot(wlen, flx/flx[(dx_ls[s][0]-1100)*2], c= clr, lw= 1.5)
+            
+            ii-=0.1
+            ax.text(1925, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
+
 
 
 
@@ -480,13 +581,13 @@ def plot_reprod(line, k):
 #########################
 
 def cntrs(line):
-
+    
     '''plot the results of reproducibilty check in a more compact way than plot_reprod.
         for each line make a 3 panel figure, one for each feature (EW, BHWHM and BHWHM).
         In each panel plot the mean on the feature for each cluster and the std dev as error bar.
         
         line: CIII, CIV or MGII '''
-
+    
     files= glob(line+"*.txt")
     
     ew, blu, red= [], [], []
@@ -494,86 +595,14 @@ def cntrs(line):
     
     
     fig= figure(figsize=(9,12))
-
+    
     for c in range(3,7):
         
         for r in range(1,4):
-        
+            
             for z in range(1,13):
                 ax= fig.add_subplot(3,4,z)
 
 
-########################
 
-def plot_spec_parts(line, line_name, k):
-    
-    """ plot composite spectra in 3 panels:
-        panel 1: C IV, (He II & OIII]), (Al III, Si III], C III])
-        panel 2: Ly alpha, Si IV
-        panel 3: Mg II
-        param:
-        line: c4, c3 or mg2 as str
-        line_name: CIV, CIII, or MgII as str
-        k: number of clusters (3, 4, ...)
-        """
-    
-    compo_name= "./composites/"+line+"_ew_hwhm_bal_only_"+str(k)+"*.fits" #for the BAL sample
-    #compo_name= "./composites/"+line+"_ew_hwhm_bal_"+str(k)+"*.fits" #for the BAL sample
-    #compo_name= "./composites/"+line+"_ew_hwhm_"+str(k)+"*.fits"
-    compos= glob(compo_name)
-    
-    
-    compo_list= []
-    for obj in compos:
-        spec= fits.open(obj)
-        num_obj= spec[0].header['SPEC_NUMBER']
-        compo_list.append([obj, num_obj])
-    ordered_compos= sorted(compo_list, key= itemgetter(1), reverse= True)
-
-    print ordered_compos
-    
-    
-    fig= figure(figsize=(14,8))
-    sns.set_style("ticks")
-    fig1= fig.add_axes([0., 0., 1, 1])
-    fig1.set_axis_off()
-    fig1.set_xlim(0, 1)
-    fig1.set_ylim(0, 1)
-    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
-    fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
-
-    
-    line_mark= [[1215.7, 1240, 1305, 1335, 1396.8], [1549, 1640, 1663.5], [1857, 1892, 1908], [2800]]
-    line_label= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV'], ['CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], ['MgII']]
-    
-    alphabet_list = ['a', 'b', 'c', 'd', 'e', 'f']
-    compo_labels= [line_name+"-"+ a for a in alphabet_list]
-    
-    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
-    
-    splt_ls=[221, 222, 223, 224]
-    dx_ls= [(1150,1450),(1465,1700), (1800, 2000),  (2750, 2850)]
-    dy_ls= [(0.5, 2.1), (0.75, 2.6), (0.75, 1.8),  (0.85, 1.6)]
-    
-    for s in range(4):
-    
-        ax= fig.add_subplot(splt_ls[s])
-        xlim(dx_ls[s])
-        ylim(dy_ls[s])
-        
-        for t in range(len(line_mark[s])):
-            ax.axvline(line_mark[s][t], ls=':', c='k')
-            ax.text(line_mark[s][t]-((dx_ls[s][1]-dx_ls[s][0])/20), dy_ls[s][1]-(dy_ls[s][1]/15), line_label[s][t], rotation= 'vertical', fontsize= 14, family='serif')
-        
-        ii= dy_ls[s][1]
-        for (sp, clr, clab) in zip(ordered_compos, clr_ls, compo_labels):
-            n= sp[1]
-            spec= fits.open(sp[0])
-            wlen= spec[0].data[0]
-            flx= spec[0].data[1]
-                
-            plot(wlen, flx/flx[(dx_ls[s][0]-1100)*2], c= clr, lw= 1.5)
-            
-            ii-=0.1
-            ax.text(1925, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
 
