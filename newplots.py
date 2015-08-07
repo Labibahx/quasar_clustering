@@ -512,7 +512,8 @@ def plot_spec_parts(line, line_name, k):
         k: number of clusters (3, 4, ...)
         """
     
-    compo_name= "./composites/"+line+"_ew_hwhm_bal_"+str(k)+"*.fits" #for the BAL sample
+    compo_name= "./composites/"+line+"_ew_hwhm_bal_only_"+str(k)+"*.fits" #for the BAL sample
+    #compo_name= "./composites/"+line+"_ew_hwhm_bal_"+str(k)+"*.fits" #for the BAL sample
     #compo_name= "./composites/"+line+"_ew_hwhm_"+str(k)+"*.fits"
     compos= glob(compo_name)
     
@@ -522,17 +523,7 @@ def plot_spec_parts(line, line_name, k):
         spec= fits.open(obj)
         num_obj= spec[0].header['SPEC_NUMBER']
         compo_list.append([obj, num_obj])
-    #ordered_compos= sorted(compo_list, key= itemgetter(1), reverse= True)
-    
-    for i in range(max(clstr[:,3].astype(int))+1):
-    
-        k_ls.append([i, (mean(clstr[:,2][clstr[:,3]==i]))])
-        #k_ls.append([i, (mean(clstr[:,1][clstr[:,3]==i]) + mean(clstr[:,2][clstr[:,3]==i]))])
-    
-        #ord_k_ls= sorted(k_ls, key= itemgetter(1), reverse= True)
-    
-    ordered_compos= sorted(k_ls, key= itemgetter(1))
-
+    ordered_compos= sorted(compo_list, key= itemgetter(1), reverse= True)
 
     print ordered_compos
     
