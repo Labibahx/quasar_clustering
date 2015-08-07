@@ -311,7 +311,7 @@ for o in clstr_num:
                           (mean(clstr_array[:,1].astype(int)[clstr_array[:,3] == k]),
                            mean(clstr_array[:,2].astype(int)[clstr_array[:,3] == k]))])
     
-    num_cntrs_ordered= sorted(num_cntrs, key= itemgetter(2), reverse= True)
+    num_cntrs_ordered= sorted(num_cntrs, key= itemgetter(2))
 
     #print num_cntrs_ordered
 
