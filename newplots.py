@@ -355,7 +355,7 @@ def four_pan_cluster_kde(line, line_name):
         line: c3, c4, or mg2
         line: "CIII", "CIV", or "MgII", a string with the line used for clustering. To be used as a title for the figure."""
     
-    sample= "_ew_hwhm_bal_" # change to "bal_" for the mixed sample or "bal_only_" for the BAL only sample or leave _ for the main non-BAL sample
+    sample= "_ew_hwhm_bal_only_" # change to "bal_" for the mixed sample or "bal_only_" for the BAL only sample or leave _ for the main non-BAL sample
     
     sns.set_style("ticks", {'font.family': u'sans-serif'})
     
@@ -407,8 +407,9 @@ def four_pan_cluster_kde(line, line_name):
         cc= -1
         for c in ordered_clstrs:
             cc+=1
-            sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]],cmap= cmap_ls[cc])
-            #sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]], shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[cc])
+            if (min(clstr_array[:,1][clstr_array[:,3]==c[0]]) >0) & (min(clstr_array[:,2][clstr_array[:,3]==c[0]]) >0):
+                sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]],cmap= cmap_ls[cc])
+            
             ew.append(mean(clstr_array[:,0][clstr_array[:,3]==c[0]]))
             x.append(mean(clstr_array[:,1][clstr_array[:,3]==c[0]]))
             y.append(mean(clstr_array[:,2][clstr_array[:,3]==c[0]]))
