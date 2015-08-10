@@ -447,14 +447,12 @@ from seaborn import kdeplot
 
 # based on http://www.astrobetter.com/blog/2014/02/10/visualization-fun-with-python-2d-histogram-with-1d-histograms-on-axes/
 
-def kde_hist(cluster):
+def kde_hist(cluster, line_name):
     '''makes a histogran with sidecars:
         2D histogram shown as an image in center, with
         1D histograms corresponding to the 2 axes along each side
         input: xvals, yvals: X and Y positions of points to be histogrammed
         '''
-    
-    #hist_2d_all, xedge, yedge = np.histogram2d(xvals, yvals, bins=8)
     
     # start with a rectangular Figure
     f = plt.figure(figsize=(8,8))
@@ -480,7 +478,7 @@ def kde_hist(cluster):
     
     # the 2D plot:
     # note the all-important transpose!
-    clstr= np.load(cluster)
+    clstr_array= np.load(cluster)
     
     clstr_num= []
         
@@ -499,27 +497,28 @@ def kde_hist(cluster):
        
         sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]],cmap= cmap_ls[cc], ax=ax2d)
     
-    #plot2d = ax2d.imshow(hist2d.T, interpolation='none', origin='low', extent=[xedge[0], xedge[-1], yedge[0], yedge[-1]],aspect='auto',cmap=cm.coolwarm)
     ax2d.set_xlabel(line_name+ " BHWHM (km/s)" )
     ax2d.set_ylabel(line_name+ " RHWHM (km/s)")
+    ax2d.set_xlim(0,11000)
+    ax2d.set_ylim(0,11000)
 
     b= Table.read('sample_myflags_BAL_only.fits')
     ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=3, color='0.3', alpha=0.5)
     
     # the 1-D histograms: first the X-histogram
-    #xhist = hist2d.sum(axis=1) # note x-hist is axis 1, not 0
+
     sns.distplot(b['BHWHM_'+line_name], bins= 20, ax=axHistx)
     #axHistx.bar(left=xedge[:-1], height=xhist, width = xedge[1:]-xedge[:-1])
-    #axHistx.set_xlim( ax2d.get_xlim()) # x-limits match the 2D plot
+    axHistx.set_xlim( ax2d.get_xlim()) # x-limits match the 2D plot
     axHistx.set_ylabel('BHWHM')
     #axHistx.set_yticks([0.1, 0.4, 0.7, 1.0])
         
     # then the Y-histogram
-    #yhist = hist2d.sum(axis=0) # note y-hist is axis 0, not 1
+    
     # use barh instead of bar here because we want a horizontal histogram
     sns.distplot(b['BHWHM_'+line_name], bins= 20, vertical= True, ax=axHisty)
     #axHisty.barh(bottom=yedge[:-1], width=yhist, height = yedge[1:]-yedge[:-1])
-    #axHisty.set_ylim( ax2d.get_ylim()) # y-limits match the 2D plot
+    axHisty.set_ylim( ax2d.get_ylim()) # y-limits match the 2D plot
     #axHisty.set_xlim(0,0.8)
     axHisty.set_xlabel('RHWHM')
     #axHisty.set_xticks([0.2, 0.5, 0.8])
