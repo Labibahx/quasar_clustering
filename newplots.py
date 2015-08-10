@@ -447,15 +447,18 @@ from seaborn import kdeplot
 
 # based on http://www.astrobetter.com/blog/2014/02/10/visualization-fun-with-python-2d-histogram-with-1d-histograms-on-axes/
 
-def kde_hist(cluster, line_name):
+def kde_hist(cluster, line_name, j):
     '''makes a histogran with sidecars:
         2D histogram shown as an image in center, with
         1D histograms corresponding to the 2 axes along each side
         input: xvals, yvals: X and Y positions of points to be histogrammed
         '''
+    sns.set(font_scale= 1.5)
+    sns.set_style("ticks", {'font.family': u'serif'})
+    props= dict(boxstyle='round', alpha=0.7, color='w')
     
     # start with a rectangular Figure
-    f = plt.figure(figsize=(8,8))
+    f = plt.figure(figsize=(12,12))
     
     # define where the axes go
     left, width = 0.1, 0.65
@@ -490,39 +493,53 @@ def kde_hist(cluster, line_name):
     print ordered_clstrs
 
     cmap_ls= ['YlOrBr', 'Blues', 'RdPu', 'Greens', 'Greys', 'Reds']
-    
+
+    ew, x, y, n, =[],[],[],[]
     cc= -1
     for c in ordered_clstrs:
         cc+=1
        
         sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]],cmap= cmap_ls[cc], ax=ax2d)
+        ew.append(mean(clstr_array[:,0][clstr_array[:,3]==c[0]]))
+        x.append(mean(clstr_array[:,1][clstr_array[:,3]==c[0]]))
+        y.append(mean(clstr_array[:,2][clstr_array[:,3]==c[0]]))
+        n.append(len(clstr_array[clstr_array[:,3]==c[0]]))
     
+    ax2d.scatter(x,y, marker='o', color='k', s=ew*100) #[e for e in ew]
+        
+    clstr_label= ['a'+str(j),'b'+str(j),'c'+str(j),'d'+str(j),'e'+str(j),'f'+str(j)]
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red'] # 'cornflowerblue', 'brown' , 'olive', 'purple']
+    u=0.3
+    for l in range(j):
+        u-=0.04
+            
+        ax2d.text(x[l]+150, y[l]-150, clstr_label[l], fontsize= 14, family= 'serif', bbox=props)
+        ax2d.text(0.8, u,  line_name+"-"+clstr_label[l]+", N="+str(n[l]), transform=ax2d.transAxes, color= clr_ls[l])
+
     ax2d.set_xlabel(line_name+ " BHWHM (km/s)" )
     ax2d.set_ylabel(line_name+ " RHWHM (km/s)")
     ax2d.set_xlim(0,11000)
     ax2d.set_ylim(0,11000)
 
     b= Table.read('sample_myflags_BAL_only.fits')
-    ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=3, color='0.3', alpha=0.5)
+    ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=3, color='0.3', alpha=0.5, label="BAL Quasars")
+    #ax2d.legend(loc=2, prop={'size':12})
+    z= arange(11000)
+    ax2d.plot(z,z,'k-', lw=.5) #plot 1:1 line
     
     # the 1-D histograms: first the X-histogram
-
-    sns.distplot(b['BHWHM_'+line_name], bins= 20, ax=axHistx)
-    #axHistx.bar(left=xedge[:-1], height=xhist, width = xedge[1:]-xedge[:-1])
+    sns.distplot(b['BHWHM_'+line_name], bins= 20, ax=axHistx, kde=False, axlabel= False, hist_kws={"histtype": "step", "linewidth": 1,"alpha": 1, "color": "k", "label":"BAL Quasars"}, kde_kws={"color": "k"})
     axHistx.set_xlim( ax2d.get_xlim()) # x-limits match the 2D plot
-    axHistx.set_ylabel('BHWHM')
-    #axHistx.set_yticks([0.1, 0.4, 0.7, 1.0])
+    axHistx.set_ylabel('BALQ BHWHM')
+    axHistx.set_yticks([100, 300, 500])
+    axHistx.legend(prop={'size':12})
         
     # then the Y-histogram
-    
-    # use barh instead of bar here because we want a horizontal histogram
-    sns.distplot(b['BHWHM_'+line_name], bins= 20, vertical= True, ax=axHisty)
-    #axHisty.barh(bottom=yedge[:-1], width=yhist, height = yedge[1:]-yedge[:-1])
+    sns.distplot(b['BHWHM_'+line_name], bins= 20, vertical= True, ax=axHisty, kde=False, axlabel= False, hist_kws={"histtype": "step", "linewidth": 1,"alpha": 1, "color": "k"}, kde_kws={"color": "k"})
     axHisty.set_ylim( ax2d.get_ylim()) # y-limits match the 2D plot
-    #axHisty.set_xlim(0,0.8)
-    axHisty.set_xlabel('RHWHM')
-    #axHisty.set_xticks([0.2, 0.5, 0.8])
-        
+    axHisty.set_xlabel('BALQ RHWHM')
+    axHisty.set_xticks([100, 300, 500])
+    
     plt.show()
     return
 
