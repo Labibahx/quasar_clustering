@@ -355,11 +355,11 @@ def four_pan_cluster_kde(line, line_name):
         line: c3, c4, or mg2
         line: "CIII", "CIV", or "MgII", a string with the line used for clustering. To be used as a title for the figure."""
     
-    sample= "_ew_hwhm_bal_only_" # change to "bal_" for the mixed sample or "bal_only_" for the BAL only sample or leave _ for the main non-BAL sample
+    sample= "_ew_hwhm_" # change to "bal_" for the mixed sample or "bal_only_" for the BAL only sample or leave _ for the main non-BAL sample
     
     sns.set_style("ticks", {'font.family': u'sans-serif'})
     
-    fig= figure(figsize=(16,10))
+    fig= figure(figsize=(12,10))
     sns.set_style("ticks")
     fig1= fig.add_axes([0., 0., 1, 1])
     fig1.set_axis_off()
@@ -368,7 +368,7 @@ def four_pan_cluster_kde(line, line_name):
     fig1.text(.05, .5, line_name+ " RHWHM (km/s)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
     fig1.text(.5, .03, line_name+ " BHWHM (km/s)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
     
-    props= dict(boxstyle='round', alpha=0.5, color='w')
+    props= dict(boxstyle='round', alpha=0.7, color='w')
     
     cmap_ls= ['YlOrBr', 'Blues', 'RdPu', 'Greens', 'Greys', 'Reds']
 
@@ -387,8 +387,8 @@ def four_pan_cluster_kde(line, line_name):
         
         clstr_array= np.load(clstr_name)
         
-        xlim(0, 6500)
-        ylim(0, 10500)
+        xlim(0, 8300)
+        ylim(0, 8000)
     
         clstr_num= []
     
@@ -415,24 +415,26 @@ def four_pan_cluster_kde(line, line_name):
             y.append(mean(clstr_array[:,2][clstr_array[:,3]==c[0]]))
             n.append(len(clstr_array[clstr_array[:,3]==c[0]]))
         
-        scatter(x,y, marker='o', color='r', s=[e for e in ew])
+        scatter(x,y, marker='o', color='k', s=ew*100)
         
         clstr_label= ['a'+str(j),'b'+str(j),'c'+str(j),'d'+str(j),'e'+str(j),'f'+str(j)]
         clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red'] # 'cornflowerblue', 'brown' , 'olive', 'purple']
         
         #if j ==6:
             
-        u=1
+        u=0.4
         for l in range(j):
-            u-=0.07
+            u-=0.06
                 
-            text(x[l]+50, y[l]-150, clstr_label[l], fontsize= 14, family= 'serif', bbox=props)
-            text(0.7, u,  line_name+"-"+clstr_label[l]+", N="+str(n[l]), transform=ax.transAxes, color= clr_ls[l], fontsize= 14, family= 'serif')
+            text(x[l]+150, y[l]-150, clstr_label[l], fontsize= 14, family= 'serif', bbox=props)
+            text(0.63, u,  line_name+"-"+clstr_label[l]+", N="+str(n[l]), transform=ax.transAxes, color= clr_ls[l], fontsize= 12, family= 'serif')
+
+    return
 
         ## now overplot BAL quasars
         
-        b= Table.read('sample_myflags_BAL_only.fits')
-        scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=3, color='0.3', alpha=0.5)
+        #b= Table.read('sample_myflags_BAL_only.fits')
+        #scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=3, color='0.3', alpha=0.5)
         #sns.kdeplot(b['BHWHM_'+line_name], b['RHWHM_'+line_name], shade=False, shade_lowest=False)
 
 
