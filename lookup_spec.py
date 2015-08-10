@@ -42,10 +42,10 @@ def spec_look_up(cluster_array, k):
     all_clstrs= np.load(cluster_array)
     
     
-    ss= Table.read("dr10sample_BAL.fits") # BAL quasars sample
+    data= Table.read("sample_myflags.fits") # BAL quasars sample
     #data= Table.read("sample_myflags.csv", format='ascii', delimiter=',') #sample (no BALs)
     
-    #ss = data[data['MY_FLAG'] ==0] # subsample. some objects were flagged if the had missing flux
+    ss = data[data['MY_FLAG'] ==0] # subsample. some objects were flagged if the had missing flux
     
     #corss-match the above two files
     
@@ -62,7 +62,7 @@ def spec_look_up(cluster_array, k):
     
     
         ## plot the spectra
-    fig= figure(figsize=(12, 8))
+    fig= figure(figsize=(16, 8))
     ax=fig.add_subplot(111)
     
     for (file, name) in zip(spec_files_list, sdss_names_list):
@@ -72,9 +72,11 @@ def spec_look_up(cluster_array, k):
             flx= spec[0].data[1]
            # plot(wavelen[c4], flx[c4])
             plot (wavelen, flx)
-            xlim(1350, 1750)
+            xlim(1190, 3000)
             # ylim(-1, 4.5)
             axvline(1549, ls= ':')
+            axvline(2800, ls= ':')
+            axvline(1908, ls=':')
             text(1355, 3.5, "SDSS "+name)
             print str(file)
             
