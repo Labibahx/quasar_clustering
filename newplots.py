@@ -1,6 +1,7 @@
 """ plots similar to what is in lstr_plots.py but ordered according to the number of objects in each cluster 
 May 8 2015"""
 
+import matplotlib.pyplot as plt
 import numpy as np
 from astropy.io import fits
 from astropy.table import Table
@@ -15,7 +16,7 @@ import seaborn as sns
 #sns.set_context("paper", font_scale=2)
 
 
-ss= np.load(dr10qsample.npy)
+#ss= np.load(dr10qsample.npy)
 
 
 ## each cluster is saved into a numpy 2D array which includes the clustering parameters and the name of the sdss object. To get the other parameters for the same object that were not used in the clustering, I can cross match the cluster 2D array with the full subsample array ss (defined in line 14 here).
@@ -329,7 +330,7 @@ def twoD_cluster_kde(cluster_array, line):
         
         
         sns.kdeplot(clstr[:,1][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j]) #n_levels= 5
-        #sns.kdeplot(clstr[:,0][clstr[:,3]==k], clstr[:,2][clstr[:,3]==k], n_levels= 10, shade=True, shade_lowest=False, alpha= 0.5, cmap= cmap_ls[j]) #EW
+        
         #scatter(x,y, marker= 'x', c='r', s=60)
     
         text(x, y, clstr_label[j], fontsize= 16, family= 'serif')
@@ -348,35 +349,74 @@ def twoD_cluster_kde(cluster_array, line):
 
 #############################
 
-def four_pan_cluster_kde(line, line_name):
+def four_pan_cluster_kde(line, sample_name):
     
     """ plot KDE for the clusters for the BHWHM, RHWHM in 4 panels for k=3, 4, 5, and 6
 
         line: c3, c4, or mg2
-        line: "CIII", "CIV", or "MgII", a string with the line used for clustering. To be used as a title for the figure."""
+        sample_name: main (no BALs), mixed (non BALs and BALs), only (BALs only)
+        """
     
-    sample= "_ew_hwhm_bal_" # change to "bal_" for the mixed sample or "bal_only_" for the BAL only sample or leave _ for the main non-BAL sample
+    
+    if line == "c3":
+        line_name= "CIII"
+        line_label= "CIII]"
+        xlimits= (0, 7250)
+        ylimits= (0, 10750)
+    
+    elif line== "c4":
+        line_name= line_label= "CIV"
+        xlimits= (0, 6250)
+        ylimits= (0, 5750)
+
+    elif line== "mg2":
+        line_name= line_label = "MgII"
+        xlimits= (0, 8750)
+        ylimits= (0, 8250)
+
+    if sample_name== "main":
+        sample= "_ew_hwhm_"
+    elif sample_name== "mixed":
+        sample= "_ew_hwhm_bal_"
+    elif sample_name == "only":
+        sample="_ew_hwhm_bal_only_"
     
     sns.set_style("ticks", {'font.family': u'sans-serif'})
     
-    fig= figure(figsize=(12,10))
+    fig= plt.figure(figsize=(12,10))
+    fig.subplots_adjust(wspace=0.001, hspace=0.001)
     sns.set_style("ticks")
     fig1= fig.add_axes([0., 0., 1, 1])
     fig1.set_axis_off()
     fig1.set_xlim(0, 1)
     fig1.set_ylim(0, 1)
-    fig1.text(.05, .5, line_name+ " RHWHM (km/s)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
-    fig1.text(.5, .03, line_name+ " BHWHM (km/s)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(.05, .5, line_label+ " RHWHM (km/s)", rotation='vertical' \
+            , horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(.5, .03, line_label+ " BHWHM (km/s)", rotation='horizontal'\
+              , horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
     
-    props= dict(boxstyle='round', alpha=0.7, color='w')
+    props= dict(boxstyle='round', alpha=0.5, color='w')
     
     cmap_ls= ['YlOrBr', 'Blues', 'RdPu', 'Greens', 'Greys', 'Reds']
-
+    
+    nullfmt   = NullFormatter()
+    
     for (i,j) in zip(range(1,5), range(3,7)):
         
         ax= fig.add_subplot(2,2,i)
         
-        text(.07, .9, "K="+str(j), transform=ax.transAxes, horizontalalignment='center', verticalalignment='center', fontsize= 12, family= 'serif')
+        if i ==1:
+            ax.xaxis.set_major_formatter(nullfmt)
+        
+        elif i== 2:
+            ax.xaxis.set_major_formatter(nullfmt)
+            ax.yaxis.set_major_formatter(nullfmt)
+
+        elif i ==4:
+            ax.yaxis.set_major_formatter(nullfmt)
+        
+        text(.07, .9, "K="+str(j), transform=ax.transAxes \
+            , horizontalalignment='center', verticalalignment='center', fontsize= 12, family= 'serif')
         
         z= arange(11000)
         plot(z,z,'k-', lw=.5) #plot 1:1 line
@@ -387,15 +427,16 @@ def four_pan_cluster_kde(line, line_name):
         
         clstr_array= np.load(clstr_name)
         
-        xlim(0, 8300)
-        ylim(0, 8000)
+        xlim(xlimits)
+        ylim(ylimits)
     
         clstr_num= []
     
         for k in range(max(clstr_array[:,3].astype(int))+1):
         
             #clstr_num.append([k, (len(clstr_array[clstr_array[:,3]== k]))])
-            clstr_num.append([k, (mean(clstr_array[:,1][clstr_array[:,3]== k]), (mean(clstr_array[:,2][clstr_array[:,3]== k])))])
+            clstr_num.append([k, (mean(clstr_array[:,1][clstr_array[:,3]== k]) \
+                               , (mean(clstr_array[:,2][clstr_array[:,3]== k])))])
     
         ordered_clstrs= sorted(clstr_num, key= itemgetter(1)) # reverse= True
         print ordered_clstrs
@@ -406,16 +447,18 @@ def four_pan_cluster_kde(line, line_name):
 
         cc= -1
         for c in ordered_clstrs:
+        
             cc+=1
+            
             if (min(clstr_array[:,1][clstr_array[:,3]==c[0]]) >0) & (min(clstr_array[:,2][clstr_array[:,3]==c[0]]) >0):
-                sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]],cmap= cmap_ls[cc])
+            
+                sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]] \
+                ,cmap= cmap_ls[cc], shade=True, shade_lowest=False, alpha=0.6)
             
             ew.append(mean(clstr_array[:,0][clstr_array[:,3]==c[0]]))
             x.append(mean(clstr_array[:,1][clstr_array[:,3]==c[0]]))
             y.append(mean(clstr_array[:,2][clstr_array[:,3]==c[0]]))
             n.append(len(clstr_array[clstr_array[:,3]==c[0]]))
-        
-        scatter(x,y, marker='o', color='k', s=ew*100)
         
         clstr_label= ['a'+str(j),'b'+str(j),'c'+str(j),'d'+str(j),'e'+str(j),'f'+str(j)]
         clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red'] # 'cornflowerblue', 'brown' , 'olive', 'purple']
@@ -426,8 +469,12 @@ def four_pan_cluster_kde(line, line_name):
         for l in range(j):
             u-=0.06
                 
-            text(x[l]+150, y[l]-150, clstr_label[l], fontsize= 14, family= 'serif', bbox=props)
-            text(0.63, u,  line_name+"-"+clstr_label[l]+", N="+str(n[l]), transform=ax.transAxes, color= clr_ls[l], fontsize= 12, family= 'serif')
+            text(x[l]+150, y[l]-150, clstr_label[l], color= 'k', fontsize= 14, family= 'serif') #, bbox=props
+            
+            text(0.67, u,  line_label+"-"+clstr_label[l]+", N="+str(n[l]), transform=ax.transAxes \
+            , color= clr_ls[l], fontsize= 12, family= 'serif')
+            
+        scatter(x,y, marker='D', color='w', s=[e for e in ew])
 
     return
 
@@ -449,15 +496,37 @@ from seaborn import kdeplot
 
 # based on http://www.astrobetter.com/blog/2014/02/10/visualization-fun-with-python-2d-histogram-with-1d-histograms-on-axes/
 
-def kde_hist(cluster, line_name, j):
-    '''makes a histogran with sidecars:
-        2D histogram shown as an image in center, with
-        1D histograms corresponding to the 2 axes along each side
-        input: xvals, yvals: X and Y positions of points to be histogrammed
+def kde_hist(line, sample_name,j):
+    '''plot KDE for clusters for one value of K
+    param:
+    line: 'c3', 'c4', 'mg2'
+    sample_name: 'main' for main sample with no BALs, 'mixed' for the sample with BALs and no BALs, 'only' for BALs only
+    j: number of clusters: 3, 4, 5, 6
+       
         '''
     sns.set(font_scale= 1.5)
     sns.set_style("ticks", {'font.family': u'serif'})
-    props= dict(boxstyle='round', alpha=0.7, color='w')
+    props= dict(boxstyle='round', alpha=0.9, color='w')
+    
+    if line == "c3":
+        line_name= "CIII"
+        line_label= "CIII]"
+   
+    elif line== "c4":
+        line_name= line_label= "CIV"
+
+    elif line== "mg2":
+        line_name= line_label = "MgII"
+
+    if sample_name== "main":
+        sample= "_ew_hwhm_"
+    elif sample_name== "mixed":
+        sample= "_ew_hwhm_bal_"
+    elif sample_name == "only":
+        sample="_ew_hwhm_bal_only_"
+
+
+    clstr_name= "./clusters/"+line+sample+ str(j) +"clstrs.npy"
     
     # start with a rectangular Figure
     f = plt.figure(figsize=(12,12))
@@ -483,7 +552,7 @@ def kde_hist(cluster, line_name, j):
     
     # the 2D plot:
     # note the all-important transpose!
-    clstr_array= np.load(cluster)
+    clstr_array= np.load(clstr_name)
     
     clstr_num= []
         
@@ -502,13 +571,15 @@ def kde_hist(cluster, line_name, j):
         cc+=1
         
         if (min(clstr_array[:,1][clstr_array[:,3]==c[0]]) >0) & (min(clstr_array[:,2][clstr_array[:,3]==c[0]]) >0):
-            sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]],cmap= cmap_ls[cc], ax=ax2d, shade=True, shade_lowest=False, alpha=0.6)
+            sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]] \
+                        ,cmap= cmap_ls[cc], ax=ax2d, shade=True, shade_lowest=False, alpha=0.6)
+        
         ew.append(mean(clstr_array[:,0][clstr_array[:,3]==c[0]]))
         x.append(mean(clstr_array[:,1][clstr_array[:,3]==c[0]]))
         y.append(mean(clstr_array[:,2][clstr_array[:,3]==c[0]]))
         n.append(len(clstr_array[clstr_array[:,3]==c[0]]))
     
-    ax2d.scatter(x,y, marker='D', color='r', s=[10**(e/15) for e in ew] ) #[e for e in ew]
+    ax2d.scatter(x,y, marker='D', color='w', s=[e for e in ew])
         
     clstr_label= ['a'+str(j),'b'+str(j),'c'+str(j),'d'+str(j),'e'+str(j),'f'+str(j)]
     clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red'] # 'cornflowerblue', 'brown' , 'olive', 'purple']
@@ -516,31 +587,31 @@ def kde_hist(cluster, line_name, j):
     for l in range(j):
         u-=0.04
             
-        ax2d.text(x[l]+150, y[l]-150, clstr_label[l], fontsize= 14, bbox=props)
-        ax2d.text(0.7, u,  line_name+"-"+clstr_label[l]+", N="+str(n[l]), transform=ax2d.transAxes, fontsize= 14, color= clr_ls[l])
+        ax2d.text(x[l]+150, y[l]-150, clstr_label[l], color='r', fontsize= 14 ) #, bbox=props
+        ax2d.text(0.67, u,  line_label+"-"+clstr_label[l]+", N="+str(n[l]) \
+                  , transform=ax2d.transAxes, fontsize= 13, color= clr_ls[l])
 
-    ax2d.set_xlabel(line_name+ " BHWHM (km/s)" )
-    ax2d.set_ylabel(line_name+ " RHWHM (km/s)")
+    ax2d.set_xlabel(line_label+ " BHWHM (km/s)" )
+    ax2d.set_ylabel(line_label+ " RHWHM (km/s)")
     ax2d.set_xlim(0,11000)
     ax2d.set_ylim(0,11000)
 
     b= Table.read('sample_myflags_BAL_only.fits')
-    ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=3, color='0.3', label="BAL Quasars")
-    #ax2d.legend(loc=2, prop={'size':12})
+    ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=1, color='0.5', label="BAL Quasars")
     z= arange(11000)
     ax2d.plot(z,z,'k-', lw=.5) #plot 1:1 line
     
     # the 1-D histograms: first the X-histogram
     sns.distplot(b['BHWHM_'+line_name], bins= 20, ax=axHistx, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.7", "label":"BAL Quasars"}, kde_kws={"color": "k"})
     axHistx.set_xlim( ax2d.get_xlim()) # x-limits match the 2D plot
-    axHistx.set_ylabel('BALQ BHWHM')
+    axHistx.set_ylabel(line_label+' BHWHM')
     axHistx.set_yticks([100, 300, 500])
     axHistx.legend(prop={'size':12})
         
     # then the Y-histogram
     sns.distplot(b['BHWHM_'+line_name], bins= 20, vertical= True, ax=axHisty, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.7", "label":"BAL Quasars"}, kde_kws={"color": "k"})
     axHisty.set_ylim( ax2d.get_ylim()) # y-limits match the 2D plot
-    axHisty.set_xlabel('BALQ RHWHM')
+    axHisty.set_xlabel(line_label+' RHWHM')
     axHisty.set_xticks([100, 300, 500])
     axHisty.legend(prop={'size':12})
     
