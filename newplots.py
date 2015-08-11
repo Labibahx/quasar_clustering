@@ -355,7 +355,7 @@ def four_pan_cluster_kde(line, line_name):
         line: c3, c4, or mg2
         line: "CIII", "CIV", or "MgII", a string with the line used for clustering. To be used as a title for the figure."""
     
-    sample= "_ew_hwhm_" # change to "bal_" for the mixed sample or "bal_only_" for the BAL only sample or leave _ for the main non-BAL sample
+    sample= "_ew_hwhm_bal_" # change to "bal_" for the mixed sample or "bal_only_" for the BAL only sample or leave _ for the main non-BAL sample
     
     sns.set_style("ticks", {'font.family': u'sans-serif'})
     
@@ -500,14 +500,15 @@ def kde_hist(cluster, line_name, j):
     cc= -1
     for c in ordered_clstrs:
         cc+=1
-       
-        sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]],cmap= cmap_ls[cc], ax=ax2d)
+        
+        if (min(clstr_array[:,1][clstr_array[:,3]==c[0]]) >0) & (min(clstr_array[:,2][clstr_array[:,3]==c[0]]) >0):
+            sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]],cmap= cmap_ls[cc], ax=ax2d, shade=True, shade_lowest=False, alpha=0.6)
         ew.append(mean(clstr_array[:,0][clstr_array[:,3]==c[0]]))
         x.append(mean(clstr_array[:,1][clstr_array[:,3]==c[0]]))
         y.append(mean(clstr_array[:,2][clstr_array[:,3]==c[0]]))
         n.append(len(clstr_array[clstr_array[:,3]==c[0]]))
     
-    ax2d.scatter(x,y, marker='o', color='k', s=ew*100) #[e for e in ew]
+    ax2d.scatter(x,y, marker='D', color='r', s=[10**(e/15) for e in ew] ) #[e for e in ew]
         
     clstr_label= ['a'+str(j),'b'+str(j),'c'+str(j),'d'+str(j),'e'+str(j),'f'+str(j)]
     clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red'] # 'cornflowerblue', 'brown' , 'olive', 'purple']
@@ -515,8 +516,8 @@ def kde_hist(cluster, line_name, j):
     for l in range(j):
         u-=0.04
             
-        ax2d.text(x[l]+150, y[l]-150, clstr_label[l], fontsize= 14, family= 'serif', bbox=props)
-        ax2d.text(0.8, u,  line_name+"-"+clstr_label[l]+", N="+str(n[l]), transform=ax2d.transAxes, color= clr_ls[l])
+        ax2d.text(x[l]+150, y[l]-150, clstr_label[l], fontsize= 14, bbox=props)
+        ax2d.text(0.7, u,  line_name+"-"+clstr_label[l]+", N="+str(n[l]), transform=ax2d.transAxes, fontsize= 14, color= clr_ls[l])
 
     ax2d.set_xlabel(line_name+ " BHWHM (km/s)" )
     ax2d.set_ylabel(line_name+ " RHWHM (km/s)")
@@ -524,23 +525,24 @@ def kde_hist(cluster, line_name, j):
     ax2d.set_ylim(0,11000)
 
     b= Table.read('sample_myflags_BAL_only.fits')
-    ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=3, color='0.3', alpha=0.5, label="BAL Quasars")
+    ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=3, color='0.3', label="BAL Quasars")
     #ax2d.legend(loc=2, prop={'size':12})
     z= arange(11000)
     ax2d.plot(z,z,'k-', lw=.5) #plot 1:1 line
     
     # the 1-D histograms: first the X-histogram
-    sns.distplot(b['BHWHM_'+line_name], bins= 20, ax=axHistx, kde=False, axlabel= False, hist_kws={"histtype": "step", "linewidth": 1,"alpha": 1, "color": "k", "label":"BAL Quasars"}, kde_kws={"color": "k"})
+    sns.distplot(b['BHWHM_'+line_name], bins= 20, ax=axHistx, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.7", "label":"BAL Quasars"}, kde_kws={"color": "k"})
     axHistx.set_xlim( ax2d.get_xlim()) # x-limits match the 2D plot
     axHistx.set_ylabel('BALQ BHWHM')
     axHistx.set_yticks([100, 300, 500])
     axHistx.legend(prop={'size':12})
         
     # then the Y-histogram
-    sns.distplot(b['BHWHM_'+line_name], bins= 20, vertical= True, ax=axHisty, kde=False, axlabel= False, hist_kws={"histtype": "step", "linewidth": 1,"alpha": 1, "color": "k"}, kde_kws={"color": "k"})
+    sns.distplot(b['BHWHM_'+line_name], bins= 20, vertical= True, ax=axHisty, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.7", "label":"BAL Quasars"}, kde_kws={"color": "k"})
     axHisty.set_ylim( ax2d.get_ylim()) # y-limits match the 2D plot
     axHisty.set_xlabel('BALQ RHWHM')
     axHisty.set_xticks([100, 300, 500])
+    axHisty.legend(prop={'size':12})
     
     plt.show()
     return
