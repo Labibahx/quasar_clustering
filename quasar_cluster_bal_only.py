@@ -43,11 +43,11 @@ ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1)
           This is how the BAL+nonBAL sample was selected. File saved as dr10qsample_BAL_only.fits then I flagged a few objects with issues in their spectra. File saved as sample_BAL_myflags.fits
 """
 
-data= Table.read('sample_BAL_myflags.fits')
+data= Table.read('sample_mixed_myflags.fits')
 
 tt= data[(data['BAL_FLAG_VI'] ==1) & (data['MY_FLAG']== 0)]
 
-tt.write('sample_myflags_BAL_only.fits')
+tt.write('sample_bal_myflags.fits')
 
 
 # list of parameters to include in the clustering analysis (features)
@@ -177,7 +177,7 @@ for l in lines:
 
 ### Now do the clustering using K-Means
 
-clstr_name= "c3_ew_hwhm_bal_only"
+clstr_name= "c3_ew_hwhm_bal"
 k=6 #number of clusters
 kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
 kmeans.fit(qs)

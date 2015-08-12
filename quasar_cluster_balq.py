@@ -41,9 +41,9 @@ ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1)
           & (data['ERR_REWE_MGII'] < data['REWE_MGII']/10)
           & (data['SNR_1700'] > 3)]
 
-ss.write('dr10qsample_BAL.fits') # Even csv is not working all the time (works on laptop not desktop :/). I tried to save as numpy array then load the array and use fits.writeto('filename.fits', array). this works on desktop
+ss.write('dr10qsample_mixed.fits')
 
-save('dr10sample_BAL.npy',ss) # save as numpy array
+save('dr10sample_mixed.npy',ss) # save as numpy array
 
 """
 use only some of the parameters to do the clustering, use only the objects with no heavy absorption in CIV (MY_FLAG == 0 only)
@@ -51,9 +51,9 @@ use only some of the parameters to do the clustering, use only the objects with 
 I used lookup_spec.py to flag objects with A star-like spectra. Then the flags array was joined with the main sample dr10qsample_BAL.csv and saved as balsample_myflags.csv
 
 """
-t= Table.read("sample_BAL_myflags.fits")
+t= Table.read("sample_mixed_myflags.fits")
 
-b= t[t['BAL_FLAG_VI'] ==1] # this table has BAL quasars only. might be useful for the analysis on BAL quasars.
+b= t[t['BAL_FLAG_VI'] ==1] # this table has BAL quasars *only*. Ignore for the rest of the work here
 b.write('BALs_only.fits', format= 'fits')
 
 ###
@@ -164,7 +164,7 @@ param_list = ['REWE_', 'BHWHM_', 'RHWHM_']
 
 
 for l in lines:
-    cntrs = open(l[0]+str(l[1])+"_bal.txt", 'wr')
+    cntrs = open(l[0]+str(l[1])+"_mixed.txt", 'wr')
 
     print l[0], ",K=", l[1]
     
@@ -191,7 +191,7 @@ for l in lines:
 
 ### Now do the clustering using K-Means
 
-clstr_name= "c3_ew_hwhm_bal"
+clstr_name= "c3_ew_hwhm_mixed"
 k=6 #number of clusters
 kmeans= KMeans(init= 'k-means++', n_clusters= k, n_init= 10)
 kmeans.fit(qs)
@@ -262,7 +262,7 @@ for i,j in zip(range(1,k+1), spec_num):
 
 clstr_num= [('c3', 3), ('c3', 4), ('c3', 5), ('c3', 6)]
 
-tbl_file= open("clstrs_num_tbl_bal.txt", 'wr')
+tbl_file= open("clstrs_num_tbl_mixed.txt", 'wr')
 tbl_file.write("Line & k & 1 & 2 & 3 & 4 & 5 & 6\n")
 
 for o in clstr_num:
@@ -270,7 +270,7 @@ for o in clstr_num:
     spec_numbers=[]
     tbl_file.write(o[0] + "\t" )
     for pp in range(1, o[1]+1):
-        sp= fits.open("./composites/"+o[0]+"_ew_hwhm_bal_"+str(o[1])+"clstrs"+str(pp)+".fits")
+        sp= fits.open("./composites/"+o[0]+"_ew_hwhm_mixed_"+str(o[1])+"clstrs"+str(pp)+".fits")
         spec_numbers.append(sp[0].header['SPEC_NUMBER'])
     spec_numbers_ordered= sorted(spec_numbers, reverse= True)
     print spec_numbers_ordered
