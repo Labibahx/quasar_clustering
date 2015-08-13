@@ -354,7 +354,7 @@ def four_pan_cluster_kde(line, sample_name):
     """ plot KDE for the clusters for the BHWHM, RHWHM in 4 panels for k=3, 4, 5, and 6
 
         line: c3, c4, or mg2
-        sample_name: main (no BALs), mixed (non BALs and BALs), only (BALs only)
+        sample_name: main (no BALs), mixed (non BALs and BALs), bal (BALs only)
         """
     
     
@@ -377,9 +377,9 @@ def four_pan_cluster_kde(line, sample_name):
     if sample_name== "main":
         sample= "_ew_hwhm_"
     elif sample_name== "mixed":
-        sample= "_ew_hwhm_bal_"
-    elif sample_name == "only":
-        sample="_ew_hwhm_bal_only_"
+        sample= "_ew_hwhm_mixed_"
+    elif sample_name == "bal":
+        sample="_ew_hwhm_bal_"
     
     sns.set_style("ticks", {'font.family': u'sans-serif'})
     
@@ -500,7 +500,7 @@ def kde_hist(line, sample_name,j):
     '''plot KDE for clusters for one value of K
     param:
     line: 'c3', 'c4', 'mg2'
-    sample_name: 'main' for main sample with no BALs, 'mixed' for the sample with BALs and no BALs, 'only' for BALs only
+    sample_name: 'main' for main sample with no BALs, 'mixed' for the sample with BALs and no BALs, 'bal' for BALs only
     j: number of clusters: 3, 4, 5, 6
        
         '''
@@ -516,14 +516,15 @@ def kde_hist(line, sample_name,j):
         line_name= line_label= "CIV"
 
     elif line== "mg2":
-        line_name= line_label = "MgII"
+        line_name= "MGII"
+        line_label = "MgII"
 
     if sample_name== "main":
         sample= "_ew_hwhm_"
     elif sample_name== "mixed":
-        sample= "_ew_hwhm_bal_"
-    elif sample_name == "only":
-        sample="_ew_hwhm_bal_only_"
+        sample= "_ew_hwhm_mixed_"
+    elif sample_name == "bal":
+        sample="_ew_hwhm_bal_"
 
 
     clstr_name= "./clusters/"+line+sample+ str(j) +"clstrs.npy"
@@ -596,23 +597,29 @@ def kde_hist(line, sample_name,j):
     ax2d.set_xlim(0,11000)
     ax2d.set_ylim(0,11000)
 
-    b= Table.read('sample_myflags_BAL_only.fits')
+    b= Table.read("sample_bal_myflags.fits")
     ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=1, color='0.5', label="BAL Quasars")
     z= arange(11000)
     ax2d.plot(z,z,'k-', lw=.5) #plot 1:1 line
     
     # the 1-D histograms: first the X-histogram
-    sns.distplot(b['BHWHM_'+line_name], bins= 20, ax=axHistx, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.7", "label":"BAL Quasars"}, kde_kws={"color": "k"})
+    #sns.distplot(clstr_array[:,1], bins= 20, ax=axHistx, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.9", "label":"Full Sample"+"\n"+"N="+str(len(clstr_array))})
+    sns.distplot(b['BHWHM_'+line_name], bins= 20, ax=axHistx, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.5", "label":"BAL Quasars"+"\n"+"N="+str(len(b))}, kde_kws={"color": "k"})
+    
     axHistx.set_xlim( ax2d.get_xlim()) # x-limits match the 2D plot
     axHistx.set_ylabel(line_label+' BHWHM')
-    axHistx.set_yticks([100, 300, 500])
+    axHistx.set_yticks([200, 400])
+    axHistx.set_ylim(0,500)
     axHistx.legend(prop={'size':12})
         
     # then the Y-histogram
-    sns.distplot(b['BHWHM_'+line_name], bins= 20, vertical= True, ax=axHisty, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.7", "label":"BAL Quasars"}, kde_kws={"color": "k"})
-    axHisty.set_ylim( ax2d.get_ylim()) # y-limits match the 2D plot
+    #sns.distplot(clstr_array[:,2], bins= 20, vertical= True, ax=axHisty, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.9", "label":"Full Sample"+"\n"+"N="+str(len(clstr_array))})
+    sns.distplot(b['BHWHM_'+line_name], bins= 20, vertical= True, ax=axHisty, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.5", "label":"BAL Quasars"+"\n"+"N="+str(len(b))}, kde_kws={"color": "k"})
+    
+    axHisty.set_ylim(ax2d.get_ylim()) # y-limits match the 2D plot
     axHisty.set_xlabel(line_label+' RHWHM')
-    axHisty.set_xticks([100, 300, 500])
+    axHisty.set_xticks([200, 400])
+    axHisty.set_xlim(0,500)
     axHisty.legend(prop={'size':12})
     
     plt.show()
@@ -622,7 +629,7 @@ def kde_hist(line, sample_name,j):
         
 ########################
 
-def plot_spec_parts(line, line_name, k):
+def plot_spec_parts(line, sample_name, k):
     
     """ plot composite spectra in 3 panels:
         panel 1: C IV, (He II & OIII]), (Al III, Si III], C III])
@@ -634,8 +641,25 @@ def plot_spec_parts(line, line_name, k):
         k: number of clusters (3, 4, ...)
         """
     
-    sample= "_ew_hwhm_bal_only_" # change to "bal_" for the mixed sample or "bal_only_" for the BAL only sample or leave _ for the main non-BAL sample
     
+    if line == "c3":
+        line_name= "CIII"
+        line_label= "CIII]"
+    
+    elif line== "c4":
+        line_name= line_label= "CIV"
+    
+    elif line== "mg2":
+        line_name= line_label = "MgII"
+    
+    if sample_name== "main":
+        sample= "_ew_hwhm_"
+    elif sample_name== "mixed":
+        sample= "_ew_hwhm_mixed_"
+    elif sample_name == "bal":
+        sample="_ew_hwhm_bal_"
+
+
     clstr_name= "./clusters/"+line+sample+ str(k) +"clstrs.npy"
     clstr_array= np.load(clstr_name)
     
@@ -684,7 +708,7 @@ def plot_spec_parts(line, line_name, k):
 
     
     line_mark= [[1215.7, 1240, 1305, 1335, 1396.8], [1549, 1640, 1663.5], [1857, 1892, 1908], [2800]]
-    line_label= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV'], ['CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], ['MgII']]
+    line_labels= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV'], ['CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], ['MgII']]
     
     alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
     compo_labels= [line_name+"-"+ a for a in alphabet_list]
@@ -703,7 +727,7 @@ def plot_spec_parts(line, line_name, k):
         
         for t in range(len(line_mark[s])):
             ax.axvline(line_mark[s][t], ls=':', c='k')
-            ax.text(line_mark[s][t]-((dx_ls[s][1]-dx_ls[s][0])/20), dy_ls[s][1]-(dy_ls[s][1]/15), line_label[s][t], rotation= 'vertical', fontsize= 14, family='serif')
+            ax.text(line_mark[s][t]-((dx_ls[s][1]-dx_ls[s][0])/20), dy_ls[s][1]-(dy_ls[s][1]/15), line_labels[s][t], rotation= 'vertical', fontsize= 14, family='serif')
         
         ii= dy_ls[s][1]
         for (sp, clr, clab) in zip(compo_list, clr_ls, compo_labels):
