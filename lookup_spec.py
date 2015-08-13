@@ -29,27 +29,35 @@ def spec_display(plate, mjd, fiber):
 ###################
 
 
-def spec_look_up(cluster_array, k):
+def spec_look_up(cluster_array, sample_name, label):
 
     """ read a list of sdss names, corss-match list with table with mjd, plate, fiber IDs to generate spectra file name with format mjd-plate-fiber_proc.fits e.g., spec-3587-55182-0691_proc.fits
     the processed spectra (i.e., corrected for Galactic extinction and de-redshifted and normalized. See spec_proc.py)
     
     cluster_array: a 2D numpy array with the results of a clustering trial.  Each sample (row) has the values for the features (parameters) used in the clustering and the sdss names of the objects in each cluster. and a column with clusters labels. e.g, 'c4_ew_hwhm_5clstrs_name.npy'
-    k: the cluster label you want to look at: k=0 --> first cluster, k=1 --> second cluster...
+    label: the cluster label you want to look at: k=0 --> first cluster, k=1 --> second cluster...
     
         """
 
     all_clstrs= np.load(cluster_array)
+   
+    if sample_name== "main":
+        sample= ""
+    elif sample_name== "mixed":
+        sample= "_mixed"
+    elif sample_name == "bal":
+        sample="_bal"
+
+    t_name= "sample"+sample+"_myflags.fits"
     
-    
-    data= Table.read("sample_myflags.fits") # BAL quasars sample
+    data= Table.read(t_name) # BAL quasars sample
     #data= Table.read("sample_myflags.csv", format='ascii', delimiter=',') #sample (no BALs)
     
     ss = data[data['MY_FLAG'] ==0] # subsample. some objects were flagged if the had missing flux
     
     #corss-match the above two files
     
-    clstr_k= ss[(ss['SDSS_NAME'] == all_clstrs[:,4]) & (all_clstrs[:, 3].astype(int) == k)] # only samples in cluster k
+    clstr_k= ss[(ss['SDSS_NAME'] == all_clstrs[:,4]) & (all_clstrs[:, 3].astype(int) == label)] # only samples in cluster k
 
     print len(clstr_k)
 
