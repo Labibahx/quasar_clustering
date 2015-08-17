@@ -741,6 +741,11 @@ def plot_spec_parts(line, sample_name, k):
             ii-=0.1
             ax.text(1925, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
 
+        mean_compo= fits.open("./composites/mean_compo_"+sample_name+".fits")
+        mean_flx= mean_compo[0].data[1]
+        
+        plot(wlen, mean_flx/mean_flx[(dx_ls[s][0]-1100)*2], c='k', lw=2, label= "Mean")
+
 
 ###########################
 def plot_reprod(line, k):
