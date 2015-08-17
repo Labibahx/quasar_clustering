@@ -603,7 +603,7 @@ def kde_hist(line, sample_name,j):
     ax2d.plot(z,z,'k-', lw=.5) #plot 1:1 line
     
     # the 1-D histograms: first the X-histogram
-    #sns.distplot(clstr_array[:,1], bins= 20, ax=axHistx, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.9", "label":"Full Sample"+"\n"+"N="+str(len(clstr_array))})
+    sns.distplot(clstr_array[:,1], bins= 20, ax=axHistx, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.9", "label":"Full Sample"+"\n"+"N="+str(len(clstr_array))})
     sns.distplot(b['BHWHM_'+line_name], bins= 20, ax=axHistx, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.5", "label":"BAL Quasars"+"\n"+"N="+str(len(b))}, kde_kws={"color": "k"})
     
     axHistx.set_xlim( ax2d.get_xlim()) # x-limits match the 2D plot
@@ -613,8 +613,8 @@ def kde_hist(line, sample_name,j):
     axHistx.legend(prop={'size':12})
         
     # then the Y-histogram
-    #sns.distplot(clstr_array[:,2], bins= 20, vertical= True, ax=axHisty, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.9", "label":"Full Sample"+"\n"+"N="+str(len(clstr_array))})
-    sns.distplot(b['BHWHM_'+line_name], bins= 20, vertical= True, ax=axHisty, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.5", "label":"BAL Quasars"+"\n"+"N="+str(len(b))}, kde_kws={"color": "k"})
+    sns.distplot(clstr_array[:,2], bins= 20, vertical= True, ax=axHisty, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.9", "label":"Full Sample"+"\n"+"N="+str(len(clstr_array))})
+    sns.distplot(b['RHWHM_'+line_name], bins= 20, vertical= True, ax=axHisty, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.5", "label":"BAL Quasars"+"\n"+"N="+str(len(b))}, kde_kws={"color": "k"})
     
     axHisty.set_ylim(ax2d.get_ylim()) # y-limits match the 2D plot
     axHisty.set_xlabel(line_label+' RHWHM')
