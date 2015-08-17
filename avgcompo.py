@@ -18,14 +18,14 @@ def avg_compo(sample):
         comments= "Main sample, nonBALs with only EW >0"
     
     elif sample == "mixed":
-        sample_name= "mixed"
+        sample_name= "_mixed"
         comments= "Mixed sample, BAL and nonBAL"
     
     elif sample == "bal":
-        sample_name= "bal"
+        sample_name= "_bal"
         comments= "BAL quasars only"
 
-    table_name= "sample_"+sample_name+"myflags.fits"
+    table_name= "sample"+sample_name+"_myflags.fits"
     tab= Table.read(table_name)
     t= tab[tab['MY_FLAG'] ==0 ]
    
@@ -50,7 +50,7 @@ def avg_compo(sample):
         m=median(y[0])
         clipped_compo.append(m)
 
-    avg_compo_name= "./composites/mean_compo_"+sample_name+".fits"
+    avg_compo_name= "./composites/mean_compo"+sample_name+".fits"
     spec_file= np.vstack((wlen,clipped_compo))
     hdu= fits.PrimaryHDU(spec_file)
     hdr= hdu.header
