@@ -791,31 +791,6 @@ def plot_reprod(line, k):
     for m in range(2, k*3, 3):
         ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='0.5')
 
-#########################
-
-def cntrs(line):
-    
-    '''plot the results of reproducibilty check in a more compact way than plot_reprod.
-        for each line make a 3 panel figure, one for each feature (EW, BHWHM and BHWHM).
-        In each panel plot the mean on the feature for each cluster and the std dev as error bar.
-        
-        line: CIII, CIV or MGII '''
-    
-    files= glob(line+"*.txt")
-    
-    ew, blu, red= [], [], []
-    
-    
-    
-    fig= figure(figsize=(9,12))
-    
-    for c in range(3,7):
-        
-        for r in range(1,4):
-            
-            for z in range(1,13):
-                ax= fig.add_subplot(3,4,z)
-
 
 
 
