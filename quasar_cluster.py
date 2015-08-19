@@ -41,7 +41,7 @@ ss = data[(data['Z_PCA'] >1.6) & (data['Z_PCA'] <2.1)
           & (data['REWE_MGII'] >0) & (data['ERR_REWE_MGII'] < data['REWE_MGII']/10)
           & (data['BAL_FLAG_VI'] ==0) & (data['SNR_1700'] > 3)]
 
-ss.write('dr10qsample.csv', delimiter= ',') # save as csv (tried to save as FITS file but there is something wrong with the units)
+ss.write('dr10qsample.fits') # save as FITS table
 
 save('dr10qsample.npy',ss) # save as numpy array
 
