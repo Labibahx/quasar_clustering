@@ -29,26 +29,36 @@ def spec_display(plate, mjd, fiber):
 ###################
 
 
-def spec_look_up(cluster_array, sample_name, label):
+def spec_look_up(line, k, sample_name, label):
 
     """ read a list of sdss names, corss-match list with table with mjd, plate, fiber IDs to generate spectra file name with format mjd-plate-fiber_proc.fits e.g., spec-3587-55182-0691_proc.fits
     the processed spectra (i.e., corrected for Galactic extinction and de-redshifted and normalized. See spec_proc.py)
     
-    cluster_array: a 2D numpy array with the results of a clustering trial.  Each sample (row) has the values for the features (parameters) used in the clustering and the sdss names of the objects in each cluster. and a column with clusters labels. e.g, 'c4_ew_hwhm_5clstrs_name.npy'
+    param:
+    line: "mg2", "c4", or "c3"
+    k: total number of clusters used
+    sample_name: "main", "mixed", or "bal"
     label: the cluster label you want to look at: k=0 --> first cluster, k=1 --> second cluster...
     
         """
+    
+    if sample_name== "main":
+        sample= "_"
+    elif sample_name== "mixed":
+        sample= "_mixed_"
+    elif sample_name == "bal":
+        sample="_bal_"
+
+
+    cluster_array = "./clusters/"+line+"_ew_hwhm"+sample+str(k)+"clstrs_name.npy"
 
     all_clstrs= np.load(cluster_array)
-   
-    if sample_name== "main":
-        sample= ""
-    elif sample_name== "mixed":
-        sample= "_mixed"
-    elif sample_name == "bal":
-        sample="_bal"
 
-    t_name= "sample"+sample+"_myflags.fits"
+    compo_name= "./composites/"+line+"_ew_hwhm"+sample+str(k)+"clstrs"+str(label+1)+".fits"
+
+    compo= fits.open(compo_name)
+   
+    t_name= "sample"+sample+"myflags.fits"
     
     data= Table.read(t_name) # BAL quasars sample
     #data= Table.read("sample_myflags.csv", format='ascii', delimiter=',') #sample (no BALs)
@@ -61,31 +71,37 @@ def spec_look_up(cluster_array, sample_name, label):
 
     print len(clstr_k)
 
-    spec_files_list=[]
-    sdss_names_list= []
+    spec_files_ls=[]
+    sdss_names_ls= []
+    redshift_ls= []
     for s in range(len(clstr_k)):
         spectrum_name= "./new_proc_data/spec-"+str(clstr_k['PLATE'][s])+"-"+str(clstr_k['MJD'][s])+"-"+str(clstr_k['FIBERID'][s]).zfill(4)+"_proc.fits"
-        spec_files_list.append(spectrum_name)
-        sdss_names_list.append(clstr_k['SDSS_NAME'][s])
+        spec_files_ls.append(spectrum_name)
+        sdss_names_ls.append(clstr_k['SDSS_NAME'][s])
+        redshift_ls.append(clstr_k['Z_PCA'][s])
     
     
         ## plot the spectra
     fig= figure(figsize=(16, 8))
     ax=fig.add_subplot(111)
-    
-    for (file, name) in zip(spec_files_list, sdss_names_list):
+
+    for (file, name, z) in zip(spec_files_ls, sdss_names_ls, redshift_ls):
         try:
             spec= fits.open(file)
             wavelen= spec[0].data[0]
             flx= spec[0].data[1]
-           # plot(wavelen[c4], flx[c4])
-            plot (wavelen, flx)
+            norm_flx= flx/np.median(flx[2360:2390])
+            plot (wavelen, norm_flx, lw= 2, c='r')
+            plot(compo[0].data[0], compo[0].data[1], lw= 2, c='k')
             xlim(1190, 3000)
-            # ylim(-1, 4.5)
+            ylim(-1, 11)
             axvline(1549, ls= ':')
             axvline(2800, ls= ':')
             axvline(1908, ls=':')
-            text(1355, 3.5, "SDSS "+name)
+            text(2400, 9, "SDSS "+name)
+            text(2400, 8, "z= "+'{0:4.3f}'.format(z))
+            #print('%.50f' % d)
+            #print('{0:.50f}'.format(d))
             print str(file)
             
             resume = input("Press Enter to plot next spectrum on list.")
