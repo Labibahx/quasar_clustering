@@ -487,7 +487,7 @@ def four_pan_cluster_kde(line, sample_name):
 
 ##########################
 
-## forked from Pauline
+## original script forked from Pauline
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
