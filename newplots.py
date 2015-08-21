@@ -504,7 +504,8 @@ def four_pan_cluster_kde(line, sample_name):
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
-from matplotlib.ticker import NullFormatter
+#from matplotlib.ticker import NullFormatter
+import matplotlib.ticker as ticker
 from seaborn import kdeplot
 
 # based on http://www.astrobetter.com/blog/2014/02/10/visualization-fun-with-python-2d-histogram-with-1d-histograms-on-axes/
@@ -534,10 +535,13 @@ def kde_hist(line, sample_name,j):
 
     if sample_name== "main":
         sample= "_ew_hwhm_"
+        sample_label= "Main"
     elif sample_name== "mixed":
         sample= "_ew_hwhm_mixed_"
+        sample_label= "Mixed"
     elif sample_name == "bal":
         sample="_ew_hwhm_bal_"
+        sample_label= "BALQ"
 
 
     clstr_name= "./clusters/"+line+sample+ str(j) +"clstrs.npy"
@@ -616,25 +620,29 @@ def kde_hist(line, sample_name,j):
     ax2d.plot(z,z,'k-', lw=.5) #plot 1:1 line
     
     # the 1-D histograms: first the X-histogram
-    sns.distplot(clstr_array[:,1], bins= 20, ax=axHistx, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.9", "label":"Full Sample"+"\n"+"N="+str(len(clstr_array))})
-    sns.distplot(b['BHWHM_'+line_name], bins= 20, ax=axHistx, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.5", "label":"BAL Quasars"+"\n"+"N="+str(len(b))}, kde_kws={"color": "k"})
+    sns.kdeplot(clstr_array[:,1], ax=axHistx, shade= False,  color='k', label= sample_label+" Sample"+"\n"+"N="+str(len(clstr_array)))
+    sns.kdeplot(b['BHWHM_'+line_name], ax=axHistx, shade= False, lw= 2, color='c', label= "BALQ"+"\n"+"N="+str(len(b)))
     
     axHistx.set_xlim( ax2d.get_xlim()) # x-limits match the 2D plot
     axHistx.set_ylabel(line_label+' BHWHM')
-    #axHistx.set_yticks([200, 400])
-    axHistx.set_yticks([500, 1000, 1500])
-    axHistx.set_ylim(0,1500)
+    axHistx.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
+    axHistx.yaxis.set_major_locator(ticker.MultipleLocator(base=0.0003)) # this locator puts ticks at regular intervals
+    #gca().xaxis.set_major_locator(MaxNLocator(nbins=3, prune= 'both'))
+    #axHistx.set_yticks([500, 1000, 1500])
+    #axHistx.set_ylim(0,1000)
     axHistx.legend(prop={'size':12})
         
     # then the Y-histogram
-    sns.distplot(clstr_array[:,2], bins= 20, vertical= True, ax=axHisty, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.9", "label":"Full Sample"+"\n"+"N="+str(len(clstr_array))})
-    sns.distplot(b['RHWHM_'+line_name], bins= 20, vertical= True, ax=axHisty, kde=False, axlabel= False, hist_kws={"histtype": "stepfilled", "linewidth": 1,"alpha": 1, "color": "0.5", "label":"BAL Quasars"+"\n"+"N="+str(len(b))}, kde_kws={"color": "k"})
-    
+    sns.kdeplot(clstr_array[:,2], ax=axHisty, vertical= True, shade= False, color='k', label= sample_label+" Sample"+"\n"+"N="+str(len(clstr_array)))
+    sns.kdeplot(b['RHWHM_'+line_name], ax=axHisty, vertical= True, shade= False, lw= 2, color='c', label= "BALQ"+"\n"+"N="+str(len(b)))
+
     axHisty.set_ylim(ax2d.get_ylim()) # y-limits match the 2D plot
     axHisty.set_xlabel(line_label+' RHWHM')
-    #axHisty.set_xticks([200, 400])
-    axHisty.set_xticks([500, 1000, 1500])
-    axHisty.set_xlim(0,1500)
+    axHisty.xaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
+    axHisty.xaxis.set_major_locator(ticker.MultipleLocator(base=0.0003)) # this locator puts ticks at regular intervals
+    #gca().yaxis.set_major_locator(MaxNLocator(nbins=3, prune= 'both'))
+    #axHisty.set_xticks([500, 1000, 1500])
+    #axHisty.set_xlim(0,1000)
     axHisty.legend(prop={'size':12})
     
     plt.show()
