@@ -376,10 +376,16 @@ def four_pan_cluster_kde(line, sample_name):
 
     if sample_name== "main":
         sample= "_ew_hwhm_"
+        tab_name= "sample_myflags.fits"
     elif sample_name== "mixed":
         sample= "_ew_hwhm_mixed_"
+        tab_name= "sample_mixed_myflags.fits"
     elif sample_name == "bal":
         sample="_ew_hwhm_bal_"
+        tab_name= "sample_bal_myflags.fits"
+
+    #t= Table.read(tab_name)
+
     
     sns.set_style("ticks", {'font.family': u'sans-serif'})
     
@@ -401,9 +407,16 @@ def four_pan_cluster_kde(line, sample_name):
     
     nullfmt   = NullFormatter()
     
+    #ax1= fig.add_subplot(321)
+    #sns.kdeplot(t['BHWHM_'+line_name], t['RHWHM_'+line_name] \
+            ,cmap= 'summer', shade=True, shade_lowest=False, alpha=0.6)
+    #xlim(xlimits)
+    #ylim(ylimits)
+    
+    
     for (i,j) in zip(range(1,5), range(3,7)):
         
-        ax= fig.add_subplot(2,2,i)
+        ax= fig.add_subplot(3,2,i)
         
         if i ==1:
             ax.xaxis.set_major_formatter(nullfmt)
@@ -656,10 +669,13 @@ def plot_spec_parts(line, sample_name, k):
     
     if sample_name== "main":
         sample= "_ew_hwhm_"
+        sample_label= "Main"
     elif sample_name== "mixed":
         sample= "_ew_hwhm_mixed_"
+        sample_label= "Mixed"
     elif sample_name == "bal":
         sample="_ew_hwhm_bal_"
+        sample_label= "BALQ"
 
 
     clstr_name= "./clusters/"+line+sample+ str(k) +"clstrs.npy"
@@ -713,7 +729,7 @@ def plot_spec_parts(line, sample_name, k):
     line_labels= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV'], ['CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], ['MgII']]
     
     alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
-    compo_labels= [line_name+"-"+ a for a in alphabet_list]
+    compo_labels= [line_label+"-"+ a for a in alphabet_list]
     
     clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
     
@@ -747,6 +763,10 @@ def plot_spec_parts(line, sample_name, k):
         mean_flx= mean_compo[0].data[1]
         
         plot(wlen, mean_flx/mean_flx[(dx_ls[s][0]-1100)*2], c='k', lw=2, label= "Mean")
+        
+        ax.text(2752, dy_ls[s][1]-0.15, sample_label+" Sample, "+"N="+ str(len(clstr_array))+"\n"+"Mean Composite ", color= 'k', fontsize= 14, family= 'serif')
+
+    return
 
 
 ###########################
