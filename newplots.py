@@ -608,8 +608,9 @@ def kde_hist(line, sample_name,j):
     
     axHistx.set_xlim( ax2d.get_xlim()) # x-limits match the 2D plot
     axHistx.set_ylabel(line_label+' BHWHM')
-    axHistx.set_yticks([200, 400])
-    axHistx.set_ylim(0,500)
+    #axHistx.set_yticks([200, 400])
+    axHistx.set_yticks([500, 1000, 1500])
+    axHistx.set_ylim(0,1500)
     axHistx.legend(prop={'size':12})
         
     # then the Y-histogram
@@ -618,8 +619,9 @@ def kde_hist(line, sample_name,j):
     
     axHisty.set_ylim(ax2d.get_ylim()) # y-limits match the 2D plot
     axHisty.set_xlabel(line_label+' RHWHM')
-    axHisty.set_xticks([200, 400])
-    axHisty.set_xlim(0,500)
+    #axHisty.set_xticks([200, 400])
+    axHisty.set_xticks([500, 1000, 1500])
+    axHisty.set_xlim(0,1500)
     axHisty.legend(prop={'size':12})
     
     plt.show()
