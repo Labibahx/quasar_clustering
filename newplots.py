@@ -649,7 +649,6 @@ def kde_hist(line, sample_name,j):
     return
 
 
-        
 ########################
 
 def plot_spec_parts(line, sample_name, k):
@@ -818,6 +817,256 @@ def plot_reprod(line, k):
     gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
     for m in range(2, k*3, 3):
         ax3.scatter(range(50), cntrs[:, m], marker='^', edgecolor='k', facecolor='0.5')
+
+
+##########################
+
+balt= Table.read('sample_bal_myflags.fits')
+
+
+
+fig= figure()
+
+ax1= fig.add_subplot(331)
+ax1.hist(balt['BI_CIV'])
+xlabel('BI_CIV')
+
+ax2= fig.add_subplot(332)
+ax2.hist(balt['VMIN_CIV_2000'])
+xlabel('VMIN_CIV_2000')
+
+ax3= fig.add_subplot(333)
+ax3.hist(balt['VMAX_CIV_2000'])
+xlabel('VMAX_CIV_2000')
+
+ax4= fig.add_subplot(334)
+ax4.hist(balt['AI_CIV'])
+xlabel('AI_CIV')
+
+ax5= fig.add_subplot(335)
+ax5.hist(balt['VMIN_CIV_450'])
+xlabel('VMIN_CIV_450')
+
+ax6= fig.add_subplot(336)
+ax6.hist(balt['VMAX_CIV_450'])
+xlabel('VMAX_CIV_450')
+
+ax7= fig.add_subplot(337)
+ax7.hist(balt['REW_SIIV'])
+xlabel('REW_SIIV')
+
+ax8= fig.add_subplot(338)
+ax8.hist(balt['REW_CIV'])
+xlabel('REW_CIV')
+
+ax9= fig.add_subplot(339)
+ax9.hist(balt['REW_ALIII'])
+xlabel('REW_ALIII')
+
+
+###################
+def bal_hist1(k):
+
+    """make histograms for absorption properties in the BALQ sample
+        k: number of clusters
+        """
+    sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in'})
+
+    t=Table.read('sample_bal_myflags.fits')
+
+    cluster_array= np.load("./clusters/c3_ew_hwhm_bal_"+str(k)+"clstrs_name.npy")
+    
+    clstr_num= []
+    for l in range(k):
+        clstr_num.append([l, (mean(cluster_array[:,1].astype(float)[cluster_array[:,3].astype(int)== l]), \
+                             (mean(cluster_array[:,2].astype(float)[cluster_array[:,3].astype(int)== l])))])
+
+    ordered_clstrs= sorted(clstr_num, key= itemgetter(1))
+
+    c_labels= []
+    for ll in ordered_clstrs:
+        c_labels.append(ll[0])
+    print c_labels
+
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
+    alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
+    compo_labels= [line_label+"-"+ a for a in alphabet_list]
+
+
+    bals= t[t['SDSS_NAME'] == cluster_array[:,4]]
+
+    fig= figure(figsize=(14,10))
+
+    ax1= fig.add_subplot(221)
+    xlabel(r'EW SiIV abs trough ($\AA$)')
+    sns.kdeplot(bals['REW_SIIV'], ax= ax1, color= 'k', lw=3, legend=False)
+
+    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
+        sns.kdeplot(bals_c['REW_SIIV'], ax=ax1, color= clr, legend=False)
+
+
+    ax2= fig.add_subplot(222)
+    xlabel(r'EW CIV abs trough ($\AA$)')
+    sns.kdeplot(bals['REW_CIV'], ax= ax2, label= "BALQ Sample, N="+str(len(t)), color= 'k', lw=3)
+    
+    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
+        sns.kdeplot(bals_c['REW_CIV'], ax= ax2, label= cl+", N= "+str(len(bals_c['REW_CIV'])), color= clr)
+
+
+    ax3= fig.add_subplot(223)
+    xlabel(r'EW AlIII abs trough ($\AA$)')
+    sns.kdeplot(bals['REW_ALIII'], ax= ax3, color= 'k', lw=3, legend=False)
+    
+    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
+        sns.kdeplot(bals_c['REW_ALIII'], ax=ax3, color= clr, legend=False)
+
+
+    return
+
+#################
+def bal_hist2(k):
+    
+    """make histograms for absorption properties in the BALQ sample
+        k: number of clusters
+        """
+    sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in'})
+    
+    t=Table.read('sample_bal_myflags.fits')
+    
+    cluster_array= np.load("./clusters/c3_ew_hwhm_bal_"+str(k)+"clstrs_name.npy")
+    
+    clstr_num= []
+    for l in range(k):
+        clstr_num.append([l, (mean(cluster_array[:,1].astype(float)[cluster_array[:,3].astype(int)== l]), \
+                              (mean(cluster_array[:,2].astype(float)[cluster_array[:,3].astype(int)== l])))])
+    
+    ordered_clstrs= sorted(clstr_num, key= itemgetter(1))
+
+    c_labels= []
+    for ll in ordered_clstrs:
+        c_labels.append(ll[0])
+    print c_labels
+    
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
+    alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
+    compo_labels= [line_label+"-"+ a for a in alphabet_list]
+    
+    
+    bals= t[t['SDSS_NAME'] == cluster_array[:,4]]
+    
+    fig= figure(figsize=(14,10))
+    
+    ax1= fig.add_subplot(221)
+    xlabel(r'BI CIV (km/s)')
+    ax1.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+    sns.kdeplot(bals['BI_CIV'], ax= ax1, color= 'k', lw=3, legend= False)
+    
+    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
+        sns.kdeplot(bals_c['BI_CIV'], ax=ax1, color= clr, legend= False)
+    
+    ax2= fig.add_subplot(223)
+    xlabel(r'VMIN CIV from BI (km/s)')
+    ax2.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+    sns.kdeplot(bals['VMIN_CIV_2000'], ax= ax2, color= 'k', lw=3, label= "BALQ Sample, N="+str(len(t)))
+    
+    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
+        sns.kdeplot(bals_c['VMIN_CIV_2000'], ax= ax2, color= clr, label= cl+", N= "+str(len(bals_c['BI_CIV'])))
+
+    ax3= fig.add_subplot(224)
+    xlabel(r'VMAX CIV from BI (km/s)')
+    ax3.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+    sns.kdeplot(bals['VMAX_CIV_2000'], ax= ax3, color= 'k', lw=3, legend= False)
+    
+    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
+        sns.kdeplot(bals_c['VMAX_CIV_2000'], ax=ax3, color= clr, legend= False)
+
+
+    return
+
+#################
+def bal_hist3(k):
+    
+    """make histograms for absorption properties in the BALQ sample
+        k: number of clusters
+        """
+    sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in'})
+    
+    t=Table.read('sample_bal_myflags.fits')
+    
+    cluster_array= np.load("./clusters/c3_ew_hwhm_bal_"+str(k)+"clstrs_name.npy")
+    
+    clstr_num= []
+    for l in range(k):
+        clstr_num.append([l, (mean(cluster_array[:,1].astype(float)[cluster_array[:,3].astype(int)== l]), \
+                              (mean(cluster_array[:,2].astype(float)[cluster_array[:,3].astype(int)== l])))])
+    
+    ordered_clstrs= sorted(clstr_num, key= itemgetter(1))
+
+    c_labels= []
+    for ll in ordered_clstrs:
+        c_labels.append(ll[0])
+    print c_labels
+    
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
+    alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
+    compo_labels= [line_label+"-"+ a for a in alphabet_list]
+    
+    
+    bals= t[t['SDSS_NAME'] == cluster_array[:,4]]
+    
+    fig= figure(figsize=(14,10))
+    
+    ax1= fig.add_subplot(221)
+    xlabel(r'AI CIV (km/s)')
+    ax1.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+    sns.kdeplot(bals['AI_CIV'], ax= ax1, color= 'k', lw=3, legend= False)
+    
+    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
+        sns.kdeplot(bals_c['AI_CIV'], ax=ax1, color= clr, legend= False)
+
+    ax2= fig.add_subplot(223)
+    xlabel(r'VMIN CIV from AI (km/s)')
+    ax2.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+    sns.kdeplot(bals['VMIN_CIV_450'], ax= ax2, color= 'k', lw=3, label= "BALQ Sample, N="+str(len(t)))
+    
+    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
+        sns.kdeplot(bals_c['VMIN_CIV_450'], ax= ax2, color= clr, label= cl+", N= "+str(len(bals_c['AI_CIV'])))
+
+    ax3= fig.add_subplot(224)
+    xlabel(r'VMAX CIV from AI (km/s)')
+    ax3.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+    sns.kdeplot(bals['VMAX_CIV_450'], ax= ax3, color= 'k', lw=3, legend= False)
+    
+    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
+        sns.kdeplot(bals_c['VMAX_CIV_450'], ax=ax3, color= clr, legend= False)
+
+
+    return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
