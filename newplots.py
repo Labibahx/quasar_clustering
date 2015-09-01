@@ -653,16 +653,16 @@ def kde_hist(line, sample_name,j):
 
 def plot_spec_parts(line, sample_name, k):
     
-    """ plot composite spectra in 3 panels:
-        panel 1: C IV, (He II & OIII]), (Al III, Si III], C III])
-        panel 2: Ly alpha, Si IV
-        panel 3: Mg II
+    """ plot composite spectra in 4 panels:
+        panel 1: Ly alpha, Si IV
+        panel 2: C IV, (He II & OIII])
+        panel 3: Al III, Si III], C III]
+        panel 4: Mg II
         param:
         line: c4, c3 or mg2 as str
-        line_name: CIV, CIII, or MgII as str
+        sample name: main, mixed or bal
         k: number of clusters (3, 4, ...)
         """
-    
     
     if line == "c3":
         line_name= "CIII"
