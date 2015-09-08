@@ -732,8 +732,12 @@ def plot_spec_parts(line, sample_name, k):
     fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
     
-    line_mark= [[1215.7, 1240, 1305, 1335, 1396.8], [1549, 1640, 1663.5], [1857, 1892, 1908], [2800]]
-    line_labels= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV'], ['CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], ['MgII']]
+    line_mark= [[1215.7, 1240, 1305, 1335, 1396.8], \
+                [1549, 1640, 1663.5], [1857, 1892, 1908], \
+                [2800]]
+    line_labels= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV'], \
+                  ['CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], \
+                  ['MgII']]
     
     alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
     compo_labels= [line_label+"-"+ a for a in alphabet_list]
@@ -752,7 +756,8 @@ def plot_spec_parts(line, sample_name, k):
         
         for t in range(len(line_mark[s])):
             ax.axvline(line_mark[s][t], ls=':', c='k')
-            ax.text(line_mark[s][t]-((dx_ls[s][1]-dx_ls[s][0])/20), dy_ls[s][1]-(dy_ls[s][1]/15), line_labels[s][t], rotation= 'vertical', fontsize= 14, family='serif')
+            ax.text(line_mark[s][t]-(dx_ls[s][1]-dx_ls[s][0])/20, dy_ls[s][1]-(dy_ls[s][1]-dy_ls[s][0])/10, \
+                    line_labels[s][t], rotation= 'vertical', fontsize= 14, family='serif')
         
         ii= dy_ls[s][1]
         for (sp, clr, clab) in zip(compo_list, clr_ls, compo_labels):
@@ -766,12 +771,12 @@ def plot_spec_parts(line, sample_name, k):
             ii-=0.1
             ax.text(1925, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
 
-        mean_compo= fits.open("./composites/mean_compo_"+sample_name+".fits")
-        mean_flx= mean_compo[0].data[1]
+        #mean_compo= fits.open("./composites/mean_compo_"+sample_name+".fits")
+        #mean_flx= mean_compo[0].data[1]
         
-        plot(wlen, mean_flx/mean_flx[(dx_ls[s][0]-1100)*2], c='k', lw=2, label= "Mean")
+        #plot(wlen, mean_flx/mean_flx[(dx_ls[s][0]-1100)*2], c='k', lw=2, label= "Mean")
         
-        ax.text(2752, dy_ls[s][1]-0.15, sample_label+" Sample, "+"N="+ str(len(clstr_array))+"\n"+"Mean Composite ", color= 'k', fontsize= 14, family= 'serif')
+        ax.text(2820, dy_ls[s][1]-0.15, sample_label+" Sample"+"\n"+"N="+ str(len(clstr_array)), color= 'k', fontsize= 14, family= 'serif')
 
     return
 
@@ -1051,6 +1056,23 @@ def bal_hist3(k):
 
 
     return
+##==============
+
+##plot Mi vs. z
+
+t= Table.read('sample_myflags.fits')
+
+fig= figure(figsize=(10,10))
+sns.set(font_scale= 1.5)
+sns.set_style("ticks", {'font.family': u'serif'})
+
+scatter(t['Z_PCA'], t['MI'], marker='.', color= 'k')
+sns.kdeplot(t['Z_PCA'], t['MI'], cmap= 'Reds_r')
+
+ylim(-23.5, -29.5)
+xlabel('Redshift', size= 18)
+ylabel(r'$M_{\rm i}$', size= 18)
+
 
 
 
