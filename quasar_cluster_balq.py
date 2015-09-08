@@ -146,6 +146,8 @@ ax1.plot(num_c, sos_ls_mg2, marker= 'D', color= '0.1', ls='--', label= 'Mg II')
 ax1.plot(num_c, sos_ls_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
 ax1.plot(num_c, sos_ls_c4, marker= 'o', color= '0.5', ls=':', label= 'C IV')
 
+text(.4, .9, 'Mixed Sample', transform=ax1.transAxes, size= 16)
+
 ylabel(r'Sum of squares')
 xlim(1.9, 8.1)
 
