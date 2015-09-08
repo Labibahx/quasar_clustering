@@ -116,29 +116,40 @@ for q in num_c:
     sil_score_c3.append(sc)
 
 
-fig= figure(figsize=(8,6))
-plot(num_c, sil_score_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
+##plot results
+fig= figure(figsize=(8,12))
+subplots_adjust(hspace= 0.01)
+
+sns.set(font_scale= 1.5)
+sns.set_style("ticks", {'font.family': u'serif'})
 
 
-text(3.5,0.85, "Features: EW, RHWHM, BHWHM")
+ax1= fig.add_subplot(211)
 
-legend(numpoints= 1)
+nullfmt   = NullFormatter()
+ax1.xaxis.set_major_formatter(nullfmt)
+
+ax1.plot(num_c, sos_ls_mg2, marker= 'D', color= '0.1', ls='--', label= 'Mg II')
+ax1.plot(num_c, sos_ls_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
+ax1.plot(num_c, sos_ls_c4, marker= 'o', color= '0.5', ls=':', label= 'C IV')
+
+text(.4, .9, 'BALQ Sample', transform=ax1.transAxes, size= 16)
+
+ylabel(r'Sum of squares')
+xlim(1.9, 8.1)
+
+legend(numpoints=1)
+
+ax2= fig.add_subplot(212)
+
+ax2.plot(num_c, sil_score_mg2, marker= 'D', color= '0.1', ls='--', label= 'Mg II')
+ax2.plot(num_c, sil_score_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
+ax2.plot(num_c, sil_score_c4, marker= 'o', color= '0.5', ls=':', label= 'C IV')
+
+xlabel(r'$K$')
 ylabel('Silhouette score')
-xlabel(r'$K$')
 xlim(1.9, 8.1)
-ylim(0.3, 0.72)
-
-
-"""plot sos vs K CIII]
-"""
-
-fig= figure(figsize=(8,6))
-
-plot(num_c, sos_ls, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
-
-ylabel('Sum of squares')
-xlabel(r'$K$')
-xlim(1.9, 8.1)
+ylim(.3, .661)
 legend(numpoints=1)
 
 
