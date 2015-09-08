@@ -91,7 +91,7 @@ features= [[c4_ew, c4_bhwhm, c4_rhwhm],
 
 # qs= np.column_stack(n for n in features[0][:3]+features[1][:3]+features[2][:3]) # all three lines. can specify which features to use by changing the range in the second []
 
-qs= np.column_stack(n for n in features[0]) # one line only. 0 can be changed to use a different line
+qs= np.column_stack(n for n in features[2]) # one line only. 0 can be changed to use a different line
 
 ####
 # use the following two lines to do dimensionality reduction on the features matrix using PCA
@@ -129,28 +129,35 @@ for q in num_c:
 
 
 #plot silhouette scores
-fig= figure(figsize=(8,6))
-plot(num_c, sil_score_mg2, marker= 'D', color= '0.1', ls='--', label= 'Mg II')
-plot(num_c, sil_score_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
-plot(num_c, sil_score_c4, marker= 'o', color= '0.5', ls=':', label= 'C IV')
+fig= figure(figsize=(8,12))
+subplots_adjust(hspace= 0.01)
 
-text(3.5,0.85, "Features: EW, RHWHM, BHWHM")
+sns.set(font_scale= 1.5)
+sns.set_style("ticks", {'font.family': u'serif'})
 
-legend(numpoints= 1)
-ylabel('Silhouette score')
-xlabel(r'$K$')
+
+ax1= fig.add_subplot(211)
+
+nullfmt   = NullFormatter()
+ax1.xaxis.set_major_formatter(nullfmt)
+
+ax1.plot(num_c, sos_ls_mg2, marker= 'D', color= '0.1', ls='--', label= 'Mg II')
+ax1.plot(num_c, sos_ls_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
+ax1.plot(num_c, sos_ls_c4, marker= 'o', color= '0.5', ls=':', label= 'C IV')
+
+ylabel(r'Sum of squares')
 xlim(1.9, 8.1)
 
+legend(numpoints=1)
 
-#plot sos
-fig= figure(figsize=(8,6))
+ax2= fig.add_subplot(212)
 
-plot(num_c, sos_ls_mg2, marker= 'D', color= '0.1', ls='--', label= 'Mg II')
-plot(num_c, sos_ls_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
-plot(num_c, sos_ls_c4, marker= 'o', color= '0.5', ls=':', label= 'C IV')
+ax2.plot(num_c, sil_score_mg2, marker= 'D', color= '0.1', ls='--', label= 'Mg II')
+ax2.plot(num_c, sil_score_c3, marker= 'v', color= '0.3', ls='-.', label= 'C III]')
+ax2.plot(num_c, sil_score_c4, marker= 'o', color= '0.5', ls=':', label= 'C IV')
 
-ylabel('Sum of squares')
 xlabel(r'$K$')
+ylabel('Silhouette score')
 xlim(1.9, 8.1)
 legend(numpoints=1)
 
