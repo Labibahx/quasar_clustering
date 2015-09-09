@@ -384,14 +384,12 @@ def four_pan_cluster_kde(line, sample_name):
         sample="_ew_hwhm_bal_"
         tab_name= "sample_bal_myflags.fits"
 
-    #t= Table.read(tab_name)
-
-    
-    sns.set_style("ticks", {'font.family': u'sans-serif'})
+    sns.set(font_scale= 1.5)
+    sns.set_style("ticks", {'font.family': u'serif'})
     
     fig= plt.figure(figsize=(12,10))
     fig.subplots_adjust(wspace=0.001, hspace=0.001)
-    sns.set_style("ticks")
+
     fig1= fig.add_axes([0., 0., 1, 1])
     fig1.set_axis_off()
     fig1.set_xlim(0, 1)
@@ -405,18 +403,12 @@ def four_pan_cluster_kde(line, sample_name):
     
     cmap_ls= ['YlOrBr', 'Blues', 'RdPu', 'Greens', 'Greys', 'Reds']
     
-    nullfmt   = NullFormatter()
-    
-    #ax1= fig.add_subplot(321)
-    #sns.kdeplot(t['BHWHM_'+line_name], t['RHWHM_'+line_name] \
-            ,cmap= 'summer', shade=True, shade_lowest=False, alpha=0.6)
-    #xlim(xlimits)
-    #ylim(ylimits)
-    
+    nullfmt = NullFormatter()
+
     
     for (i,j) in zip(range(1,5), range(3,7)):
         
-        ax= fig.add_subplot(3,2,i)
+        ax= fig.add_subplot(2,2,i)
         
         if i ==1:
             ax.xaxis.set_major_formatter(nullfmt)
@@ -466,7 +458,7 @@ def four_pan_cluster_kde(line, sample_name):
             if (min(clstr_array[:,1][clstr_array[:,3]==c[0]]) >0) & (min(clstr_array[:,2][clstr_array[:,3]==c[0]]) >0):
             
                 sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]] \
-                ,cmap= cmap_ls[cc], shade=True, shade_lowest=False, alpha=0.6)
+                ,cmap= cmap_ls[cc], shade=True, shade_lowest=False, alpha=0.5)
             
             ew.append(mean(clstr_array[:,0][clstr_array[:,3]==c[0]]))
             x.append(mean(clstr_array[:,1][clstr_array[:,3]==c[0]]))
@@ -487,7 +479,7 @@ def four_pan_cluster_kde(line, sample_name):
             text(0.67, u,  line_label+"-"+clstr_label[l]+", N="+str(n[l]), transform=ax.transAxes \
             , color= clr_ls[l], fontsize= 12, family= 'serif')
             
-        scatter(x,y, marker='D', color='w', s=[e for e in ew])
+        scatter(x,y, marker='D', color='w', s=[30**(eqw/25) for eqw in ew])
 
     return
 
@@ -569,7 +561,7 @@ def kde_hist(line, sample_name,j):
     axHisty.yaxis.set_major_formatter(nullfmt)
     
     # the 2D plot:
-    # note the all-important transpose!
+   
     clstr_array= np.load(clstr_name)
     
     clstr_num= []
@@ -590,14 +582,21 @@ def kde_hist(line, sample_name,j):
         
         if (min(clstr_array[:,1][clstr_array[:,3]==c[0]]) >0) & (min(clstr_array[:,2][clstr_array[:,3]==c[0]]) >0):
             sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]] \
-                        ,cmap= cmap_ls[cc], ax=ax2d, shade=True, shade_lowest=False, alpha=0.6)
+                        ,cmap= cmap_ls[cc], ax=ax2d, shade=True, shade_lowest=False, alpha=0.5)
         
         ew.append(mean(clstr_array[:,0][clstr_array[:,3]==c[0]]))
         x.append(mean(clstr_array[:,1][clstr_array[:,3]==c[0]]))
         y.append(mean(clstr_array[:,2][clstr_array[:,3]==c[0]]))
         n.append(len(clstr_array[clstr_array[:,3]==c[0]]))
-    
-    ax2d.scatter(x,y, marker='D', color='w', s=[e for e in ew])
+        
+    #plot BALQ as scattered dots and the 1:1 line
+    b= Table.read("sample_bal_myflags.fits")
+    ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=1, color='.3', label="BAL Quasars")
+    z= arange(11000)
+    ax2d.plot(z,z,'k-', lw=.5) #plot 1:1 line
+
+    #plot centroids with sizes proportional to mean EW of cluster
+    ax2d.scatter(x,y, marker='D', color='w', s=[100**(eqw/30) for eqw in ew])
         
     clstr_label= ['a'+str(j),'b'+str(j),'c'+str(j),'d'+str(j),'e'+str(j),'f'+str(j)]
     clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red'] # 'cornflowerblue', 'brown' , 'olive', 'purple']
@@ -605,7 +604,7 @@ def kde_hist(line, sample_name,j):
     for l in range(j):
         u-=0.04
             
-        ax2d.text(x[l]+150, y[l]-150, clstr_label[l], color='r', fontsize= 14 ) #, bbox=props
+        ax2d.text(x[l]+150, y[l]-150, clstr_label[l], color='k', fontsize= 14 ) #, bbox=props
         ax2d.text(0.67, u,  line_label+"-"+clstr_label[l]+", N="+str(n[l]) \
                   , transform=ax2d.transAxes, fontsize= 13, color= clr_ls[l])
 
@@ -614,14 +613,16 @@ def kde_hist(line, sample_name,j):
     ax2d.set_xlim(0,11000)
     ax2d.set_ylim(0,11000)
 
-    b= Table.read("sample_bal_myflags.fits")
-    ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=1, color='0.5', label="BAL Quasars")
-    z= arange(11000)
-    ax2d.plot(z,z,'k-', lw=.5) #plot 1:1 line
-    
+
+    hist_bins= arange(0, 11000, 500)
     # the 1-D histograms: first the X-histogram
-    sns.kdeplot(clstr_array[:,1], ax=axHistx, shade= False,  color='k', label= sample_label+" Sample"+"\n"+"N="+str(len(clstr_array)))
-    sns.kdeplot(b['BHWHM_'+line_name], ax=axHistx, shade= False, lw= 2, color='c', label= "BALQ"+"\n"+"N="+str(len(b)))
+    sns.distplot(clstr_array[:,1], bins=hist_bins, kde= False, ax=axHistx, axlabel=False, norm_hist=True, \
+                 label= sample_label+" Sample"+"\n"+"N="+str(len(clstr_array)), \
+                 hist_kws={"histtype": "step", "linewidth": 2, "alpha": 1, "color": "k"})
+
+    sns.distplot(b['BHWHM_'+line_name], bins=hist_bins, kde= False, ax=axHistx,  axlabel=False, norm_hist=True, \
+                 label= "BALQ"+"\n"+"N="+str(len(b)), \
+                 hist_kws={"histtype": "step", "linewidth": 2, "alpha": 1, "color": "c"})
     
     axHistx.set_xlim( ax2d.get_xlim()) # x-limits match the 2D plot
     axHistx.set_ylabel(line_label+' BHWHM')
@@ -633,8 +634,13 @@ def kde_hist(line, sample_name,j):
     axHistx.legend(prop={'size':12})
         
     # then the Y-histogram
-    sns.kdeplot(clstr_array[:,2], ax=axHisty, vertical= True, shade= False, color='k', label= sample_label+" Sample"+"\n"+"N="+str(len(clstr_array)))
-    sns.kdeplot(b['RHWHM_'+line_name], ax=axHisty, vertical= True, shade= False, lw= 2, color='c', label= "BALQ"+"\n"+"N="+str(len(b)))
+    sns.distplot(clstr_array[:,2], vertical= True, bins=hist_bins, kde= False, ax=axHisty, axlabel=False, norm_hist=True, \
+                 label= sample_label+" Sample"+"\n"+"N="+str(len(clstr_array)), \
+                 hist_kws={"histtype": "step", "linewidth": 2, "alpha": 1, "color": "k"})
+
+    sns.distplot(b['RHWHM_'+line_name], vertical= True, bins=hist_bins, kde= False, ax=axHisty, axlabel=False, norm_hist=True, \
+                 label= "BALQ"+"\n"+"N="+str(len(b)),  \
+                 hist_kws={"histtype": "step", "linewidth": 2, "alpha": 1, "color": "c"})
 
     axHisty.set_ylim(ax2d.get_ylim()) # y-limits match the 2D plot
     axHisty.set_xlabel(line_label+' RHWHM')
