@@ -881,6 +881,7 @@ def bal_hist1(k):
     """make histograms for absorption properties in the BALQ sample
         k: number of clusters
         """
+    
     sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in'})
 
     t=Table.read('sample_bal_myflags.fits')
@@ -901,7 +902,7 @@ def bal_hist1(k):
 
     clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
     alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
-    compo_labels= [line_label+"-"+ a for a in alphabet_list]
+    compo_labels= ["CIII]-"+ a for a in alphabet_list]
 
 
     bals= t[t['SDSS_NAME'] == cluster_array[:,4]]
@@ -910,29 +911,29 @@ def bal_hist1(k):
 
     ax1= fig.add_subplot(221)
     xlabel(r'EW SiIV abs trough ($\AA$)')
-    sns.kdeplot(bals['REW_SIIV'], ax= ax1, color= 'k', lw=3, legend=False)
+    sns.kdeplot(bals['REW_SIIV'], ax= ax1, color= 'k', lw=3, legend=False, cut=0)
 
     for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
-        sns.kdeplot(bals_c['REW_SIIV'], ax=ax1, color= clr, legend=False)
+        sns.kdeplot(bals_c['REW_SIIV'], ax=ax1, color= clr, legend=False, cut=0)
 
 
     ax2= fig.add_subplot(222)
     xlabel(r'EW CIV abs trough ($\AA$)')
-    sns.kdeplot(bals['REW_CIV'], ax= ax2, label= "BALQ Sample, N="+str(len(t)), color= 'k', lw=3)
+    sns.kdeplot(bals['REW_CIV'], ax= ax2, label= "BALQ Sample, N="+str(len(t)), color= 'k', lw=3, cut=0)
     
     for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
-        sns.kdeplot(bals_c['REW_CIV'], ax= ax2, label= cl+", N= "+str(len(bals_c['REW_CIV'])), color= clr)
+        sns.kdeplot(bals_c['REW_CIV'], ax= ax2, label= cl+", N= "+str(len(bals_c['REW_CIV'])), color= clr, cut=0)
 
 
     ax3= fig.add_subplot(223)
     xlabel(r'EW AlIII abs trough ($\AA$)')
-    sns.kdeplot(bals['REW_ALIII'], ax= ax3, color= 'k', lw=3, legend=False)
+    sns.kdeplot(bals['REW_ALIII'], ax= ax3, color= 'k', lw=3, legend=False, cut=0)
     
     for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
-        sns.kdeplot(bals_c['REW_ALIII'], ax=ax3, color= clr, legend=False)
+        sns.kdeplot(bals_c['REW_ALIII'], ax=ax3, color= clr, legend=False, cut=0)
 
 
     return
@@ -1062,6 +1063,7 @@ def bal_hist3(k):
 
 
     return
+
 ##==============
 
 ##plot Mi vs. z
