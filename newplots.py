@@ -361,26 +361,29 @@ def four_pan_cluster_kde(line, sample_name):
     if line == "c3":
         line_name= "CIII"
         line_label= "CIII]"
-        xlimits= (0, 7250)
-        ylimits= (0, 10750)
+        xlimits= (50, 7250)
+        ylimits= (50, 10750)
     
     elif line== "c4":
         line_name= line_label= "CIV"
-        xlimits= (0, 6250)
-        ylimits= (0, 5750)
+        xlimits= (50, 5950)
+        ylimits= (50, 5750)
 
     elif line== "mg2":
         line_name= line_label = "MgII"
-        xlimits= (0, 8750)
-        ylimits= (0, 8250)
+        xlimits= (50, 8350)
+        ylimits= (50, 8250)
 
     if sample_name== "main":
+        sample_label= "Main Sample"
         sample= "_ew_hwhm_"
         tab_name= "sample_myflags.fits"
     elif sample_name== "mixed":
+        sample_label= "Mixed Sample"
         sample= "_ew_hwhm_mixed_"
         tab_name= "sample_mixed_myflags.fits"
     elif sample_name == "bal":
+        sample_label= "BALQ Sample"
         sample="_ew_hwhm_bal_"
         tab_name= "sample_bal_myflags.fits"
 
@@ -420,8 +423,8 @@ def four_pan_cluster_kde(line, sample_name):
         elif i ==4:
             ax.yaxis.set_major_formatter(nullfmt)
         
-        text(.07, .9, "K="+str(j), transform=ax.transAxes \
-            , horizontalalignment='center', verticalalignment='center', fontsize= 12, family= 'serif')
+        text(.2, .9, "K="+str(j)+", "+sample_label, transform=ax.transAxes \
+            , horizontalalignment='center', verticalalignment='center')
         
         z= arange(11000)
         plot(z,z,'k-', lw=.5) #plot 1:1 line
@@ -458,7 +461,7 @@ def four_pan_cluster_kde(line, sample_name):
             if (min(clstr_array[:,1][clstr_array[:,3]==c[0]]) >0) & (min(clstr_array[:,2][clstr_array[:,3]==c[0]]) >0):
             
                 sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]] \
-                ,cmap= cmap_ls[cc], shade=True, shade_lowest=False, alpha=0.5)
+                ,cmap= cmap_ls[cc], shade=True, shade_lowest=False, alpha=.5, n_level3=5)
             
             ew.append(mean(clstr_array[:,0][clstr_array[:,3]==c[0]]))
             x.append(mean(clstr_array[:,1][clstr_array[:,3]==c[0]]))
@@ -474,12 +477,12 @@ def four_pan_cluster_kde(line, sample_name):
         for l in range(j):
             u-=0.06
                 
-            text(x[l]+150, y[l]-150, clstr_label[l], color= 'k', fontsize= 14, family= 'serif') #, bbox=props
+            text(x[l]+150, y[l]-150, clstr_label[l], color= 'k') #, bbox=props
             
             text(0.67, u,  line_label+"-"+clstr_label[l]+", N="+str(n[l]), transform=ax.transAxes \
-            , color= clr_ls[l], fontsize= 12, family= 'serif')
+            , color= clr_ls[l])
             
-        scatter(x,y, marker='D', color='w', s=[30**(eqw/25) for eqw in ew])
+        scatter(x,y, marker='D', color='w', s=[30**(eqw/40) for eqw in ew]) #divided eqw by 40 for c4 and mg2 nad by 30 for c3
 
     return
 
@@ -582,7 +585,7 @@ def kde_hist(line, sample_name,j):
         
         if (min(clstr_array[:,1][clstr_array[:,3]==c[0]]) >0) & (min(clstr_array[:,2][clstr_array[:,3]==c[0]]) >0):
             sns.kdeplot(clstr_array[:,1][clstr_array[:,3]==c[0]], clstr_array[:,2][clstr_array[:,3]==c[0]] \
-                        ,cmap= cmap_ls[cc], ax=ax2d, shade=True, shade_lowest=False, alpha=0.5)
+                        ,cmap= cmap_ls[cc], ax=ax2d, shade=True, shade_lowest=False, alpha=.5, n_level3=5)
         
         ew.append(mean(clstr_array[:,0][clstr_array[:,3]==c[0]]))
         x.append(mean(clstr_array[:,1][clstr_array[:,3]==c[0]]))
@@ -591,12 +594,12 @@ def kde_hist(line, sample_name,j):
         
     #plot BALQ as scattered dots and the 1:1 line
     b= Table.read("sample_bal_myflags.fits")
-    ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=1, color='.3', label="BAL Quasars")
+    ax2d.scatter(b['BHWHM_'+line_name], b['RHWHM_'+line_name], marker='o', s=1, color='.5', label="BAL Quasars")
     z= arange(11000)
     ax2d.plot(z,z,'k-', lw=.5) #plot 1:1 line
 
     #plot centroids with sizes proportional to mean EW of cluster
-    ax2d.scatter(x,y, marker='D', color='w', s=[100**(eqw/30) for eqw in ew])
+    ax2d.scatter(x,y, marker='D', color='w', s=[100**(eqw/35) for eqw in ew]) #divided eqw by 45 for c4 and mg2 nad by 35 for c3
         
     clstr_label= ['a'+str(j),'b'+str(j),'c'+str(j),'d'+str(j),'e'+str(j),'f'+str(j)]
     clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red'] # 'cornflowerblue', 'brown' , 'olive', 'purple']
@@ -911,30 +914,32 @@ def bal_hist1(k):
 
     ax1= fig.add_subplot(221)
     xlabel(r'EW SiIV abs trough ($\AA$)')
-    sns.kdeplot(bals['REW_SIIV'], ax= ax1, color= 'k', lw=3, legend=False, cut=0)
+    ylabel('Density')
+    sns.kdeplot(bals['REW_SIIV'], ax= ax1, color= 'k', lw=3, legend=False)
 
     for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
-        sns.kdeplot(bals_c['REW_SIIV'], ax=ax1, color= clr, legend=False, cut=0)
+        sns.kdeplot(bals_c['REW_SIIV'], ax=ax1, color= clr, legend=False)
 
 
     ax2= fig.add_subplot(222)
     xlabel(r'EW CIV abs trough ($\AA$)')
-    sns.kdeplot(bals['REW_CIV'], ax= ax2, label= "BALQ Sample, N="+str(len(t)), color= 'k', lw=3, cut=0)
+    #ylabel('Density')
+    sns.kdeplot(bals['REW_CIV'], ax= ax2, label= "BALQ Sample, N="+str(len(t)), color= 'k', lw=3)
     
     for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
-        sns.kdeplot(bals_c['REW_CIV'], ax= ax2, label= cl+", N= "+str(len(bals_c['REW_CIV'])), color= clr, cut=0)
+        sns.kdeplot(bals_c['REW_CIV'], ax= ax2, label= cl+", N= "+str(len(bals_c['REW_CIV'])), color= clr)
 
 
     ax3= fig.add_subplot(223)
     xlabel(r'EW AlIII abs trough ($\AA$)')
-    sns.kdeplot(bals['REW_ALIII'], ax= ax3, color= 'k', lw=3, legend=False, cut=0)
+    ylabel('Density')
+    sns.kdeplot(bals['REW_ALIII'], ax= ax3, color= 'k', lw=3, legend=False)
     
     for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
-        sns.kdeplot(bals_c['REW_ALIII'], ax=ax3, color= clr, legend=False, cut=0)
-
+        sns.kdeplot(bals_c['REW_ALIII'], ax=ax3, color= clr, legend=False)
 
     return
 
@@ -964,7 +969,7 @@ def bal_hist2(k):
     
     clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
     alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
-    compo_labels= [line_label+"-"+ a for a in alphabet_list]
+    compo_labels= ["CIII]-"+ a for a in alphabet_list]
     
     
     bals= t[t['SDSS_NAME'] == cluster_array[:,4]]
@@ -973,8 +978,13 @@ def bal_hist2(k):
     
     ax1= fig.add_subplot(221)
     xlabel(r'BI CIV (km/s)')
+    ylabel('Density')
     ax1.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+    ax1.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
+    ax1.yaxis.set_major_locator(ticker.MultipleLocator(base=0.0001))
+
     sns.kdeplot(bals['BI_CIV'], ax= ax1, color= 'k', lw=3, legend= False)
+    
     
     for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
@@ -982,22 +992,29 @@ def bal_hist2(k):
     
     ax2= fig.add_subplot(223)
     xlabel(r'VMIN CIV from BI (km/s)')
+    ylabel('Density')
     ax2.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+    ax2.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
+    ax2.yaxis.set_major_locator(ticker.MultipleLocator(base=0.0001))
+
     sns.kdeplot(bals['VMIN_CIV_2000'], ax= ax2, color= 'k', lw=3, label= "BALQ Sample, N="+str(len(t)))
-    
+
     for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
         sns.kdeplot(bals_c['VMIN_CIV_2000'], ax= ax2, color= clr, label= cl+", N= "+str(len(bals_c['BI_CIV'])))
 
     ax3= fig.add_subplot(224)
     xlabel(r'VMAX CIV from BI (km/s)')
+    #ylabel('Density')
     ax3.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+    ax3.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
+    ax3.yaxis.set_major_locator(ticker.MultipleLocator(base=0.00005))
+
     sns.kdeplot(bals['VMAX_CIV_2000'], ax= ax3, color= 'k', lw=3, legend= False)
     
     for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
         sns.kdeplot(bals_c['VMAX_CIV_2000'], ax=ax3, color= clr, legend= False)
-
 
     return
 
@@ -1027,7 +1044,7 @@ def bal_hist3(k):
     
     clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
     alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
-    compo_labels= [line_label+"-"+ a for a in alphabet_list]
+    compo_labels= ["CIII]-"+ a for a in alphabet_list]
     
     
     bals= t[t['SDSS_NAME'] == cluster_array[:,4]]
@@ -1071,15 +1088,18 @@ def bal_hist3(k):
 t= Table.read('sample_myflags.fits')
 
 fig= figure(figsize=(10,10))
+
 sns.set(font_scale= 1.5)
 sns.set_style("ticks", {'font.family': u'serif'})
 
-scatter(t['Z_PCA'], t['MI'], marker='.', color= 'k')
-sns.kdeplot(t['Z_PCA'], t['MI'], cmap= 'Reds_r')
+scatter(t['Z_PCA'], t['MI'], marker='.', color= '.7')
+sns.kdeplot(t['Z_PCA'], t['MI'], cmap= 'Blues_r')
+
+text(1.6, -29, 'Main Sample', size=18)
 
 ylim(-23.5, -29.5)
-xlabel('Redshift', size= 18)
-ylabel(r'$M_{\rm i}$', size= 18)
+xlabel('Redshift', size=22)
+ylabel(r'$M_{\rm i}$', size=22)
 
 
 
