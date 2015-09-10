@@ -904,42 +904,83 @@ def bal_hist1(k):
     print c_labels
 
     clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
-    alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
-    compo_labels= ["CIII]-"+ a for a in alphabet_list]
+    abc = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
 
 
     bals= t[t['SDSS_NAME'] == cluster_array[:,4]]
 
     fig= figure(figsize=(14,10))
-
-    ax1= fig.add_subplot(221)
-    xlabel(r'EW SiIV abs trough ($\AA$)')
-    ylabel('Density')
-    sns.kdeplot(bals['REW_SIIV'], ax= ax1, color= 'k', lw=3, legend=False)
-
-    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
-        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
-        sns.kdeplot(bals_c['REW_SIIV'], ax=ax1, color= clr, legend=False)
-
-
-    ax2= fig.add_subplot(222)
-    xlabel(r'EW CIV abs trough ($\AA$)')
-    #ylabel('Density')
-    sns.kdeplot(bals['REW_CIV'], ax= ax2, label= "BALQ Sample, N="+str(len(t)), color= 'k', lw=3)
     
+
+    ax1= fig.add_subplot(231)
+    xlabel(r'EW CIV abs trough ($\AA$)')
+    ylabel('Density')
+    sns.kdeplot(bals['REW_CIV'], ax= ax1, color= 'k', lw=3, legend=False)
+    text(.9, 50, "BALQ Sample, N="+str(len(t)))
+
+    zz= 1
     for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
-        sns.kdeplot(bals_c['REW_CIV'], ax= ax2, label= cl+", N= "+str(len(bals_c['REW_CIV'])), color= clr)
+        sns.kdeplot(bals_c['REW_CIV'], ax= ax1, legend=False)
+        zz-=.15
+        text(10, z ,"CIII]-"+cl+", N= "+str(len(bals_c['REW_CIV'])), color= clr)
+
+    ax2= fig.add_subplot(232)
+    xlabel(r'EW SiIV abs trough ($\AA$)')
+    sns.kdeplot(bals['REW_SIIV'], ax= ax2, color= 'k', lw=3, legend=False)
+
+    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
+        sns.kdeplot(bals_c['REW_SIIV'], ax=ax2, color= clr, legend=False)
 
 
-    ax3= fig.add_subplot(223)
+    ax3= fig.add_subplot(233)
     xlabel(r'EW AlIII abs trough ($\AA$)')
-    ylabel('Density')
     sns.kdeplot(bals['REW_ALIII'], ax= ax3, color= 'k', lw=3, legend=False)
     
     for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
         sns.kdeplot(bals_c['REW_ALIII'], ax=ax3, color= clr, legend=False)
+
+
+    ax4= fig.add_subplot(234)
+    xlabel(r'BI CIV (km/s)')
+    ylabel('Density')
+    ax4.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+    ax4.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
+    ax4.yaxis.set_major_locator(ticker.MultipleLocator(base=0.0001))
+    
+    sns.kdeplot(bals['BI_CIV'], ax= ax4, color= 'k', lw=3, legend= False)
+    
+    
+    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
+        sns.kdeplot(bals_c['BI_CIV'], ax=ax4, color= clr, legend= False)
+
+
+    ax5= fig.add_subplot(235)
+    xlabel(r'VMIN CIV from BI (km/s)')
+    ax5.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+    ax5.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
+    ax5.yaxis.set_major_locator(ticker.MultipleLocator(base=0.0001))
+    
+    sns.kdeplot(bals['VMIN_CIV_2000'], ax= ax5, color= 'k', lw=3, legend= False)
+    
+    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
+        sns.kdeplot(bals_c['VMIN_CIV_2000'], ax= ax5, color= clr, legend= False)
+
+    ax6= fig.add_subplot(236)
+    xlabel(r'VMAX CIV from BI (km/s)')
+    ax6.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+    ax6.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
+    ax6.yaxis.set_major_locator(ticker.MultipleLocator(base=0.00005))
+
+    sns.kdeplot(bals['VMAX_CIV_2000'], ax= ax6, color= 'k', lw=3, legend= False)
+    
+    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+        bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
+        sns.kdeplot(bals_c['VMAX_CIV_2000'], ax=ax6, color= clr, legend= False)
 
     return
 
