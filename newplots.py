@@ -668,7 +668,7 @@ def plot_spec_parts(line, sample_name, k):
         panel 3: Al III, Si III], C III]
         panel 4: Mg II
         param:
-        line: c4, c3 or mg2 as str
+        line: line used in making the clusters (c4, c3 or mg2) as str
         sample name: main, mixed or bal
         k: number of clusters (3, 4, ...)
         """
@@ -791,6 +791,138 @@ def plot_spec_parts(line, sample_name, k):
 
 
 ###########################
+def spec_ex_parts(line, sample_name, k):
+    
+    """ plot example spectra from each composite in 4 panels:
+        panel 1: Ly alpha, Si IV
+        panel 2: C IV, (He II & OIII])
+        panel 3: Al III, Si III], C III]
+        panel 4: Mg II
+        param:
+        line: line used in making the clusters (c4, c3 or mg2) as str
+        sample name: main, mixed or bal
+        k: number of clusters (3, 4, ...)
+        """
+    
+    if line == "c3":
+        line_name= "CIII"
+        line_label= "CIII]"
+    
+    elif line== "c4":
+        line_name= line_label= "CIV"
+    
+    elif line== "mg2":
+        line_name= line_label = "MgII"
+    
+    if sample_name== "main":
+        sample= "_ew_hwhm_"
+        sample_label= "Main"
+    elif sample_name== "mixed":
+        sample= "_ew_hwhm_mixed_"
+        sample_label= "Mixed"
+    elif sample_name == "bal":
+        sample="_ew_hwhm_bal_"
+        sample_label= "BALQ"
+    
+    
+    clstr_name= "./clusters/"+line+sample+ str(k) +"clstrs.npy"
+    clstr_array= np.load(clstr_name)
+    
+    clstr_num=[]
+    for f in range(max(clstr_array[:,3].astype(int))+1):
+        clstr_num.append([f, (mean(clstr_array[:,1][clstr_array[:,3]== f]), (mean(clstr_array[:,2][clstr_array[:,3]== f])))])
+    
+    ordered_clstrs= sorted(clstr_num, key= itemgetter(1)) #reverse= True
+    print ordered_clstrs
+
+    '''
+    compo_name= "./composites/"+line+"_ew_hwhm_bal_only_"+str(k)+"*.fits" #for the BAL only sample
+    #compo_name= "./composites/"+line+"_ew_hwhm_bal_"+str(k)+"*.fits" #for the BAL+nonBAL sample
+    #compo_name= "./composites/"+line+"_ew_hwhm_"+str(k)+"*.fits"
+    compos= glob(compo_name)'''
+        
+        compo_list= []
+            for r in ordered_clstrs:
+    compo_name= "./composites/"+line+sample+str(k)+"clstrs"+str(r[0]+1)+".fits" #for the BAL+nonBAL sample
+    spec= fits.open(compo_name)
+        num_obj= spec[0].header['SPEC_NUMBER']
+        compo_list.append([compo_name, num_obj])
+
+    print compo_list
+
+    '''
+        compo_list= []
+        for obj in compos:
+        spec= fits.open(obj)
+        num_obj= spec[0].header['SPEC_NUMBER']
+        compo_list.append([obj, num_obj])
+        ordered_compos= sorted(compo_list, key= itemgetter(1), reverse= True)
+        
+        print ordered_compos
+        '''
+
+
+    fig= figure(figsize=(14,8))
+    sns.set_style("ticks")
+    fig1= fig.add_axes([0., 0., 1, 1])
+    fig1.set_axis_off()
+    fig1.set_xlim(0, 1)
+    fig1.set_ylim(0, 1)
+    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    
+    
+    line_mark= [[1215.7, 1240, 1305, 1335, 1396.8], \
+                [1549, 1640, 1663.5], [1857, 1892, 1908], \
+                [2800]]
+    line_labels= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV'], \
+                  ['CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], \
+                  ['MgII']]
+                
+    alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
+    compo_labels= [line_label+"-"+ a for a in alphabet_list]
+                
+    clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
+                
+    splt_ls=[221, 222, 223, 224]
+    dx_ls= [(1150,1450),(1465,1700), (1800, 2000),  (2750, 2850)]
+    dy_ls= [(0.5, 2.1), (0.75, 2.6), (0.75, 1.8),  (0.85, 1.6)]
+                
+    for s in range(4):
+                    
+        ax= fig.add_subplot(splt_ls[s])
+        xlim(dx_ls[s])
+        ylim(dy_ls[s])
+                                
+        for t in range(len(line_mark[s])):
+            ax.axvline(line_mark[s][t], ls=':', c='k')
+            ax.text(line_mark[s][t]-(dx_ls[s][1]-dx_ls[s][0])/20, dy_ls[s][1]-(dy_ls[s][1]-dy_ls[s][0])/10, \
+                                                line_labels[s][t], rotation= 'vertical', fontsize= 14, family='serif')
+                                            
+            ii= dy_ls[s][1]
+            for (sp, clr, clab) in zip(compo_list, clr_ls, compo_labels):
+            n= sp[1]
+            spec= fits.open(sp[0])
+            wlen= spec[0].data[0]
+            flx= spec[0].data[1]
+                                                                    
+            plot(wlen, flx/flx[(dx_ls[s][0]-1100)*2], c= clr, lw= 1.5)
+                                                                        
+            ii-=0.1
+            ax.text(1925, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
+                                                                                
+            #mean_compo= fits.open("./composites/mean_compo_"+sample_name+".fits")
+            #mean_flx= mean_compo[0].data[1]
+                                                                                
+            #plot(wlen, mean_flx/mean_flx[(dx_ls[s][0]-1100)*2], c='k', lw=2, label= "Mean")
+                                                                                
+            ax.text(2820, dy_ls[s][1]-0.15, sample_label+" Sample"+"\n"+"N="+ str(len(clstr_array)), color= 'k', fontsize= 14, family= 'serif')
+                                                                            
+    return
+
+
+###########################
+
 def plot_reprod(line, k):
     
     """ make plots with cluster centroids calculated 50 times to show reproducibility.
@@ -911,25 +1043,24 @@ def bal_hist1(k):
 
     fig= figure(figsize=(14,10))
     
-
     ax1= fig.add_subplot(231)
     xlabel(r'EW CIV abs trough ($\AA$)')
     ylabel('Density')
     sns.kdeplot(bals['REW_CIV'], ax= ax1, color= 'k', lw=3, legend=False)
-    text(.9, 50, "BALQ Sample, N="+str(len(t)))
+    text(30, .05, "BALQ Sample, N="+str(len(t)), color='k')
 
-    zz= 1
-    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+    zz= .05
+    for (i,cl, clr) in zip(c_labels, abc, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
-        sns.kdeplot(bals_c['REW_CIV'], ax= ax1, legend=False)
-        zz-=.15
-        text(10, z ,"CIII]-"+cl+", N= "+str(len(bals_c['REW_CIV'])), color= clr)
+        sns.kdeplot(bals_c['REW_CIV'], ax= ax1, color= clr, legend=False)
+        zz-=.005
+        text(40, zz ,"CIII]-"+cl+", N= "+str(len(bals_c['REW_CIV'])), color= clr)
 
     ax2= fig.add_subplot(232)
     xlabel(r'EW SiIV abs trough ($\AA$)')
     sns.kdeplot(bals['REW_SIIV'], ax= ax2, color= 'k', lw=3, legend=False)
 
-    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+    for (i,cl, clr) in zip(c_labels, abc, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
         sns.kdeplot(bals_c['REW_SIIV'], ax=ax2, color= clr, legend=False)
 
@@ -938,7 +1069,7 @@ def bal_hist1(k):
     xlabel(r'EW AlIII abs trough ($\AA$)')
     sns.kdeplot(bals['REW_ALIII'], ax= ax3, color= 'k', lw=3, legend=False)
     
-    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+    for (i,cl, clr) in zip(c_labels, abc, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
         sns.kdeplot(bals_c['REW_ALIII'], ax=ax3, color= clr, legend=False)
 
@@ -946,6 +1077,7 @@ def bal_hist1(k):
     ax4= fig.add_subplot(234)
     xlabel(r'BI CIV (km/s)')
     ylabel('Density')
+    xlim(-5000, 17500)
     ax4.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
     ax4.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
     ax4.yaxis.set_major_locator(ticker.MultipleLocator(base=0.0001))
@@ -953,7 +1085,7 @@ def bal_hist1(k):
     sns.kdeplot(bals['BI_CIV'], ax= ax4, color= 'k', lw=3, legend= False)
     
     
-    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+    for (i,cl, clr) in zip(c_labels, abc, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
         sns.kdeplot(bals_c['BI_CIV'], ax=ax4, color= clr, legend= False)
 
@@ -966,19 +1098,22 @@ def bal_hist1(k):
     
     sns.kdeplot(bals['VMIN_CIV_2000'], ax= ax5, color= 'k', lw=3, legend= False)
     
-    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+    for (i,cl, clr) in zip(c_labels, abc, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
         sns.kdeplot(bals_c['VMIN_CIV_2000'], ax= ax5, color= clr, legend= False)
 
     ax6= fig.add_subplot(236)
     xlabel(r'VMAX CIV from BI (km/s)')
+    locs, labels = plt.yticks()
+    plt.setp(labels, rotation=90)
     ax6.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+
     ax6.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
-    ax6.yaxis.set_major_locator(ticker.MultipleLocator(base=0.00005))
+    ax6.yaxis.set_major_locator(ticker.MultipleLocator(base=0.0001))
 
     sns.kdeplot(bals['VMAX_CIV_2000'], ax= ax6, color= 'k', lw=3, legend= False)
     
-    for (i,cl, clr) in zip(c_labels, compo_labels, clr_ls):
+    for (i,cl, clr) in zip(c_labels, abc, clr_ls):
         bals_c= t[(t['SDSS_NAME'] == cluster_array[:,4]) & (cluster_array[:,3].astype(int) == i)]
         sns.kdeplot(bals_c['VMAX_CIV_2000'], ax=ax6, color= clr, legend= False)
 
