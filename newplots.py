@@ -754,7 +754,7 @@ def plot_spec_parts(line, sample_name, k):
     clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
     
     splt_ls=[221, 222, 223, 224]
-    dx_ls= [(1150,1450),(1465,1700), (1800, 2000),  (2750, 2850)]
+    dx_ls= [(1150,1450),(1465,1700), (1800, 2300),  (2750, 2850)]
     dy_ls= [(0.5, 2.1), (0.75, 2.6), (0.75, 1.8),  (0.85, 1.6)]
     
     for s in range(4):
