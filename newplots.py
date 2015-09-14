@@ -1057,7 +1057,7 @@ def bal_hist1(k):
     ax1= fig.add_subplot(231)
     xlabel(r'EW CIV abs trough ($\AA$)')
     sns.kdeplot(bals['REW_CIV'], ax= ax1, color= 'k', lw=3, legend=False)
-    text(30, .05, "BALQ Sample, N="+str(len(t)), color='k')
+    text(25, .05, "BALQ Sample, N="+str(len(t)), color='k')
 
     zz= .05
     for (i,cl, clr) in zip(c_labels, abc, clr_ls):
