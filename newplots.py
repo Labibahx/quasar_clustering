@@ -1047,9 +1047,15 @@ def bal_hist1(k):
 
     fig= figure(figsize=(14,10))
     
+
+    fig1= fig.add_axes([0., 0., 1, 1])
+    fig1.set_axis_off()
+    fig1.set_xlim(0, 1)
+    fig1.set_ylim(0, 1)
+    fig1.text(.06, 0.5, r"Density", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+
     ax1= fig.add_subplot(231)
     xlabel(r'EW CIV abs trough ($\AA$)')
-    ylabel('Density')
     sns.kdeplot(bals['REW_CIV'], ax= ax1, color= 'k', lw=3, legend=False)
     text(30, .05, "BALQ Sample, N="+str(len(t)), color='k')
 
@@ -1080,7 +1086,8 @@ def bal_hist1(k):
 
     ax4= fig.add_subplot(234)
     xlabel(r'BI CIV (km/s)')
-    ylabel('Density')
+    locs, labels = plt.yticks()
+    plt.setp(labels, rotation=90)
     xlim(-5000, 17500)
     ax4.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
     ax4.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
@@ -1095,7 +1102,10 @@ def bal_hist1(k):
 
 
     ax5= fig.add_subplot(235)
+    xlim(-7000, 27000)
     xlabel(r'VMIN CIV from BI (km/s)')
+    locs, labels = plt.yticks()
+    plt.setp(labels, rotation=90)
     ax5.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
     ax5.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
     ax5.yaxis.set_major_locator(ticker.MultipleLocator(base=0.0001))
@@ -1107,13 +1117,16 @@ def bal_hist1(k):
         sns.kdeplot(bals_c['VMIN_CIV_2000'], ax= ax5, color= clr, legend= False)
 
     ax6= fig.add_subplot(236)
+    xlim(-15000, 39000)
+    ylim(0, 8e-5)
     xlabel(r'VMAX CIV from BI (km/s)')
     locs, labels = plt.yticks()
     plt.setp(labels, rotation=90)
-    ax6.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
+
+    #ax6.xaxis.set_major_locator(ticker.MultipleLocator(base=10000))
 
     ax6.yaxis.set_major_formatter(ticker.FormatStrFormatter('%1.0e'))
-    ax6.yaxis.set_major_locator(ticker.MultipleLocator(base=0.0001))
+    ax6.yaxis.set_major_locator(ticker.MultipleLocator(base=0.00005))
 
     sns.kdeplot(bals['VMAX_CIV_2000'], ax= ax6, color= 'k', lw=3, legend= False)
     
