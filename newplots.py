@@ -513,6 +513,7 @@ def kde_hist(line, sample_name,j):
     j: number of clusters: 3, 4, 5, 6
        
         '''
+    
     sns.set(font_scale= 1.5)
     sns.set_style("ticks", {'font.family': u'serif'})
     props= dict(boxstyle='round', alpha=0.9, color='w')
@@ -520,13 +521,19 @@ def kde_hist(line, sample_name,j):
     if line == "c3":
         line_name= "CIII"
         line_label= "CIII]"
+        xlimits= (50, 9900)
+        ylimits= (50, 9900)
    
     elif line== "c4":
         line_name= line_label= "CIV"
+        xlimits= (50, 5600)
+        ylimits= (50, 5600)
 
     elif line== "mg2":
         line_name= "MGII"
         line_label = "MgII"
+        xlimits= (50, 7600)
+        ylimits= (50, 7600)
 
     if sample_name== "main":
         sample= "_ew_hwhm_"
@@ -608,13 +615,13 @@ def kde_hist(line, sample_name,j):
         u-=0.04
             
         ax2d.text(x[l]+150, y[l]-150, clstr_label[l], color='k', fontsize= 14 ) #, bbox=props
-        ax2d.text(0.67, u,  line_label+"-"+clstr_label[l]+", N="+str(n[l]) \
-                  , transform=ax2d.transAxes, fontsize= 13, color= clr_ls[l])
+        ax2d.text(0.7, u,  line_label+"-"+clstr_label[l]+", N="+str(n[l]) \
+                  , transform=ax2d.transAxes, fontsize= 16, color= clr_ls[l])
 
-    ax2d.set_xlabel(line_label+ " BHWHM (km/s)" )
+    ax2d.set_xlabel(line_label+ " BHWHM (km/s)")
     ax2d.set_ylabel(line_label+ " RHWHM (km/s)")
-    ax2d.set_xlim(0,11000)
-    ax2d.set_ylim(0,11000)
+    ax2d.set_xlim(xlimits)
+    ax2d.set_ylim(ylimits)
 
 
     hist_bins= arange(0, 11000, 500)
@@ -634,7 +641,7 @@ def kde_hist(line, sample_name,j):
     #gca().xaxis.set_major_locator(MaxNLocator(nbins=3, prune= 'both'))
     #axHistx.set_yticks([500, 1000, 1500])
     #axHistx.set_ylim(0,1000)
-    axHistx.legend(prop={'size':12})
+    axHistx.legend(prop={'size':14})
         
     # then the Y-histogram
     sns.distplot(clstr_array[:,2], vertical= True, bins=hist_bins, kde= False, ax=axHisty, axlabel=False, norm_hist=True, \
@@ -652,7 +659,7 @@ def kde_hist(line, sample_name,j):
     #gca().yaxis.set_major_locator(MaxNLocator(nbins=3, prune= 'both'))
     #axHisty.set_xticks([500, 1000, 1500])
     #axHisty.set_xlim(0,1000)
-    axHisty.legend(prop={'size':12})
+    #axHisty.legend(prop={'size':12})
     
     plt.show()
     return
@@ -741,12 +748,22 @@ def plot_spec_parts(line, sample_name, k):
     fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
     
+    #line_mark= [[1215.7, 1240, 1305, 1335, 1396.8], \
+                #[1486, 1549, 1640, 1663.5], [1857, 1892, 1908], \
+                #[2800]]
+    #line_labels= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV'], \
+                  #['N IV]', 'CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], \
+                  #['MgII']]
+
+    # use those for BAL quasars
+
     line_mark= [[1215.7, 1240, 1305, 1335, 1396.8], \
-                [1549, 1640, 1663.5], [1857, 1892, 1908], \
-                [2800]]
+                              [1549, 1640, 1663.5], [1857, 1892, 1908], \
+                              [2800]]
     line_labels= [[r'Ly$\alpha$', 'NV', 'OI + SiII', 'CII', 'SiIV'], \
-                  ['CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], \
-                  ['MgII']]
+                                ['CIV', 'HeII', 'OIII]'], ['AlIII', 'SiIII]', 'CIII]'], \
+                                ['MgII']]
+
     
     alphabet_list = ['a'+str(k), 'b'+str(k), 'c'+str(k), 'd'+str(k), 'e'+str(k), 'f'+str(k)]
     compo_labels= [line_label+"-"+ a for a in alphabet_list]
@@ -754,8 +771,8 @@ def plot_spec_parts(line, sample_name, k):
     clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red', 'cornflowerblue', 'brown' , 'olive', 'purple']
     
     splt_ls=[221, 222, 223, 224]
-    dx_ls= [(1150,1450),(1465,1700), (1800, 2300),  (2750, 2850)]
-    dy_ls= [(0.5, 2.1), (0.75, 2.6), (0.75, 1.8),  (0.85, 1.6)]
+    dx_ls= [(1150,1450),(1465,1700), (1800, 2100),  (2750, 2850)]
+    dy_ls= [(0.5, 2.1), (0.75, 2.1), (0.75, 1.8),  (0.85, 1.6)]
     
     for s in range(4):
     
@@ -767,7 +784,11 @@ def plot_spec_parts(line, sample_name, k):
             ax.axvline(line_mark[s][t], ls=':', c='k')
             ax.text(line_mark[s][t]-(dx_ls[s][1]-dx_ls[s][0])/20, dy_ls[s][1]-(dy_ls[s][1]-dy_ls[s][0])/10, \
                     line_labels[s][t], rotation= 'vertical', fontsize= 14, family='serif')
-        
+    
+        #plot([1990,2065],[1,1], 'k-')
+        ax.arrow(2030, 1, -30, -.1, fc='k', ec='k')
+        ax.arrow(2030, 1, +30, -.1, fc='k', ec='k')
+        text(2020, 1.05, r'FeIII', fontsize= 14, family='serif', color='k')
         ii= dy_ls[s][1]
         for (sp, clr, clab) in zip(compo_list, clr_ls, compo_labels):
             n= sp[1]
@@ -778,7 +799,7 @@ def plot_spec_parts(line, sample_name, k):
             plot(wlen, flx/flx[(dx_ls[s][0]-1100)*2], c= clr, lw= 1.5)
             
             ii-=0.1
-            ax.text(1925, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
+            ax.text(1980, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
 
         #mean_compo= fits.open("./composites/mean_compo_"+sample_name+".fits")
         #mean_flx= mean_compo[0].data[1]
@@ -815,52 +836,36 @@ def spec_ex_parts(line, sample_name, k):
         line_name= line_label = "MgII"
     
     if sample_name== "main":
-        sample= "_ew_hwhm_"
+        sample= ""
         sample_label= "Main"
     elif sample_name== "mixed":
-        sample= "_ew_hwhm_mixed_"
+        sample= "_mixed"
         sample_label= "Mixed"
     elif sample_name == "bal":
-        sample="_ew_hwhm_bal_"
+        sample="_bal"
         sample_label= "BALQ"
-    
-    
-    clstr_name= "./clusters/"+line+sample+ str(k) +"clstrs.npy"
-    clstr_array= np.load(clstr_name)
-    
+
+
+    t= Table.read("sample"+sample+"_myflags.fits")
+
+    clstr_t= Table.read("./clusters/"+line+"_"+str(k)+"clstrs"+"_"+sample_name+".fits")
+
+    s= join(clstr_t, t, keys= 'SDSS_NAME')
+
     clstr_num=[]
-    for f in range(max(clstr_array[:,3].astype(int))+1):
-        clstr_num.append([f, (mean(clstr_array[:,1][clstr_array[:,3]== f]), (mean(clstr_array[:,2][clstr_array[:,3]== f])))])
+    for f in range(max(clstr_t['label'])+1):
+        clstr_num.append([f, (mean(clstr_t['BHWHM'][clstr_t['label']== f]), (mean(clstr_t['RHWHM'][clstr_t['label']== f])))])
     
     ordered_clstrs= sorted(clstr_num, key= itemgetter(1)) #reverse= True
     print ordered_clstrs
 
-    '''
-    compo_name= "./composites/"+line+"_ew_hwhm_bal_only_"+str(k)+"*.fits" #for the BAL only sample
-    #compo_name= "./composites/"+line+"_ew_hwhm_bal_"+str(k)+"*.fits" #for the BAL+nonBAL sample
-    #compo_name= "./composites/"+line+"_ew_hwhm_"+str(k)+"*.fits"
-    compos= glob(compo_name)'''
-        
-        compo_list= []
-            for r in ordered_clstrs:
-    compo_name= "./composites/"+line+sample+str(k)+"clstrs"+str(r[0]+1)+".fits" #for the BAL+nonBAL sample
-    spec= fits.open(compo_name)
-        num_obj= spec[0].header['SPEC_NUMBER']
-        compo_list.append([compo_name, num_obj])
+    spec_names=[]
+    for h in ordered_clstrs:
+            oc= s[s['label']== h[0]]
+            oc.sort('SNR_1700')
 
-    print compo_list
-
-    '''
-        compo_list= []
-        for obj in compos:
-        spec= fits.open(obj)
-        num_obj= spec[0].header['SPEC_NUMBER']
-        compo_list.append([obj, num_obj])
-        ordered_compos= sorted(compo_list, key= itemgetter(1), reverse= True)
-        
-        print ordered_compos
-        '''
-
+            spec_names.append("./new_proc_data/spec-"+str(oc['PLATE'][-15])+"-"+str(oc['MJD'][-15])+"-"+str(oc['FIBERID'][-15]).zfill(4)+"_proc.fits")
+    print spec_names
 
     fig= figure(figsize=(14,8))
     sns.set_style("ticks")
@@ -900,23 +905,22 @@ def spec_ex_parts(line, sample_name, k):
                                                 line_labels[s][t], rotation= 'vertical', fontsize= 14, family='serif')
                                             
             ii= dy_ls[s][1]
-            for (sp, clr, clab) in zip(compo_list, clr_ls, compo_labels):
-            n= sp[1]
-            spec= fits.open(sp[0])
-            wlen= spec[0].data[0]
-            flx= spec[0].data[1]
+            for (sp, clr, clab) in zip(spec_names, clr_ls, compo_labels):
+                spec= fits.open(sp)
+                wlen= spec[0].data[0]
+                flx= spec[0].data[1]
                                                                     
-            plot(wlen, flx/flx[(dx_ls[s][0]-1100)*2], c= clr, lw= 1.5)
+                plot(wlen, flx/flx[(dx_ls[s][0]-1100)*2], c= clr, lw= 1.5)
                                                                         
             ii-=0.1
-            ax.text(1925, ii, clab+", N="+ str(n), color= clr, fontsize= 14, family= 'serif') #bbox=props
+            ax.text(1925, ii, clab, color= clr, fontsize= 14, family= 'serif') #bbox=props
                                                                                 
             #mean_compo= fits.open("./composites/mean_compo_"+sample_name+".fits")
             #mean_flx= mean_compo[0].data[1]
                                                                                 
             #plot(wlen, mean_flx/mean_flx[(dx_ls[s][0]-1100)*2], c='k', lw=2, label= "Mean")
                                                                                 
-            ax.text(2820, dy_ls[s][1]-0.15, sample_label+" Sample"+"\n"+"N="+ str(len(clstr_array)), color= 'k', fontsize= 14, family= 'serif')
+            ax.text(2820, dy_ls[s][1]-0.15, sample_label, color= 'k', fontsize= 14, family= 'serif')
                                                                             
     return
 
