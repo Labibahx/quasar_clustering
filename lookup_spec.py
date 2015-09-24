@@ -26,6 +26,8 @@ def spec_display(plate, mjd, fiber):
     xlabel(r'Wavelength ($\AA$)')
     ylabel('Normalized flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)')
 
+    return
+
 ###################
 
 
