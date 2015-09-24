@@ -1294,6 +1294,52 @@ ylim(-23.5, -29.5)
 xlabel('Redshift', size=22)
 ylabel(r'$M_{\rm i}$', size=22)
 
+###================
+
+'''quick function to show line profiles for one line (CIV or CIII]) for a list of individual spectra given as a list of PLATE, MJD, FIBERID. purpose is to show interesting examples from some cluster
+'''
+
+def ex_profiles(list):
+    '''list: is a file name which contais a list with the format PLATE, MJD, FIBERID for hand picked obejcts'''
+
+    #plate, mjd, fiber, name= np.loadtxt(list, unpack=True, delimiter= ',', usecols= (0,1,2,3), dtype= ['str', 'str', 'str', 'str'])
+    
+    f= open(list, 'rb')
+    sns.set(font_scale= 1.5)
+    sns.set_style("ticks", {'font.family': u'serif'})
+    
+    fig= figure(figsize=(10,8))
+    ax= fig.add_subplot(111)
+    axvline(1549, ls= ':', color= 'k')
+    xlabel(r'Wavelength ($\AA$)', size=18)
+    ylabel('Normalized flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)', size=18)
+        
+    xlim(1500,1600)
+    ylim(0,40)
+
+
+    w= 0
+    v= 31
+    for line in f:
+        spec_name= "./new_proc_data/spec-"+str(line[0:4])+"-"+str(line[5:10])+"-"+str(line[11:14]).zfill(4)+"_proc.fits"
+    
+        spec= fits.open(spec_name)
+        flx= spec[0].data[1]
+        wlen= spec[0].data[0]
+        
+        ax.plot(wlen, flx+w, c='k', lw= 2 )
+        text(1555, v, "SDSS J"+str(line[15:34].rstrip()), size=16)
+        
+        w+=3
+        v+=2
+    
+    f.close()
+    
+    return
+
+
+
+
 
 
 
