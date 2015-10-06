@@ -91,7 +91,7 @@ def clstr_reprod(sample, k):
         gca().yaxis.set_major_locator(MaxNLocator(nbins=7, prune= 'both'))
         if p in [1,2,3,4,5,6]:
             ax3.set_xticklabels([])
-        scatter(range(50), rw_c[:50], marker='s', facecolor='0.7', edgecolor='')
+        scatter(range(50), rw_c[:50], marker='s', facecolor='0.7', edgecolor='g')
         scatter(range(50), rw_c[50:100], marker='s',facecolor='0.7', edgecolor='g')
         scatter(range(50), rw_c[100:150], marker='s',facecolor='0.7', edgecolor='g')
 
