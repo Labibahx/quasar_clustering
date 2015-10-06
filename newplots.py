@@ -927,6 +927,7 @@ def spec_ex_parts(line, sample_name, k):
 
 ###########################
 
+#see reproduce.py for a function that repeats K-Means and creats the plot.
 def plot_reprod(line, k):
     
     """ make plots with cluster centroids calculated 50 times to show reproducibility.
