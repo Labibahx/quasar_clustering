@@ -1342,18 +1342,18 @@ def ex_profiles(list):
 
 #plot histograms for Mi for separate clusters (used for referee report)
 
-sample= "BALQ Sample"
-line= "c3"
-line_name= "CIII]"
+sample= "Main Sample"
+line= "mg2"
+line_name= "MgII"
 k= 5
 
-#clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_main.fits")
+clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_main.fits")
 #clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_mixed.fits")
-clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_bal.fits")
+#clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_bal.fits")
 
-#data= Table.read("sample_myflags.fits")
+data= Table.read("sample_myflags.fits")
 #data= Table.read("sample_mixed_myflags.fits")
-data= Table.read("sample_bal_myflags.fits")
+#data= Table.read("sample_bal_myflags.fits")
 
 alphabet= ['a', 'b', 'c', 'd', 'e', 'f']
 
@@ -1370,7 +1370,7 @@ ord_clstrs= sorted(clstr_num, key= itemgetter(2))
 
 clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5']
 
-fig= figure(figsize=(10,6))
+fig= figure(figsize=(12,8))
 ax= fig.add_subplot(111)
 xlabel(r'$M_{\rm i}$')
 ylabel('Normalized Dist')
