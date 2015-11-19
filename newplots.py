@@ -1338,6 +1338,56 @@ def ex_profiles(list):
     
     return
 
+##====================================
+
+#plot histograms for Mi for separate clusters (used for referee report)
+
+sample= "BALQ Sample"
+line= "c3"
+line_name= "CIII]"
+k= 5
+
+#clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_main.fits")
+#clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_mixed.fits")
+clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_bal.fits")
+
+#data= Table.read("sample_myflags.fits")
+#data= Table.read("sample_mixed_myflags.fits")
+data= Table.read("sample_bal_myflags.fits")
+
+alphabet= ['a', 'b', 'c', 'd', 'e', 'f']
+
+
+t= join(clstr, data, keys= "SDSS_NAME")
+
+clstr_num= []
+for l in range(5):
+    clstr_num.append([l, len(clstr[clstr['label'] ==l]), (mean(clstr['BHWHM'][clstr['label'] ==l]), \
+                    mean(clstr['RHWHM'][clstr['label'] ==l]))])
+    
+ord_clstrs= sorted(clstr_num, key= itemgetter(2))
+
+
+clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5']
+
+fig= figure(figsize=(10,6))
+ax= fig.add_subplot(111)
+xlabel(r'$M_{\rm i}$')
+ylabel('Normalized Dist')
+text(0.8, 0.9, sample, color= 'k', fontsize= 14, transform=ax.transAxes)
+
+
+y= 0
+for (c,j) in zip(ord_clstrs, range(k)):
+    
+    i= c[0]
+    n= str(c[1])
+    ax.hist(t["MI"][t['label'] ==i], bins= 10, histtype='step', normed= True, lw= 2, color=clr_ls[j])
+    ax.text(0.05, 0.9-y, line_name+"-"+alphabet[j]+str(k)+", N="+n, color= clr_ls[j], fontsize= 14, transform=ax.transAxes)
+
+    y+=0.05
+
+show()
 
 
 
