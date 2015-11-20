@@ -1343,16 +1343,16 @@ def ex_profiles(list):
 #plot histograms for Mi for separate clusters (used for referee report)
 
 sample= "Main Sample"
-line= "mg2"
-line_name= "MgII"
-k= 5
+line= "c3"
+line_name= "C III]"
+k= 6
 
-clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_main.fits")
-#clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_mixed.fits")
+#clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_main.fits")
+clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_mixed.fits")
 #clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_bal.fits")
 
-data= Table.read("sample_myflags.fits")
-#data= Table.read("sample_mixed_myflags.fits")
+#data= Table.read("sample_myflags.fits")
+data= Table.read("sample_mixed_myflags.fits")
 #data= Table.read("sample_bal_myflags.fits")
 
 alphabet= ['a', 'b', 'c', 'd', 'e', 'f']
