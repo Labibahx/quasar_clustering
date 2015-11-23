@@ -1373,7 +1373,8 @@ print ord_clstrs
 fig= figure(figsize=(12,8))
 ax= fig.add_subplot(111)
 xlabel(r'$M_{\rm i}$')
-ylabel('Normalized Dist')
+#ylabel('Normalized Dist')
+ylabel(r'$M_i$')
 text(0.8, 0.9, sample, color= 'k', fontsize= 14, transform=ax.transAxes)
 
 
@@ -1382,8 +1383,8 @@ for (c,j) in zip(ord_clstrs, range(k)):
     
     i= c[0]
     n= str(c[1])
-    ax.hist(t["MI"][t['label'] ==i], bins= 10, histtype='step', normed= True, lw= 2, color=clr_ls[j])
-    #scatter(t['Z_PCA'][t['label'] ==i], t['MI'][t['label'] ==i], marker='.', color= clr_ls[j])
+    #ax.hist(t["MI"][t['label'] ==i], bins= 10, histtype='step', normed= True, lw= 2, color=clr_ls[j])
+    scatter(t['Z_PCA'][t['label'] ==i], t['MI'][t['label'] ==i], marker='.', color= clr_ls[j])
     ax.text(0.05, 0.9-y, line_name+"-"+alphabet[j]+str(k)+", N="+n, color= clr_ls[j], fontsize= 14, transform=ax.transAxes)
 
     y+=0.05
