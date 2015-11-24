@@ -1372,9 +1372,9 @@ print ord_clstrs
 
 fig= figure(figsize=(12,8))
 ax= fig.add_subplot(111)
-xlabel(r'$M_{\rm i}$')
+ylabel(r'$M_{\rm i}$')
 #ylabel('Normalized Dist')
-ylabel(r'$M_i$')
+xlabel(r'$z$')
 text(0.8, 0.9, sample, color= 'k', fontsize= 14, transform=ax.transAxes)
 
 
