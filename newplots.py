@@ -1396,19 +1396,21 @@ show()
 """ plot line profiles of high and low Mi composites.
     """
 
+sns.set_style('ticks', {'font.family': u'serif', 'xtick.direction': u'in'})
+
 sample_name= "Main Sample"
-sample= "" # or bal or bal_only
-line= "c3"
-line_name= "C III]"
+sample= "_" # main= _, mixed= _mixed_, bal = _bal_
+line= "mg2"
+line_name= "MgII"
 k= 5
-label= 2
 
 sns.set(font_scale= 1.5)
 sns.set_style("ticks", {'font.family': u'serif'})
 clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red']
-#l= [4,1,0,2,3] #CIII]
-l= [3,1,0,4,2] #MgII
-    
+#l= [4,1,0,2,3] #CIII] main
+#l= [2, 4, 0, 5, 1, 3] #CIII] mixed
+l= [3,1,0,4,2] #MgII main
+
 fig= figure(figsize=(16,8))
 ax1= fig.add_subplot(131)
 axvline(1549, ls= ':', color= 'k')
@@ -1417,62 +1419,39 @@ axvline(1906, ls= ':', color= 'k')
 ylabel('Normalized flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)', size=18)
     
 xlim(1500,2000)
-ylim(0.8,5)
+ylim(0.8,3.3)
 
-for i in l:
-    compo= fits.open("./composites/c3_ew_hwhm_"+str(k)+"clstrs"+str(i+1)+".fits")
+for (i,j) in zip(l, range(k)):
+    compo= fits.open("./composites/"+line+"_ew_hwhm"+sample+str(k)+"clstrs"+str(i+1)+".fits")
     #compo= fits.open("./composites/mg2_ew_hwhm_"+str(k)+"clstrs"+str(i+1)+".fits")
     
-    plot(compo[0].data[0], compo[0].data[1]/compo[0].data[1][1700], c= clr_ls[i], lw=1.5)
-    text(0.4, 0.9, "Total,"+line_name+", K=5", transform= ax1.transAxes)
+    plot(compo[0].data[0], compo[0].data[1]/compo[0].data[1][1700], c= clr_ls[j], lw=1.5)
+    text(0.4, 0.9, sample_name+"\nTotal,"+line_name+", K="+str(k), transform= ax1.transAxes)
 
 ax2= fig.add_subplot(132)
 axvline(1549, ls= ':', color= 'k')
 axvline(1640, ls= ':', color= 'k')
 axvline(1906, ls= ':', color= 'k')
 xlim(1500,2000)
-ylim(0.8,5)
+ylim(0.8,3.3)
 xlabel(r'Wavelength ($\AA$)', size=18)
 
-for i in l:
+for (i,j) in zip(l, range(k)):
     hi= fits.open("./composites/hiMI_"+line+"_"+str(i)+"main.fits")
-    plot(hi[0].data[0], hi[0].data[1]/hi[0].data[1][1700], c= clr_ls[i], lw=1.5)
-    text(0.5, 0.9, "High Mi", transform= ax2.transAxes)
+    plot(hi[0].data[0], hi[0].data[1]/hi[0].data[1][1700], c= clr_ls[j], lw=1.5)
+    text(0.4, 0.9, "High Mi (> -26)", transform= ax2.transAxes)
     
 ax3= fig.add_subplot(133)
 axvline(1549, ls= ':', color= 'k')
 axvline(1640, ls= ':', color= 'k')
 axvline(1906, ls= ':', color= 'k')
 xlim(1500,2000)
-ylim(0.8,5)
+ylim(0.8,3.3)
 
-for i in l:
+for (i,j) in zip(l, range(k)):
     lo= fits.open("./composites/loMI_"+line+"_"+str(i)+"main.fits")
-    plot(lo[0].data[0], lo[0].data[1]/lo[0].data[1][1700], c= clr_ls[i], lw=1.5)
-    text(0.5, 0.9, "Low Mi", transform= ax3.transAxes)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    plot(lo[0].data[0], lo[0].data[1]/lo[0].data[1][1700], c= clr_ls[j], lw=1.5)
+    text(0.4, 0.9, "Low Mi (< -26.5)", transform= ax3.transAxes)
 
 
 
