@@ -1343,8 +1343,8 @@ def ex_profiles(list):
 #plot histograms for Mi for separate clusters (used for referee report)
 
 sample= "Main Sample"
-line= "c3"
-line_name= "C III]"
+line= "mg2"
+line_name= "Mg II"
 k= 5
 
 clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_main.fits")
@@ -1406,7 +1406,8 @@ label= 2
 sns.set(font_scale= 1.5)
 sns.set_style("ticks", {'font.family': u'serif'})
 clr_ls= ['orange', 'navy', 'mediumvioletred','seagreen', '0.5', 'red']
-l= [4,1,0,2,3]
+#l= [4,1,0,2,3] #CIII]
+l= [3,1,0,4,2] #MgII
     
 fig= figure(figsize=(16,8))
 ax1= fig.add_subplot(131)
@@ -1420,9 +1421,10 @@ ylim(0.8,5)
 
 for i in l:
     compo= fits.open("./composites/c3_ew_hwhm_"+str(k)+"clstrs"+str(i+1)+".fits")
+    #compo= fits.open("./composites/mg2_ew_hwhm_"+str(k)+"clstrs"+str(i+1)+".fits")
     
     plot(compo[0].data[0], compo[0].data[1]/compo[0].data[1][1700], c= clr_ls[i], lw=1.5)
-    text(0.4, 0.9, "Total, C III], K=5", transform= ax1.transAxes)
+    text(0.4, 0.9, "Total,"+line_name+", K=5", transform= ax1.transAxes)
 
 ax2= fig.add_subplot(132)
 axvline(1549, ls= ':', color= 'k')
@@ -1433,7 +1435,7 @@ ylim(0.8,5)
 xlabel(r'Wavelength ($\AA$)', size=18)
 
 for i in l:
-    hi= fits.open("./composites/hiMI_c3_"+str(i)+"main.fits")
+    hi= fits.open("./composites/hiMI_"+line+"_"+str(i)+"main.fits")
     plot(hi[0].data[0], hi[0].data[1]/hi[0].data[1][1700], c= clr_ls[i], lw=1.5)
     text(0.5, 0.9, "High Mi", transform= ax2.transAxes)
     
@@ -1445,7 +1447,7 @@ xlim(1500,2000)
 ylim(0.8,5)
 
 for i in l:
-    lo= fits.open("./composites/loMI_c3_"+str(i)+"main.fits")
+    lo= fits.open("./composites/loMI_"+line+"_"+str(i)+"main.fits")
     plot(lo[0].data[0], lo[0].data[1]/lo[0].data[1][1700], c= clr_ls[i], lw=1.5)
     text(0.5, 0.9, "Low Mi", transform= ax3.transAxes)
 
