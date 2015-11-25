@@ -8,18 +8,16 @@ from astropy.table import Table
 from scipy.stats import sigmaclip
 
 sample= "Main Sample"
-sample_name= "main"
+sample_name= "bal"
 line= "c3"
-line_name= "C III]"
+line_name= "CII]"
 k= 5
-comments= "High Mi"
+comments= "Low Mi"
 
 clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_"+sample_name+".fits")
-#clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_"+sample_name+".fits")
-#clstr= Table.read("./clusters/"+line+"_"+str(k)+"clstrs_"+sample_name+".fits")
 
-data= Table.read("sample_myflags.fits")
-#data= Table.read("sample_mixed_myflags.fits")
+#data= Table.read("sample_myflags.fits")
+data= Table.read("sample_mixed_myflags.fits")
 #data= Table.read("sample_bal_myflags.fits")
 
 tt= join(clstr, data, keys= "SDSS_NAME")
@@ -27,8 +25,8 @@ tt= join(clstr, data, keys= "SDSS_NAME")
 #t= tt[(tt['label'] ==2) & (tt['MI'] > -25.5)]
 
 for c in range(k):
-    #t= tt[(tt['MI'] < -26.5) & (tt['label'] == c)] # low Mi
-    t= tt[(tt['MI'] > -25.5) & (tt['label'] == c)] # high Mi
+    t= tt[(tt['MI'] < -26.5) & (tt['label'] == c)] # low Mi
+    #t= tt[(tt['MI'] > -26) & (tt['label'] == c)] # high Mi
 
     compo_array= np.arange(1100, 4000, 0.5)
 
@@ -51,7 +49,8 @@ for c in range(k):
         m=median(y[0])
         clipped_compo.append(m)
 
-    compo_name= "./composites/hiMI_"+line+"_"+str(c)+sample_name+".fits"
+    #compo_name= "./composites/hiMI_"+line+"_"+str(c)+sample_name+".fits" # high
+    compo_name= "./composites/loMI_"+line+"_"+str(c)+sample_name+".fits" #low
     spec_file= np.vstack((wlen,clipped_compo))
     hdu= fits.PrimaryHDU(spec_file)
     hdr= hdu.header
