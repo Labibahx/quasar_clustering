@@ -1278,28 +1278,39 @@ def bal_hist3(k):
 ##==============
 
 ##plot Mi vs. z
+
+from astropy import units as u
+
 from astropy.cosmology import FlatLambdaCDM
 cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
 
 dr10 = Table.read('dr10q.fits') # read the entire DR 10 quasar catalog
 
 ld= cosmo.luminosity_distance(dr10['Z_PCA']) #luminosity distance to be used to calculated apparent i mag
-mi= dr10['MI']-5*log(ld)
+#mi= np.array(dr10['MI']) + 5 * log10(ld.to(u.pc)/(10.*u.pc)) #remember to convert uints
 
+bigmi= 19.1 - 5 * log10(ld.to(u.pc)/(10.*u.pc))
 
-t= Table.read('sample_myflags.fits')
+t= Table.read('sample_myflags.fits') #my sample
 
-fig= figure(figsize=(10,10))
+fig= figure(figsize=(12,10))
 
 sns.set(font_scale= 1.5)
 sns.set_style("ticks", {'font.family': u'serif'})
 
-scatter(t['Z_PCA'], t['MI'], marker='.', color= '.7')
+#sns.kdeplot(dr10['Z_PCA'][dr10['Z_PCA'] !=-1.], dr10['MI'][dr10['Z_PCA'] !=-1.], cmap= 'Blues_r', n_levels= 17)
+scatter(dr10['Z_PCA'][dr10['Z_PCA'] !=-1.], dr10['MI'][dr10['Z_PCA'] !=-1.], marker='.', color= '.7')
+scatter(dr10['Z_PCA'], bigmi, marker= 'o', s= 5, color= 'y')
 sns.kdeplot(t['Z_PCA'], t['MI'], cmap= 'Blues_r')
 
-text(1.6, -29, 'Main Sample', size=18)
+#scatter(t['Z_PCA'], t['MI'], marker='.', color= '.7')
 
-ylim(-23.5, -29.5)
+#scatter(dr10['Z_PCA'], dr10['MI'], marker='.', color= '.7')
+#sns.kdeplot(t['Z_PCA'], t['MI'], cmap= 'Blues_r')
+
+#text(1.6, -29, 'Main Sample', size=18)
+xlim(0.1,4.8)
+ylim(-20.5, -31.5)
 xlabel('Redshift', size=22)
 ylabel(r'$M_{\rm i}$', size=22)
 
