@@ -1278,6 +1278,14 @@ def bal_hist3(k):
 ##==============
 
 ##plot Mi vs. z
+from astropy.cosmology import FlatLambdaCDM
+cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
+
+dr10 = Table.read('dr10q.fits') # read the entire DR 10 quasar catalog
+
+ld= cosmo.luminosity_distance(dr10['Z_PCA']) #luminosity distance to be used to calculated apparent i mag
+mi= dr10['MI']-5*log(ld)
+
 
 t= Table.read('sample_myflags.fits')
 
