@@ -31,7 +31,7 @@ def spec_display(plate, mjd, fiber):
 ###################
 
 
-def spec_look_up(line, k, sample_name, label):
+def inspec(line, k, sample_name, label):
 
     """ read a list of sdss names, corss-match list with table with mjd, plate, fiber IDs to generate spectra file name with format mjd-plate-fiber_proc.fits e.g., spec-3587-55182-0691_proc.fits
     the processed spectra (i.e., corrected for Galactic extinction and de-redshifted and normalized. See spec_proc.py)
@@ -84,7 +84,7 @@ def spec_look_up(line, k, sample_name, label):
     
     
         ## plot the spectra
-    fig= figure(figsize=(16, 8))
+    fig= figure(figsize=(20, 10))
     ax=fig.add_subplot(111)
 
     for (file, name, z) in zip(spec_files_ls, sdss_names_ls, redshift_ls):
