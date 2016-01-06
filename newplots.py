@@ -1359,7 +1359,10 @@ def ex_profiles(list):
 
 ##====================================
 
-#plot histograms for Mi for separate clusters (used for referee report)
+#plot histograms or scatter plots for Mi (or mi) for separate clusters (used for referee report)
+
+from astropy.cosmology import FlatLambdaCDM
+cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
 
 sample= "Main Sample"
 line= "mg2"
@@ -1374,7 +1377,15 @@ data= Table.read("sample_myflags.fits")
 #data= Table.read("sample_mixed_myflags.fits")
 #data= Table.read("sample_bal_myflags.fits")
 
-t= join(clstr, data, keys= "SDSS_NAME")
+
+tt= join(clstr, data, keys= "SDSS_NAME")
+
+ld= cosmo.luminosity_distance(tt['Z_PCA']) #luminosity distance to be used to calculated apparent i mag
+mi= np.array(tt['MI']) + 5 * log10(ld.to(u.pc)/(10.*u.pc)) #remember to convert uints
+
+mag= Column(mi)
+
+t= tt.add_column(mag)
 
 alphabet= ['a', 'b', 'c', 'd', 'e', 'f']
 
@@ -1403,6 +1414,7 @@ for (c,j) in zip(ord_clstrs, range(k)):
     i= c[0]
     n= str(c[1])
     #ax.hist(t["MI"][t['label'] ==i], bins= 10, histtype='step', normed= True, lw= 2, color=clr_ls[j])
+    #scatter(t['Z_PCA'][t['label'] ==i], t['MI'][t['label'] ==i], marker='.', color= clr_ls[j])
     scatter(t['Z_PCA'][t['label'] ==i], t['MI'][t['label'] ==i], marker='.', color= clr_ls[j])
     ax.text(0.05, 0.9-y, line_name+"-"+alphabet[j]+str(k)+", N="+n, color= clr_ls[j], fontsize= 14, transform=ax.transAxes)
 
