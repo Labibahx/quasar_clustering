@@ -1298,15 +1298,14 @@ fig= figure(figsize=(12,10))
 sns.set(font_scale= 1.5)
 sns.set_style("ticks", {'font.family': u'serif'})
 
-#sns.kdeplot(dr10['Z_PCA'][dr10['Z_PCA'] !=-1.], dr10['MI'][dr10['Z_PCA'] !=-1.], cmap= 'Blues_r', n_levels= 17)
-scatter(dr10['Z_PCA'][dr10['Z_PCA'] !=-1.], dr10['MI'][dr10['Z_PCA'] !=-1.], marker='.', color= '.7')
-scatter(dr10['Z_PCA'], bigmi, marker= 'o', s= 5, color= 'y')
-sns.kdeplot(t['Z_PCA'], t['MI'], cmap= 'Blues_r')
+#sns.kdeplot(dr10['Z_PCA'][dr10['Z_PCA'] !=-1.], dr10['MI'][dr10['Z_PCA'] !=-1.], cmap= 'Blues_r', gridsize= 100) # KDE for the entire DR10 catalog
 
-#scatter(t['Z_PCA'], t['MI'], marker='.', color= '.7')
+scatter(dr10['Z_PCA'][dr10['Z_PCA'] !=-1.], dr10['MI'][dr10['Z_PCA'] !=-1.], marker='+', s= 1, color= '.7') # scatter fot the DR10 catalog
 
-#scatter(dr10['Z_PCA'], dr10['MI'], marker='.', color= '.7')
-#sns.kdeplot(t['Z_PCA'], t['MI'], cmap= 'Blues_r')
+sns.kdeplot(t['Z_PCA'], t['MI'], cmap= 'Blues_r') # KDE for our sample
+
+#scatter(t['Z_PCA'], t['MI'], marker='.', color= '.7') # scatter plot for our sample
+scatter(dr10['Z_PCA'], bigmi, marker= '.', color= 'k') # line to show the abs i mag line
 
 #text(1.6, -29, 'Main Sample', size=18)
 xlim(0.1,4.8)
