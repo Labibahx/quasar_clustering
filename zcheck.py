@@ -32,24 +32,23 @@ def zcheck(line, sample, k):
     # now calculate and print Anderson-Darling test for the redshift estimates using CIII], MgII, CIV and PCA. PCA is the one I used to shift spectra to restframe.
 
     f= open("z_match.txt", 'wr')
-    f.write("Clstr"+'\t'+ "Num" + '\t' + "all"+ '\t'+ "sig"+ '\t'+ "Z_MgII"+ \
-            '\t' + "sig"+ '\t'+ "Z_CIII"+ '\t' + "sig"+ '\t' +"Z_CIV"+ '\t' + "sig" + '\n')
+    f.write("Clstr"+'\t'+ "Num" + '\t'+ "Z_MgII"+ '\t' + "sig"+ '\t'+ \
+            "Z_CIII"+ '\t' + "sig"+ '\t' +"Z_CIV"+ '\t' + "sig" + '\n')
 
 
     for l in range(k):
         
-        ss = stats.anderson_ksamp([tt['Z_PCA'][tt['label']==l], tt['Z_MGII'][tt['label'] ==l], \
-                                 tt['Z_CIII'][tt['label'] ==l], tt['Z_CIV'][tt['label'] ==l]])
+        #ss = stats.anderson_ksamp([tt['Z_PCA'][tt['label']==l], tt['Z_MGII'][tt['label'] ==l], \
+                                 #tt['Z_CIII'][tt['label'] ==l], tt['Z_CIV'][tt['label'] ==l]])
         
-        s_mg= stats.anderson_ksamp([tt['Z_PCA'][tt['label']==l], tt['Z_MGII'][tt['label'] ==l]])
-        s_c3= stats.anderson_ksamp([tt['Z_PCA'][tt['label']==l], tt['Z_CIII'][tt['label'] ==l]])
-        s_c4= stats.anderson_ksamp([tt['Z_PCA'][tt['label']==l], tt['Z_CIV'][tt['label'] ==l]])
+        s_mg= stats.ks_2samp(tt['Z_PCA'][tt['label']==l], tt['Z_MGII'][tt['label'] ==l])
+        s_c3= stats.ks_2samp(tt['Z_PCA'][tt['label']==l], tt['Z_CIII'][tt['label'] ==l])
+        s_c4= stats.ks_2samp(tt['Z_PCA'][tt['label']==l], tt['Z_CIV'][tt['label'] ==l])
 
-        f.write('\t'+str(len(tt[tt['label'] == l]))+ \
-                '\t'+'{:5.3f}'.format(ss[0])+'\t'+'{:5.3f}'.format(ss[2])+ \
-                '\t'+'{:5.3f}'.format(s_mg[0])+'\t'+'{:5.3f}'.format(s_mg[2])+ \
-                '\t'+'{:5.3f}'.format(s_c3[0])+'\t'+'{:5.3f}'.format(s_c3[2])+ \
-                '\t'+'{:5.3f}'.format(s_c4[0])+'\t'+'{:5.3f}'.format(s_c4[2])+'\n')
+        f.write('\t' + '&' +str(len(tt[tt['label'] == l]))+ \
+                '\t'+ '&'+'{:5.3f}'.format(s_mg[0])+ '\t' +'&'+'{:5.3f}'.format(s_mg[1])+ \
+                '\t'+ '&'+'{:5.3f}'.format(s_c3[0])+ '\t' +'&'+'{:5.3f}'.format(s_c3[1])+ \
+                '\t'+ '&'+'{:5.3f}'.format(s_c4[0])+'\t'+ '&'+'{:5.3f}'.format(s_c4[1])+'\n')
 
 
 
