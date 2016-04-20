@@ -53,7 +53,7 @@ def line_profile(line, line_name, k):
     fig1.set_axis_off()
     fig1.set_xlim(0, 1)
     fig1.set_ylim(0, 1)
-    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18)
+    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-2}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18)
     fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18)
 
     dx_list= [(1160, 1265), (1350, 1450), (1500, 1600), (1590, 1690), (1810, 1950), (2750, 2850)]
@@ -129,7 +129,7 @@ def profiles(line, k1, k2):
     fig1.set_axis_off()
     fig1.set_xlim(0, 1)
     fig1.set_ylim(0, 1)
-    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center')
+    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-2}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center')
     fig1.text(0.5, 0.03, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center')
     fig1.text(0.92, 0.7, "K = "+str(k1), rotation= 'vertical', horizontalalignment= 'center')
     fig1.text(0.92, 0.3, "K = "+str(k2), rotation= 'vertical', horizontalalignment= 'center')
@@ -744,7 +744,7 @@ def plot_spec_parts(line, sample_name, k):
     fig1.set_axis_off()
     fig1.set_xlim(0, 1)
     fig1.set_ylim(0, 1)
-    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-2}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
     fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
 
     
@@ -873,7 +873,7 @@ def spec_ex_parts(line, sample_name, k):
     fig1.set_axis_off()
     fig1.set_xlim(0, 1)
     fig1.set_ylim(0, 1)
-    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
+    fig1.text(.07, 0.5, r"Normalized Flux (erg s$^{-1}$ cm$^{-2}$ $\AA^{-1}$)", rotation='vertical', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
     fig1.text(0.5, 0.01, r"Wavelength ($\AA$)", rotation='horizontal', horizontalalignment='center', verticalalignment='center', fontsize= 18, family= 'serif')
     
     
@@ -1331,7 +1331,7 @@ def ex_profiles(list):
     ax= fig.add_subplot(111)
     axvline(1549, ls= ':', color= 'k')
     xlabel(r'Wavelength ($\AA$)', size=18)
-    ylabel('Normalized flux (erg s$^{-1}$ cm$^{-1}$ $\AA^{-1}$)', size=18)
+    ylabel('Normalized flux (erg s$^{-1}$ cm$^{-2}$ $\AA^{-1}$)', size=18)
         
     xlim(1500,1600)
     ylim(0,40)
